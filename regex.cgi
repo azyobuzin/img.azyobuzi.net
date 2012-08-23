@@ -14,4 +14,4 @@ for service in supported.services:
 
 print "Content-Type: application/json"
 print
-print json.dumps(ret)
+print json.dumps(ret, sort_keys = True)
