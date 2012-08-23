@@ -3,7 +3,7 @@
 import re
 
 class pckles:
-	regexStr = "^https?://pckles\\.com/(\w+)/(\w+)/?(?:\\?.*)?$"
+	regexStr = "^https?://pckles\\.com/(\w+)/(\w+)(?:/|\\.png|\\.(?:resize\\.)?jpg)?(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	
 	def getFullSize(self, match):
