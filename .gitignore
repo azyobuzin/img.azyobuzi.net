@@ -1,0 +1,2 @@
+*.pyc
+/resolvers/db_access.py
