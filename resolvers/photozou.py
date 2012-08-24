@@ -25,15 +25,16 @@ class photozou:
 		sqlResult = c.fetchone()
 		
 		if sqlResult is None:
-			httpRes = urllib2.urlopen("http://api.photozou.jp/rest/photo_info?photo_id=" + id)
+			httpRes = None
 			
-			root = ET.fromstring(httpRes.read())
-			info = root.find("info")
-			
-			if info is None:
+			try:
+				httpRes = urllib2.urlopen("http://api.photozou.jp/rest/photo_info?photo_id=" + id)
+			except:
 				return None
 			
-			photo = info.find("photo")
+			root = ET.fromstring(httpRes.read())
+			
+			photo = root.find("info").find("photo")
 			
 			image = photo.find("image_url").text
 			thumbnail_image = photo.find("thumbnail_image_url").text
