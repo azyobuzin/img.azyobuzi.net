@@ -1,2 +1,2 @@
 *.pyc
-/resolvers/db_access.py
+/resolvers/private_constant.py

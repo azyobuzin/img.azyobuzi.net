@@ -5,7 +5,7 @@ import re
 import MySQLdb
 import urllib2
 import urlparse
-from db_access import *
+from private_constant import *
 
 class hatenaFotolife:
 	regexStr = "^http://f\\.hatena\\.ne\\.jp/(\\w+)/(\\d+)(?:\\?.*)?$"
@@ -17,7 +17,7 @@ class hatenaFotolife:
 	last = None
 	
 	def getUriData(self, username, id):
-		if self.last is not None and self.last[0] == username and self.last[1] == id:
+		if self.last is not None and self.last[0] == username and str(self.last[1]) == str(id):
 			return self.last
 		
 		db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")

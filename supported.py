@@ -3,6 +3,7 @@
 import sys
 sys.path.append("resolvers")
 
+import flickr
 import gyazo
 import hatena_fotolife
 import imgly
@@ -15,6 +16,7 @@ import yfrog
 #アルファベット順
 
 services = [
+	flickr.flickr(),
 	gyazo.gyazo(),
 	hatena_fotolife.hatenaFotolife(),
 	imgly.imgly(),
