@@ -1,48 +1,41 @@
 #!/virtual/azyobuzin/local/bin/python
 # -*- coding: utf-8 -*-
 
-import cgitb
-cgitb.enable()
+from error import handleError
 
-import os
-import urlparse
-import json
-import supported
-
-query = dict(urlparse.parse_qsl(os.environ.get("QUERY_STRING", "")))
-
-if "uri" in query:
-	uri = query["uri"]
+try:
+	import os
+	import urlparse
+	import json
+	import supported
 	
-	for service in supported.services:
-		match = service.regex.match(uri)
-		if match is not None:
-			full = service.getFullSize(match)
-			large = service.getLargeSize(match)
-			thumb = service.getThumbnail(match)
-			
-			if full is None or large is None or thumb is None:
-				print "Status: 400 Bad Request"
-				print "Content-Type: text/plain"
-				print
-				print "Could'nt resolve the URI. Maybe the URI is not found."
-			else:
-				print "Content-Type: application/json"
-				print
-				print json.dumps({
-					"full": full,
-					"large": large,
-					"thumb": thumb
-				})
-			
-			break
+	query = dict(urlparse.parse_qsl(os.environ.get("QUERY_STRING", "")))
+	
+	if "uri" in query:
+		uri = query["uri"]
+		
+		for service in supported.services:
+			match = service.regex.match(uri)
+			if match is not None:
+				full = service.getFullSize(match)
+				large = service.getLargeSize(match)
+				thumb = service.getThumbnail(match)
+				
+				if full is None or large is None or thumb is None:
+					handleError("500 Internal Server Error", 5000, None)
+				else:
+					print "Content-Type: application/json"
+					print
+					print json.dumps({"response": {
+						"full": full,
+						"large": large,
+						"thumb": thumb
+					}})
+				
+				break
+		else:
+			handleError("400 Bad Request", 4001, None)
 	else:
-		print "Status: 400 Bad Request"
-		print "Content-Type: text/plain"
-		print
-		print "Could'nt resolve the URI. Maybe not supported."
-else:
-	print "Status: 400 Bad Request"
-	print "Content-Type: text/plain"
-	print
-	print "\"uri\" parameter is required."
+		handleError("400 Bad Request", 4000, None)
+except Exception, ex:
+	handleError("500 Internal Server Error", 5001, ex)

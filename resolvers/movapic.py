@@ -56,7 +56,7 @@ class movapic:
 			return self.last
 		else:
 			return ["", expanded]
-			
+	
 	def getFullSize(self, match):
 		data = self.getUriData(match)
 		

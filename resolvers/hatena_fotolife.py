@@ -31,7 +31,12 @@ class hatenaFotolife:
 		
 		if sqlResult is None:
 			reqUri = "http://f.hatena.ne.jp/%s/%s" % (username, id)
-			httpRes = urllib2.urlopen(reqUri)
+			httpRes = None
+			
+			try:
+				httpRes = urllib2.urlopen(reqUri)
+			except:
+				return None
 			
 			if httpRes.geturl() != reqUri: #リダイレクトされたと判断
 				return None
