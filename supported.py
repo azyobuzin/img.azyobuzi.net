@@ -13,6 +13,7 @@ import movapic
 import niconico_seiga
 import pckles
 import photozou
+import pixiv
 import twipple
 import twitgoo
 import twitpic
@@ -32,6 +33,7 @@ services = [
 	niconico_seiga.niconicoSeiga(),
 	pckles.pckles(),
 	photozou.photozou(),
+	pixiv.pixiv(),
 	twipple.twipple(),
 	twitgoo.twitgoo(),
 	twitpic.twitpic(),
