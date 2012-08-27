@@ -3,6 +3,9 @@
 import re
 
 class niconicoSeiga:
+	def __str__(self):
+		return u"ニコニコ静画"
+	
 	regexStr = "^https?://(?:seiga\\.nicovideo\\.jp/seiga|nico\\.ms)/im(\\d+)(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	

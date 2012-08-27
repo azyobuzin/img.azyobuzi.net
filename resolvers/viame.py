@@ -3,6 +3,9 @@
 import re
 
 class viame:
+	def __str__(self):
+		return "Via.Me"
+	
 	regexStr = "^https?://(?:www\\.)?via\\.me/\\-(\\w+)/?(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	

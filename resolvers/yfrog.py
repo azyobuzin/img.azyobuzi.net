@@ -3,6 +3,9 @@
 import re
 
 class yfrog:
+	def __str__(self):
+		return "yfrog"
+	
 	regexStr = "^https?://(?:www\\.)?yfrog\\.com/(\\w+)(?::\\w+)?(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	

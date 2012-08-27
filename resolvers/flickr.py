@@ -7,6 +7,9 @@ import xml.etree.ElementTree as ET
 from private_constant import *
 
 class flickr:
+	def __str__(self):
+		return "Flickr"
+	
 	regexStr = "^https?://(?:www\\.)?(?:flickr\\.com/photos/(?:[\\w\\-_@]+)/(\\d+)|flic\\.kr/p/(\\w+))/?(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	

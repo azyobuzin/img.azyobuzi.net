@@ -3,6 +3,9 @@
 import re
 
 class twitpic:
+	def __str__(self):
+		return "Twitpic"
+	
 	regexStr = "^https?://(?:www\\.)?twitpic\\.com/(?:show/\\w+/)?(\\w+)/?(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	

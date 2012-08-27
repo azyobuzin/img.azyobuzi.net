@@ -3,6 +3,9 @@
 import re
 
 class imgly:
+	def __str__(self):
+		return "img.ly"
+	
 	regexStr = "^https?://(?:www\\.)?img\\.ly/(?:show/\\w+/)?(\\w+)/?(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	

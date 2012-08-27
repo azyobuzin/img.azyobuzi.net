@@ -3,6 +3,9 @@
 import re
 
 class twipple:
+	def __str__(self):
+		return u"ついっぷるフォト"
+	
 	regexStr = "^http://(?:p.twipple\\.jp|(?:p.twipple\\.jp|p.twpl.jp)/show/\\w+)/(\\w+)(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	

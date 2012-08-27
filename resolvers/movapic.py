@@ -6,6 +6,9 @@ import urllib2
 from private_constant import *
 
 class movapic:
+	def __str__(self):
+		return u"携帯百景"
+	
 	regexStr = "^http://(?:www\\.)?movapic\\.com/(?:(\\w+)/pic/(\\d+)|pic/(\w+))/?(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	

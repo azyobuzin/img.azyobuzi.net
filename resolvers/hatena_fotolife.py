@@ -8,6 +8,9 @@ import urlparse
 from private_constant import *
 
 class hatenaFotolife:
+	def __str__(self):
+		return u"はてなフォトライフ"
+	
 	regexStr = "^http://f\\.hatena\\.ne\\.jp/(\\w+)/(\\d+)(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	

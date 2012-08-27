@@ -3,6 +3,9 @@
 import re
 
 class instagram:
+	def __str__(self):
+		return "Instagram"
+	
 	regexStr = "^https?://(?:www\\.)?instagr(?:\\.am|am\\.com)/p/(\\w+)(?:/(?:media/?)?)?(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	

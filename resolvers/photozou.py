@@ -7,6 +7,9 @@ import xml.etree.ElementTree as ET
 from private_constant import *
 
 class photozou:
+	def __str__(self):
+		return u"フォト蔵"
+	
 	regexStr = "^https?://(?:www\\.)?photozou\\.jp/photo/(?:show|photo_only)/\\d+/(\\d+)/?(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	

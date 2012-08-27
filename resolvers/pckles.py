@@ -3,6 +3,9 @@
 import re
 
 class pckles:
+	def __str__(self):
+		return "Pckles"
+	
 	regexStr = "^https?://pckles\\.com/(\w+)/(\w+)(?:/|\\.png|\\.(?:resize\\.)?jpg)?(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	

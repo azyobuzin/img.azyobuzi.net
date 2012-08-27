@@ -3,6 +3,9 @@
 import re
 
 class twitgoo:
+	def __str__(self):
+		return "Twitgoo"
+	
 	regexStr = "^http://(?:www\\.)?twitgoo\\.com/(?:show/\\w+/)?(\\w+)(?:/\\w*/?)?(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	

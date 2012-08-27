@@ -3,6 +3,9 @@
 import re
 
 class lockerz:
+	def __str__(self):
+		return "Lockerz"
+	
 	regexStr = "^https?://(?:www\\.)?(?:lockerz|plixi)\\.com/[sp]/(\\d+)(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	

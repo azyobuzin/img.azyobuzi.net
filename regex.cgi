@@ -10,7 +10,7 @@ try:
 	ret = {}
 	
 	for service in supported.services:
-		ret[service.__module__] = service.regexStr
+		ret[str(service)] = service.regexStr
 	
 	print "Content-Type: application/json"
 	print

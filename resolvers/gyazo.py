@@ -3,6 +3,9 @@
 import re
 
 class gyazo:
+	def __str__(self):
+		return "Gyazo"
+	
 	regexStr = "^http://(?:www\\.)?gyazo\\.com/(\w+)(?:\\.png)?(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	
