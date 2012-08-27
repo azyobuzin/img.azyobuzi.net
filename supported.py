@@ -12,6 +12,7 @@ import movapic
 import niconico_seiga
 import pckles
 import photozou
+import twipple
 import twitgoo
 import twitpic
 import viame
@@ -29,6 +30,7 @@ services = [
 	niconico_seiga.niconicoSeiga(),
 	pckles.pckles(),
 	photozou.photozou(),
+	twipple.twipple(),
 	twitgoo.twitgoo(),
 	twitpic.twitpic(),
 	viame.viame(),
