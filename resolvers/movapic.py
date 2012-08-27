@@ -23,7 +23,7 @@ class movapic:
 			username = match.group(1)
 			id = match.group(2)
 			
-			if self.last is not None and str(self.last[0]) == str(id):
+			if self.last is not None and str(self.last[0]) == id:
 				return self.last
 			
 			db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")

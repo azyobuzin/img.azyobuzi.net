@@ -26,11 +26,11 @@ try:
 				else:
 					print "Content-Type: application/json"
 					print
-					print json.dumps({"response": {
+					print json.dumps({
 						"full": full,
 						"large": large,
 						"thumb": thumb
-					}})
+					})
 				
 				break
 		else:

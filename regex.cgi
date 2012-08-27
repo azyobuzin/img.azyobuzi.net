@@ -7,13 +7,13 @@ try:
 	import json
 	import supported
 	
-	ret = {}
+	ret = []
 	
 	for service in supported.services:
-		ret[str(service)] = service.regexStr
+		ret.append({"name": str(service), "regex": service.regexStr})
 	
 	print "Content-Type: application/json"
 	print
-	print json.dumps({"response": ret}, sort_keys = True)
+	print json.dumps(ret, sort_keys = True)
 except Exception, ex:
 	handleError("500 Internal Server Error", 5001, ex)
