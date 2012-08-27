@@ -7,6 +7,7 @@ import flickr
 import gyazo
 import hatena_fotolife
 import imgly
+import instagram
 import lockerz
 import movapic
 import niconico_seiga
@@ -24,6 +25,7 @@ services = [
 	flickr.flickr(),
 	gyazo.gyazo(),
 	hatena_fotolife.hatenaFotolife(),
+	instagram.instagram(),
 	imgly.imgly(),
 	lockerz.lockerz(),
 	movapic.movapic(),
