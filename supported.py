@@ -9,6 +9,7 @@ import hatena_fotolife
 import imgly
 import instagram
 import lockerz
+import mobypicture
 import movapic
 import niconico_seiga
 import pckles
@@ -31,6 +32,7 @@ services = [
 	instagram.instagram(),
 	imgly.imgly(),
 	lockerz.lockerz(),
+	mobypicture.mobypicture(),
 	movapic.movapic(),
 	niconico_seiga.niconicoSeiga(),
 	pckles.pckles(),
