@@ -17,6 +17,7 @@ import pixiv
 import twipple
 import twitgoo
 import twitpic
+import twitvideo
 import viame
 import yfrog
 
@@ -37,6 +38,7 @@ services = [
 	twipple.twipple(),
 	twitgoo.twitgoo(),
 	twitpic.twitpic(),
+	twitvideo.twitvideo(),
 	viame.viame(),
 	yfrog.yfrog()
 ]
