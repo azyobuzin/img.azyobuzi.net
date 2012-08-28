@@ -14,6 +14,7 @@ import niconico_seiga
 import pckles
 import photozou
 import pixiv
+import tinami
 import twipple
 import twitgoo
 import twitpic
@@ -35,6 +36,7 @@ services = [
 	pckles.pckles(),
 	photozou.photozou(),
 	pixiv.pixiv(),
+	tinami.tinami(),
 	twipple.twipple(),
 	twitgoo.twitgoo(),
 	twitpic.twitpic(),
