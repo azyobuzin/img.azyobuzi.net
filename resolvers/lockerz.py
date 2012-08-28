@@ -6,7 +6,7 @@ class lockerz:
 	def __str__(self):
 		return "Lockerz"
 	
-	regexStr = "^https?://(?:www\\.)?(?:lockerz|plixi)\\.com/[sp]/(\\d+)(?:\\?.*)?$"
+	regexStr = "^https?://(?:www\\.)?(?:lockerz\\.com/s|plixi\\.com/p)/(\\d+)(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	
 	def getFullSize(self, match):
