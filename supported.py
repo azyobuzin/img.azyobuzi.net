@@ -12,6 +12,7 @@ import lockerz
 import mobypicture
 import movapic
 import niconico_seiga
+import owly
 import pckles
 import photozou
 import pixiv
@@ -35,6 +36,7 @@ services = [
 	mobypicture.mobypicture(),
 	movapic.movapic(),
 	niconico_seiga.niconicoSeiga(),
+	owly.owly(),
 	pckles.pckles(),
 	photozou.photozou(),
 	pixiv.pixiv(),
