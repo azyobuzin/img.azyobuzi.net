@@ -27,6 +27,7 @@ try:
 					print "Content-Type: application/json"
 					print
 					print json.dumps({
+						"service": str(service),
 						"full": full,
 						"large": large,
 						"thumb": thumb
