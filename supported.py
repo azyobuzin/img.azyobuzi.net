@@ -13,6 +13,7 @@ import instagram
 import lockerz
 import mobypicture
 import movapic
+import niconico
 import niconico_seiga
 import owly
 import pckles
@@ -40,6 +41,7 @@ services = [
 	lockerz.lockerz(),
 	mobypicture.mobypicture(),
 	movapic.movapic(),
+	niconico.niconico(),
 	niconico_seiga.niconicoSeiga(),
 	owly.owly(),
 	pckles.pckles(),
