@@ -4,6 +4,7 @@ import sys
 sys.path.append("resolvers")
 
 import flickr
+import fxcamera
 import gyazo
 import hatena_fotolife
 import imgly
@@ -29,6 +30,7 @@ import yfrog
 
 services = [
 	flickr.flickr(),
+	fxcamera.fxcamera(),
 	gyazo.gyazo(),
 	hatena_fotolife.hatenaFotolife(),
 	instagram.instagram(),
