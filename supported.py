@@ -25,6 +25,7 @@ import twitpic
 import twitvideo
 import viame
 import yfrog
+import youtube
 
 #アルファベット順
 
@@ -50,5 +51,6 @@ services = [
 	twitpic.twitpic(),
 	twitvideo.twitvideo(),
 	viame.viame(),
-	yfrog.yfrog()
+	yfrog.yfrog(),
+	youtube.youtube()
 ]
