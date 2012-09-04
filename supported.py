@@ -16,6 +16,7 @@ import movapic
 import niconico
 import niconico_seiga
 import owly
+import path
 import pckles
 import photozou
 import pixiv
@@ -44,6 +45,7 @@ services = [
 	niconico.niconico(),
 	niconico_seiga.niconicoSeiga(),
 	owly.owly(),
+	path.path(),
 	pckles.pckles(),
 	photozou.photozou(),
 	pixiv.pixiv(),
