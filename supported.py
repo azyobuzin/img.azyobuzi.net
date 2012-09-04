@@ -18,6 +18,7 @@ import niconico_seiga
 import owly
 import path
 import pckles
+import photoshare
 import photozou
 import pixiv
 import tinami
@@ -47,6 +48,7 @@ services = [
 	owly.owly(),
 	path.path(),
 	pckles.pckles(),
+	photoshare.photoshare(),
 	photozou.photozou(),
 	pixiv.pixiv(),
 	tinami.tinami(),
