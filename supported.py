@@ -20,6 +20,7 @@ import path
 import pckles
 import photoshare
 import photozou
+import piapro
 import pikubo
 import pixiv
 import tinami
@@ -51,6 +52,7 @@ services = [
 	pckles.pckles(),
 	photoshare.photoshare(),
 	photozou.photozou(),
+	piapro.piapro(),
 	pikubo.pikubo(),
 	pixiv.pixiv(),
 	tinami.tinami(),
