@@ -52,11 +52,17 @@ class niconico:
 	
 	def getFullSize(self, match):
 		data = self.getUriData(match)
-		return data[1] if data is not None else None
+		if data is not None:
+			return data[1] + (".L" if int(data[0][2:]) >= 16371850 else "")
+		else:
+			return None
 	
 	def getLargeSize(self, match):
 		data = self.getUriData(match)
-		return data[1] if data is not None else None
+		if data is not None:
+			return data[1] + (".L" if int(data[0][2:]) >= 16371850 else "")
+		else:
+			return None
 	
 	def getThumbnail(self, match):
 		data = self.getUriData(match)
