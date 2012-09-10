@@ -13,6 +13,7 @@ import instagram
 import lockerz
 import mobypicture
 import movapic
+import mypix
 import niconico
 import niconico_seiga
 import owly
@@ -23,6 +24,7 @@ import photozou
 import piapro
 import pikubo
 import pixiv
+import shamoji
 import tinami
 import tumblr
 import twipple
@@ -46,6 +48,7 @@ services = [
 	lockerz.lockerz(),
 	mobypicture.mobypicture(),
 	movapic.movapic(),
+	mypix.mypix(),
 	niconico.niconico(),
 	niconico_seiga.niconicoSeiga(),
 	owly.owly(),
@@ -56,6 +59,7 @@ services = [
 	piapro.piapro(),
 	pikubo.pikubo(),
 	pixiv.pixiv(),
+	shamoji.shamoji(),
 	tinami.tinami(),
 	tumblr.tumblr(),
 	twipple.twipple(),
