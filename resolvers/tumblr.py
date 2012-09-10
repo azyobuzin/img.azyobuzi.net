@@ -3,6 +3,7 @@
 import re
 import os
 import MySQLdb
+import httplib
 import urllib2
 import urlparse
 import json
@@ -12,20 +13,51 @@ class tumblr:
 	def __str__(self):
 		return "Tumblr"
 	
-	regexStr = "^http://([\\w\\-]+\\.tumblr\\.com)/post/(\\d+)(?:/(?:[\\w\\-]+)?)?(?:\\?.*)?$"
+	regexStr = "^http://(?:([\\w\\-]+\\.tumblr\\.com)/post/(\\d+)(?:/(?:[\\w\\-]+/?)?)?|tmblr\\.co/(\\w+))(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
+	
+	expandedRegex = re.compile("^http://([\\w\\.\\-]+)/post/(\\d+)(?:/(?:[\\w\\-]+/?)?)?$", re.IGNORECASE)
 	
 	last = None
 	
 	def getUriData(self, match):
 		hostname = match.group(1)
 		id = match.group(2)
+		shorten = match.group(3)
+		
+		db = None
+		c = None
+		
+		if shorten is not None:
+			db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")
+			c = db.cursor()
+			
+			c.execute("SELECT * FROM tumblr_shorten WHERE shorten = " + db.literal(shorten))
+			sqlResult = c.fetchone()
+			
+			if sqlResult is None:
+				conn = httplib.HTTPConnection("www.tumblr.com")
+				conn.request("HEAD", "/" + shorten)
+				res = conn.getresponse()
+				exMatch = self.expandedRegex.match(res.getheader("location"))
+				hostname = exMatch.group(1)
+				id = exMatch.group(2)
+				
+				c.execute("INSERT INTO tumblr_shorten VALUES (%s, %s, %s)"
+					% (db.literal(shorten), db.literal(hostname), db.literal(id))
+				)
+				
+				db.commit()
+			else:
+				hostname = sqlResult[1]
+				id = sqlResult[2]
 		
 		if self.last is not None and str(self.last[0]) == id:
 			return self.last
 		
-		db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")
-		c = db.cursor()
+		if db is None:
+			db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")
+			c = db.cursor()
 		
 		c.execute("SELECT * FROM tumblr WHERE id = " + db.literal(id))
 		sqlResult = c.fetchone()
