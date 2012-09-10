@@ -32,6 +32,7 @@ import twitgoo
 import twitpic
 import twitvideo
 import viame
+import vimeo
 import yfrog
 import youtube
 
@@ -67,6 +68,7 @@ services = [
 	twitpic.twitpic(),
 	twitvideo.twitvideo(),
 	viame.viame(),
+	vimeo.vimeo(),
 	yfrog.yfrog(),
 	youtube.youtube()
 ]

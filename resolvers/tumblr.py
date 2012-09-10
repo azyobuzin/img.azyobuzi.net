@@ -39,7 +39,11 @@ class tumblr:
 				conn = httplib.HTTPConnection("www.tumblr.com")
 				conn.request("HEAD", "/" + shorten)
 				res = conn.getresponse()
-				exMatch = self.expandedRegex.match(res.getheader("location"))
+				exMatch = None
+				try:
+					exMatch = self.expandedRegex.match(res.getheader("location"))
+				except:
+					return None
 				hostname = exMatch.group(1)
 				id = exMatch.group(2)
 				
@@ -52,7 +56,7 @@ class tumblr:
 				hostname = sqlResult[1]
 				id = sqlResult[2]
 		
-		if self.last is not None and str(self.last[0]) == id:
+		if self.last is not None and str(self.last[0]) == str(id):
 			return self.last
 		
 		if db is None:
@@ -68,7 +72,7 @@ class tumblr:
 			try:
 				httpRes = urllib2.urlopen("http://api.tumblr.com/v2/blog/%s/posts?api_key=%s&id=%s"
 					% (hostname, tumblrApiKey, id))
-			except Exception, ex:
+			except:
 				return None
 			
 			post = json.loads(httpRes.read())["response"]["posts"][0]
