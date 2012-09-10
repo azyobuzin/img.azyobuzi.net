@@ -24,6 +24,7 @@ import piapro
 import pikubo
 import pixiv
 import tinami
+import tumblr
 import twipple
 import twitgoo
 import twitpic
@@ -56,6 +57,7 @@ services = [
 	pikubo.pikubo(),
 	pixiv.pixiv(),
 	tinami.tinami(),
+	tumblr.tumblr(),
 	twipple.twipple(),
 	twitgoo.twitgoo(),
 	twitpic.twitpic(),
