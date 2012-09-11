@@ -27,6 +27,7 @@ import pixiv
 import shamoji
 import tinami
 import tumblr
+import tunabe
 import twipple
 import twitgoo
 import twitpic
@@ -63,6 +64,7 @@ services = [
 	shamoji.shamoji(),
 	tinami.tinami(),
 	tumblr.tumblr(),
+	tunabe.tunabe(),
 	twipple.twipple(),
 	twitgoo.twitgoo(),
 	twitpic.twitpic(),
