@@ -11,7 +11,7 @@ class tunabe:
 	def __str__(self):
 		return u"つなビィ"
 	
-	regexStr = "^http://(?:[\\w\\-]+\\.tuna\\.be/(\\d+)\\.html|(?:www\\.)?tuna\\.be/t/([\\w\\-]+)/?)(?:\\?.*)?$"
+	regexStr = "^http://(?:[\\w\\-]+\\.tuna\\.be/(\\d+)\\.html|(?:www\\.)?tuna\\.be/(?:t|show/\\w+)/([\\w\\-]+)/?)(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	
 	last = None
