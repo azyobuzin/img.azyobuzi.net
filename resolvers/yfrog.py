@@ -6,7 +6,7 @@ class yfrog:
 	def __str__(self):
 		return "yfrog"
 	
-	regexStr = "^https?://(?:www\\.)?yfrog\\.com/(\\w+)(?::\\w+)?(?:\\?.*)?$"
+	regexStr = "^https?://(?:www\\.|twitter\\.)?yfrog\\.com/(\\w+)(?::\\w+)?(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	
 	def getFullSize(self, match):
