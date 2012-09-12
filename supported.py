@@ -31,6 +31,7 @@ import tunabe
 import twipple
 import twitgoo
 import twitpic
+import twitrpix
 import twitter
 import twitvideo
 import viame
@@ -69,6 +70,7 @@ services = [
 	twipple.twipple(),
 	twitgoo.twitgoo(),
 	twitpic.twitpic(),
+	twitrpix.twitrpix(),
 	twitter.twitter(),
 	twitvideo.twitvideo(),
 	viame.viame(),
