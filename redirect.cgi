@@ -31,6 +31,7 @@ try:
 				elif len(ret) == 0:
 					handleError("400 Bad Request", 4002, None)
 				else:
+					print "Status: 303 See Other"
 					print "Location: " + ret
 					print
 				
