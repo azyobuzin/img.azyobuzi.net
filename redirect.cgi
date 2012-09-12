@@ -34,6 +34,19 @@ try:
 					print "Status: 303 See Other"
 					print "Location: " + ret
 					print
+					print """
+						<!DOCTYPE html>
+						<html>
+						<head>
+						<meta charset="utf-8">
+						<title>img.azyobuzi.net</title>
+						</head>
+						<body>
+						<div>
+						<img src="%s" alt="Expanded" style="max-width:100%%;max-height:100%%">
+						</div>
+						</body>
+					""" % ret
 				
 				break
 		else:
