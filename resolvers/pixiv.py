@@ -13,7 +13,7 @@ class pixiv:
 	regexStr = "^http://(?:www\\.)?pixiv\\.net/(?:index|member_illust)\\.php\\?(?:.*)&?illust_id=(\\d+)(?:&.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	
-	imageRegex = re.compile("<div class=\"front-centered\"><a href=\"login.php\\?illust_id=\\d+\" style=\"display:block;line-height:0;\"><img src=\"(http://[a-z0-9/_\\-\\.]+)_m(\\.\\w+)\" alt=\".+\" title=\".+\" border=\"0\" /></a></div>", re.IGNORECASE)
+	imageRegex = re.compile(u"<div class=\"front-centered\"><a href=\"https://ssl\\.pixiv\\.net/signup\\.php\\?ref=medium_image\" style=\"display:block;line-height:0;\" class=\"require-login\" data-text-confirm=\"会員登録をするとさらに大きな画像で閲覧できます。新規登録しますか？\"><img src=\"(http://[a-z0-9/_\\-\\.]+)_m(\\.\\w+)\" alt=\".+\" title=\".+\" border=\"0\" /></a></div>", re.IGNORECASE)
 	
 	last = None
 	
