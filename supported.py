@@ -6,6 +6,7 @@ sys.path.append("resolvers")
 import deviantart
 import flickr
 import fxcamera
+import gochisophoto
 import gyazo
 import hatena_fotolife
 import imgly
@@ -46,6 +47,7 @@ services = [
 	deviantart.deviantart(),
 	flickr.flickr(),
 	fxcamera.fxcamera(),
+	gochisophoto.gochisophoto(),
 	gyazo.gyazo(),
 	hatena_fotolife.hatenaFotolife(),
 	instagram.instagram(),
