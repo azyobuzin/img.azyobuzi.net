@@ -36,6 +36,7 @@ import twitpic
 import twitrpix
 import twitter
 import twitvideo
+import ustream
 import viame
 import vimeo
 import yfrog
@@ -77,6 +78,7 @@ services = [
 	twitrpix.twitrpix(),
 	twitter.twitter(),
 	twitvideo.twitvideo(),
+	ustream.ustream(),
 	viame.viame(),
 	vimeo.vimeo(),
 	yfrog.yfrog(),
