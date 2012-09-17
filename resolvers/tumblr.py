@@ -77,9 +77,9 @@ class tumblr:
 			
 			post = json.loads(httpRes.read())["response"]["posts"][0]
 			
-			original = ""
-			large = ""
-			thumb = ""
+			original = None
+			large = None
+			thumb = None
 			video = ""
 			
 			type = post["type"]
@@ -92,6 +92,9 @@ class tumblr:
 				for size in altSizes:
 					if size["width"] > 420 and size["width"] <= 500:
 						large = size["url"]
+				
+				if large is None:
+					large = original
 				
 				thumb = altSizes[-2]["url"]
 			elif type == "video":
