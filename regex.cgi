@@ -14,6 +14,6 @@ try:
 	
 	print "Content-Type: application/json"
 	print
-	print json.dumps(ret, sort_keys = True)
+	print json.dumps(ret)
 except Exception, ex:
 	handleError("500 Internal Server Error", 5001, ex)
