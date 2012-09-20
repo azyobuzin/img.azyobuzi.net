@@ -47,9 +47,9 @@ class tunabe:
 			conn.request("HEAD", reqPath)
 			res = conn.getresponse()
 			
-			org = ("http://%s%s" % (url.netloc, reqPath)) if res.status != 404 else ("http://tuna.be/show/thumb/" + id)
+			org = ("http://%s%s" % (url.netloc, reqPath)) if res.status != httplib.NOT_FOUND else ("http://tuna.be/show/thumb/" + id)
 			
-			res.close()
+			conn.close()
 			
 			c.execute("INSERT INTO tunabe VALUES (%s, %s)"
 				% (db.literal(id), db.literal(org))

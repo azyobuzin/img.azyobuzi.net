@@ -3,6 +3,7 @@
 import sys
 sys.path.append("resolvers")
 
+import cloudapp
 import deviantart
 import flickr
 import fxcamera
@@ -45,6 +46,7 @@ import youtube
 #アルファベット順
 
 services = [
+	cloudapp.cloudapp(),
 	deviantart.deviantart(),
 	flickr.flickr(),
 	fxcamera.fxcamera(),
