@@ -13,7 +13,7 @@ class tumblr:
 	def __str__(self):
 		return "Tumblr"
 	
-	regexStr = "^http://(?:([\\w\\-]+\\.tumblr\\.com)/post/(\\d+)(?:/(?:[\\w\\-]+/?)?)?|tmblr\\.co/(\\w+))(?:\\?.*)?$"
+	regexStr = "^http://(?:([\\w\\-]+\\.tumblr\\.com)/post/(\\d+)(?:/(?:[\\w\\-]+/?)?)?|tmblr\\.co/([\\w\\-]+))(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	
 	expandedRegex = re.compile("^http://([\\w\\.\\-]+)/post/(\\d+)(?:/(?:[\\w\\-]+/?)?)?$", re.IGNORECASE)
