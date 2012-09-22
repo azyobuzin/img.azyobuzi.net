@@ -4,6 +4,7 @@ import sys
 sys.path.append("resolvers")
 
 import cloudapp
+import dailymotion
 import deviantart
 import flickr
 import fxcamera
@@ -47,6 +48,7 @@ import youtube
 
 services = [
 	cloudapp.cloudapp(),
+	dailymotion.dailymotion(),
 	deviantart.deviantart(),
 	flickr.flickr(),
 	fxcamera.fxcamera(),
