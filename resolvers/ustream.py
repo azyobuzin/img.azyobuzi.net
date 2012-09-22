@@ -10,13 +10,13 @@ class ustream:
 	def __str__(self):
 		return "Ustream.tv"
 	
-	regexStr = "^(?:https?://(?:www\\.)?ustream\\.tv/channel/(?:([\\w\\-%]+)|id/(\\d+))|http://ustre\\.am/(\\w+))/?(?:\\?.*)?$"
+	regexStr = "^(?:https?://(?:www\\.)?ustream\\.tv/channel/(?:([\\w\\-%]+)|id/(\\d+))|http://ustre\\.am/(\\w+)\\)?)/?(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	
 	last = None
 	
 	def getUriData(self, match):
-		channel = match.group(1)
+		channel = urllib2.unquote(match.group(1)).decode("utf-8") if match.group(1) is not None else None
 		id = match.group(2)
 		shorten = match.group(3)
 		
@@ -42,7 +42,7 @@ class ustream:
 		if sqlResult is None:
 			#id_strは元々uri引数についてきたものだから、既にquoteされているものと判断
 			httpRes = urllib2.urlopen("http://api.ustream.tv/json/channel/%s/getInfo?key=%s"
-				% (urllib2.quote(urllib2.unquote(id_str)), ustreamApiKey))
+				% (urllib2.quote(id_str), ustreamApiKey))
 			
 			results = json.loads(httpRes.read())["results"]
 			
