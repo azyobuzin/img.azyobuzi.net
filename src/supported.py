@@ -6,6 +6,7 @@ sys.path.append("resolvers")
 import cloudapp
 import dailymotion
 import deviantart
+import droplr
 import flickr
 import fxcamera
 import gochisophoto
@@ -51,6 +52,7 @@ services = [
 	cloudapp.cloudapp(),
 	dailymotion.dailymotion(),
 	deviantart.deviantart(),
+	droplr.droplr(),
 	flickr.flickr(),
 	fxcamera.fxcamera(),
 	gochisophoto.gochisophoto(),
