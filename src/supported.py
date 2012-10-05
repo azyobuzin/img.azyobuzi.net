@@ -33,6 +33,7 @@ import tinami
 import tumblr
 import tunabe
 import twipple
+import twitcasting
 import twitgoo
 import twitpic
 import twitrpix
@@ -77,6 +78,7 @@ services = [
 	tumblr.tumblr(),
 	tunabe.tunabe(),
 	twipple.twipple(),
+	twitcasting.twitcasting(),
 	twitgoo.twitgoo(),
 	twitpic.twitpic(),
 	twitrpix.twitrpix(),
