@@ -1,2 +1,2 @@
 *.pyc
-/resolvers/private_constant.py
+/src/resolvers/private_constant.py
