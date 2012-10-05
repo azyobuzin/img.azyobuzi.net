@@ -10,13 +10,17 @@ class twitcasting:
 	def __str__(self):
 		return "TwitCasting"
 	
-	regexStr = "^https?://(?:www\\.)?twitcasting\\.tv/\\w+/movie/(\\d+)(?:\\?.*)?$"
+	regexStr = "^https?://(?:www\\.)?twitcasting\\.tv/(?:(\\w+)/?|\\w+/movie/(\\d+))(?:\\?.*)?$"
 	regex = re.compile(regexStr, re.IGNORECASE)
 	
 	last = None
 	
 	def getUriData(self, match):
-		id = match.group(1)
+		username = match.group(1)
+		id = match.group(2)
+		
+		if username is not None:
+			return [username, "http://twitcasting.tv/%s/thumbstream/liveshot" % username, "http://twitcasting.tv/%s/thumbstream/liveshot-1" % username]
 		
 		if self.last is not None and str(self.last[0]) == id:
 			return self.last
