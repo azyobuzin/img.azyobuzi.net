@@ -10,7 +10,7 @@ try:
 	ret = []
 	
 	for service in supported.services:
-		ret.append({"name": str(service), "regex": service.regexStr})
+		ret.append({"name": unicode(service), "regex": service.regexStr})
 	
 	print "Content-Type: application/json"
 	print
