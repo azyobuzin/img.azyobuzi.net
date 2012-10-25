@@ -61,7 +61,7 @@ class twitter:
 
     def getFullSize(self, match):
         data = self.getUriData(match)
-        return (data[1] + ":large") if data is not None else None
+        return (data[1] + ":orig") if data is not None else None
 
     def getLargeSize(self, match):
         data = self.getUriData(match)
