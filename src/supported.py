@@ -24,6 +24,7 @@ import niconico_seiga
 import owly
 import path
 import pckles
+import photohito
 import photoshare
 import photozou
 import piapro
@@ -70,6 +71,7 @@ services = [
 	owly.owly(),
 	path.path(),
 	pckles.pckles(),
+    photohito.photohito(),
 	photoshare.photoshare(),
 	photozou.photozou(),
 	piapro.piapro(),
