@@ -6,22 +6,22 @@ import urllib2
 from sgmllib import SGMLParser
 from private_constant import *
 
-class PhotohitoParser(SGMLParser):
+class PhotomemoParser(SGMLParser):
     def __init__(self):
         SGMLParser.__init__(self)
-        self.uri_prefix = None
+        self.filename = None
 
     def do_meta(self, attributes):
         dic = dict(attributes)
         if "property" in dic and dic["property"] == "og:image":
             content = dic["content"]
-            self.uri_prefix = content[: - len("_s.jpg")]
+            self.filename = content[len("http://photomemo.jp/show_image/panel/") :]
 
-class photohito:
+class photomemo:
     def __str__(self):
-        return "PHOTOHITO"
+        return "Photomemo"
 
-    regexStr = "^https?://(?:www\\.)?photohito\\.com/photo/(\\d+)/?(?:\\?.*)?$"
+    regexStr = "^https?://(?:www\\.)?photomemo\\.jp/\\w+/(\\d+)/?(?:\\?.*)?$"
     regex = re.compile(regexStr, re.IGNORECASE)
 
     last = None
@@ -35,26 +35,28 @@ class photohito:
         db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")
         c = db.cursor()
 
-        c.execute("SELECT * FROM photohito WHERE id = %s", id)
+        c.execute("SELECT * FROM photomemo WHERE id = %s", id)
         sqlResult = c.fetchone()
 
         if sqlResult is None:
-            httpRes = urllib2.urlopen("http://photohito.com/photo/%s/" % id)
-            html = httpRes.read().decode("utf-8")
-
-            if "<div id=\"error_title\">" in html:
+            httpRes = None
+            try:
+                httpRes = urllib2.urlopen("http://photomemo.jp/p/" + id)
+            except:
                 return None
 
-            parser = PhotohitoParser()
+            html = httpRes.read().decode("utf-8")
+
+            parser = PhotomemoParser()
             parser.feed(html)
             parser.close()
 
-            prefix = parser.uri_prefix
+            filename = parser.filename
 
-            c.execute("INSERT INTO photohito VALUES (%s, %s)", (id, prefix))
+            c.execute("INSERT INTO photomemo VALUES (%s, %s)", (id, filename))
             db.commit()
 
-            self.last = (id, prefix)
+            self.last = (id, filename)
         else:
             self.last = sqlResult
 
@@ -62,12 +64,12 @@ class photohito:
 
     def getFullSize(self, match):
         data = self.getUriData(match)
-        return data[1] + "_o.jpg" if data is not None else None
+        return "http://photomemo.jp/show_image/show_image/" + data[1] if data is not None else None
 
     def getLargeSize(self, match):
         data = self.getUriData(match)
-        return data[1] + "_m.jpg" if data is not None else None
+        return "http://photomemo.jp/show_image/show_image/" + data[1] if data is not None else None
 
     def getThumbnail(self, match):
         data = self.getUriData(match)
-        return data[1] + "_s.jpg" if data is not None else None
+        return "http://photomemo.jp/show_image/panel/" + data[1] if data is not None else None
