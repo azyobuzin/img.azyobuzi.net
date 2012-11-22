@@ -18,6 +18,7 @@ import imgur
 import instagram
 import lockerz
 import mobypicture
+import molome
 import movapic
 import mypix
 import niconico
@@ -65,6 +66,7 @@ services = [
     imgur.imgur(),
     lockerz.lockerz(),
     mobypicture.mobypicture(),
+    molome.molome(),
     movapic.movapic(),
     mypix.mypix(),
     niconico.niconico(),
