@@ -7,6 +7,7 @@ import aahosyu
 import cloudapp
 import dailymotion
 import deviantart
+import dropbox
 import droplr
 import flickr
 import fxcamera
@@ -57,6 +58,7 @@ services = [
     cloudapp.cloudapp(),
     dailymotion.dailymotion(),
     deviantart.deviantart(),
+    dropbox.dropbox(),
     droplr.droplr(),
     flickr.flickr(),
     fxcamera.fxcamera(),
