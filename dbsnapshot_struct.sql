@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- ホスト: localhost
--- 生成日時: 2012 年 11 月 22 日 22:15
+-- 生成日時: 2013 年 1 月 17 日 23:39
 -- サーバのバージョン: 5.1.22-rc
 -- PHP のバージョン: 5.2.5
 
@@ -60,6 +60,18 @@ CREATE TABLE IF NOT EXISTS `deviantart` (
   `thumbnail` tinytext NOT NULL,
   `thumbnail150` tinytext NOT NULL,
   PRIMARY KEY (`username`,`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `dropbox`
+--
+
+CREATE TABLE IF NOT EXISTS `dropbox` (
+  `shorten` varchar(10) NOT NULL,
+  `expanded` tinytext NOT NULL,
+  PRIMARY KEY (`shorten`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

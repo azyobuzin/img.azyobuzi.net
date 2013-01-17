@@ -1,4 +1,4 @@
-# img.azyobuzi.net #
+﻿# img.azyobuzi.net #
 [http://img.azyobuzi.net/](http://img.azyobuzi.net/) のソースコードです。
 
 不具合報告など Issue または Twitter @azyobuzin に投げていただけるとうれしいです。
@@ -14,7 +14,7 @@ masterは本番サーバーで稼働中のもの、devは機能追加・バグ�
 - src の中身を放り込む
 - mirroring/private_constant.py を resolvers ディレクトリに突っ込み、環境に合わせて dbName と dbPassword を書き換える
 - 環境に合わせて、 Python のパスや、 .htaccess を書き換える
-- dbsnapshot.sql を MySQL で実行
+- dbsnapshot.sql と dbsnapshot_struct.sql を MySQL で実行
 
 これで多分動くと思います。
 
