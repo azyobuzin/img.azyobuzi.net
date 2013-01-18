@@ -22,6 +22,7 @@ import mobypicture
 import molome
 import movapic
 import mypix
+import my365
 import niconico
 import niconico_seiga
 import owly
@@ -73,6 +74,7 @@ services = [
     molome.molome(),
     movapic.movapic(),
     mypix.mypix(),
+    my365.my365(),
     niconico.niconico(),
     niconico_seiga.niconicoSeiga(),
     owly.owly(),
