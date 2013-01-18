@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- ホスト: localhost
--- 生成日時: 2013 年 1 月 17 日 23:39
+-- 生成日時: 2013 年 1 月 18 日 22:41
 -- サーバのバージョン: 5.1.22-rc
 -- PHP のバージョン: 5.2.5
 
@@ -19,6 +19,18 @@ SET time_zone = "+00:00";
 --
 -- データベース: `azyobuzin_img`
 --
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `cameran`
+--
+
+CREATE TABLE IF NOT EXISTS `cameran` (
+  `id` varchar(32) NOT NULL,
+  `image` tinytext NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -138,6 +150,19 @@ CREATE TABLE IF NOT EXISTS `movapic` (
   `id` int(10) unsigned NOT NULL,
   `expanded` tinytext NOT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `my365`
+--
+
+CREATE TABLE IF NOT EXISTS `my365` (
+  `username` varchar(30) NOT NULL,
+  `id` int(10) unsigned NOT NULL,
+  `image` tinytext NOT NULL,
+  PRIMARY KEY (`username`,`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

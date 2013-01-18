@@ -4,6 +4,7 @@ import sys
 sys.path.append("resolvers")
 
 import aahosyu
+import cameran
 import cloudapp
 import dailymotion
 import deviantart
@@ -56,6 +57,7 @@ import youtube
 
 services = [
     aahosyu.aahosyu(),
+    cameran.cameran(),
     cloudapp.cloudapp(),
     dailymotion.dailymotion(),
     deviantart.deviantart(),
