@@ -66,7 +66,7 @@ class movapic:
 		if data is None:
 			return None
 		else:
-			return "http://image.movapic.com/pic/_%s.jpeg" % data[1]
+			return "http://image.movapic.com/pic/m_%s.jpeg" % data[1]
 	
 	def getLargeSize(self, match):
 		data = self.getUriData(match)
