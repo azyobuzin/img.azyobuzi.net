@@ -109,6 +109,26 @@ try:
 
             status = 302
             headers["Location"] = result
+        elif api == "all_sizes.json":
+            if "uri" not in form:
+                set_error(4001, None)
+            uri = form["uri"].value
+
+            resolver, match = search_resolver(uri)
+            if resolver is None:
+                set_error(4002, None)
+
+            body = json.dumps({
+                "service": resolver.service_name,
+                "full": resolver.get_full(match),
+                "full_https": resolver.get_full_https(match),
+                "large": resolver.get_large(match),
+                "large_https": resolver.get_large_https(match),
+                "thumb": resolver.get_thumb(match),
+                "thumb_https": resolver.get_thumb_https(match),
+                "video": resolver.get_video(match),
+                "video_https": resolver.get_video_https(match)
+            })
         else:
             set_error(4042, None)
     else:
