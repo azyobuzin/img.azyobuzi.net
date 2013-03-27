@@ -30,10 +30,10 @@ class Twitpic(Resolver): #メモ：スキーマを https にしても結局 http
         return r"^https?://(?:www\.)?twitpic\.com/(?:show/\w+/)?(\w+)/?(?:\?.*)?$"
 
     def get_full(self, match):
-        return "http://twitpic.com/show/full/" + match.group(1)
+        return self.get_large(match)
 
     def get_full_https(self, match):
-        return "https://twitpic.com/show/full/" + match.group(1)
+        return self.get_large_https(match)
 
     def get_large(self, match):
         return "http://twitpic.com/show/large/" + match.group(1)

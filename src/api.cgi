@@ -1,6 +1,9 @@
 #!/virtual/azyobuzin/local/bin/python
 # -*- coding: utf-8 -*-
 
+import cgitb
+cgitb.enable() #try ブロック外でエラー起こったらつらい
+
 import cgi
 import json
 import os
@@ -27,6 +30,13 @@ status = 200
 headers = {"Content-Type": "application/json"}
 body = ""
 
+def print_result():
+    print "Status: " + str(status)
+    for header in headers.iteritems():
+        print header[0] + ": " + header[1]
+    print
+    print body,
+
 def set_error(error_code, ex):
     import traceback
     global status, body
@@ -39,17 +49,35 @@ def set_error(error_code, ex):
             "exception": None if ex is None else traceback.format_exc(ex)
         }
     })
+    print_result()
+    exit()
 
 def iter_resolvers():
     resolvers_members = dir(resolvers)
     for module_name in (filename[0:-3] for filename in os.listdir("resolvers") if filename.endswith(".py") and filename != "__init__.py"):
         m = getattr(__import__("resolvers." + module_name), module_name)
-        classes = [
+        classes = (
             c for c in
                 (getattr(m, class_name) for class_name in dir(m) if not (class_name.startswith("_") or class_name in resolvers_members))
-            if isinstance(c, type) and issubclass(c, resolvers.Resolver)]
+            if isinstance(c, type) and issubclass(c, resolvers.Resolver))
         for res in classes:
             yield res()
+
+def search_resolver(uri):
+    for resolver in iter_resolvers():
+        match = resolver.regex.match(uri)
+        if match is not None:
+            return (resolver, match)
+    return (None, None)
+
+def get_imageuri(resolver, match, size, use_https):
+    if size == "full":
+        return resolver.get_full_https(match) if use_https else resolver.get_full(match)
+    elif size == "large":
+        return resolver.get_large_https(match) if use_https else resolver.get_large(match)
+    elif size == "thumb":
+        return resolver.get_thumb_https(match) if use_https else resolver.get_thumb(match)
+    raise ValueError()
 
 try:
     if os.environ['REQUEST_METHOD'] not in ("GET", "HEAD"):
@@ -62,6 +90,25 @@ try:
 
         if api == "regex.json":
             body = json.dumps([{"name": resolver.service_name, "regex": resolver.regex_str} for resolver in iter_resolvers()])
+        elif api in ("redirect", "redirect.json"):
+            if "uri" not in form:
+                set_error(4001, None)
+            uri = form["uri"].value
+            size = form.getvalue("size", "full")
+            if size not in ("full", "large", "thumb"):
+                set_error(4003, None)
+            use_https = form.getvalue("use_https", "false").lower() == "true"
+
+            resolver, match = search_resolver(uri)
+            if resolver is None:
+                set_error(4002, None)
+
+            result = get_imageuri(resolver, match, size, use_https)
+            if result is None:
+                result = get_imageuri(resolver, match, size, False)
+
+            status = 302
+            headers["Location"] = result
         else:
             set_error(4042, None)
     else:
@@ -69,8 +116,4 @@ try:
 except Exception, ex:
     set_error(5000, ex)
 
-print "Status: " + str(status)
-for header in headers.iteritems():
-    print header[0] + ": " + header[1]
-print
-print body,
+print_result()
