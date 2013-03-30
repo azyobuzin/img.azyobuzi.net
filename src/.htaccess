@@ -1,5 +1,5 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteRule ^(.*regex|.*all_sizes)\.json$ $1.cgi
-RewriteRule ^.*redirect$ $0.cgi
+RewriteRule ^(regex|all_sizes)\.json$ api.cgi?api=$0 [QSA]
+RewriteRule ^redirect(\.json$|$) api.cgi?api=$0 [QSA]
 </IfModule>
