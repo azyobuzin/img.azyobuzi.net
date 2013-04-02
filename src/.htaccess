@@ -1,5 +1,6 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteRule ^(regex|all_sizes)\.json$ api.cgi?api=$0 [QSA]
-RewriteRule ^redirect(\.json$|$) api.cgi?api=$0 [QSA]
+RewriteRule ^api\.cgi$ api.cgi [L]
+RewriteRule ^pixiv_proxy\.cgi$ pixiv_proxy.cgi [L]
+RewriteRule ^.*$ api.cgi?api=$0 [QSA]
 </IfModule>
