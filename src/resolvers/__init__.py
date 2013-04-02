@@ -78,7 +78,7 @@ class StoringResolver(Resolver):
         pass
 
     @abc.abstractmethod
-    def _work(self, param, db, cursor):
+    def _work(self, param, cursor):
         pass
 
     def work(self, match):
@@ -86,29 +86,27 @@ class StoringResolver(Resolver):
         if param == self._cached_param:
             return self._cached_result
         else:
-            with self._connect_db() as db:
-                c = db.cursor()
-                try:
-                    result = self._work(db, c)
-                    self._cached_param = param
-                    self._cached_result = result
-                    return result
-                finally:
-                    c.close()
+            with self._connect_db() as cursor: #Connection.__enter__() で Cursor が返される
+                result = self._work(param, cursor)
+                self._cached_param = param
+                self._cached_result = result
+                return result
 
     @staticmethod
     def select_one(cursor, table, columns, conditions):
+        columns = tuple(columns)
+        conditions = dict(conditions)
         query = "SELECT %s FROM %s WHERE %s" \
             % (", ".join(columns), table, " AND ".join("%s = %%s" % c for c in conditions.iterkeys()))
         cursor.execute(query, tuple(conditions.itervalues()))
-        return c.fetchone()
+        return cursor.fetchone()
 
     @staticmethod
-    def insert_all(db, cursor, table, values):
+    def insert_all(cursor, table, values):
         "カラムを指定しないで INSERT INTO"
+        values = tuple(values)
         query = "INSERT INTO %s VALUES(%s)" % (table, ", ".join(["%s"] * len(values)))
-        cursor.execute(query, tuple(values))
-        db.commit()
+        cursor.execute(query, values)
 
 class OpenGraphResolver(StoringResolver):
     class OpenGraphParser(SGMLParser):
@@ -137,8 +135,11 @@ class OpenGraphResolver(StoringResolver):
         if check is not None and not check(response):
             return False
 
-        parser = OpenGraphParser()
+        parser = OpenGraphResolver.OpenGraphParser()
         parser.feed(response.read().decode(encoding))
         parser.close()
 
         return parser.uri
+
+class PictureNotFoundError(Exception):
+    pass

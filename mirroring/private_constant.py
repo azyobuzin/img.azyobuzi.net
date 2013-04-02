@@ -13,6 +13,6 @@ ustream_api_key = "E684BEE3166534D6B6A835F62BD535A3"
 
 # @imgazyobuzi・ReadOnly 権限
 twitter_client = oauth2.Client(
-	oauth2.Consumer(key="uiYQy5R2RJFZRZ4zvSk7A", secret="qzDldacVrcyXbp8pBerf1LBfnQXmkPKmyLVGGLus8"),
-	oauth2.Token(key="862962650-rIcjsj0j9ZJ8khPVA8jZTtEJuq7YYDBDpx6fOAgb", secret="kbMQjdVldI6tFOST3SVjmyAtG1D0oCkCpL6vBv1FtA")
+    oauth2.Consumer(key="uiYQy5R2RJFZRZ4zvSk7A", secret="qzDldacVrcyXbp8pBerf1LBfnQXmkPKmyLVGGLus8"),
+    oauth2.Token(key="862962650-rIcjsj0j9ZJ8khPVA8jZTtEJuq7YYDBDpx6fOAgb", secret="kbMQjdVldI6tFOST3SVjmyAtG1D0oCkCpL6vBv1FtA")
 )

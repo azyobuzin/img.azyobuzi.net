@@ -133,7 +133,9 @@ try:
             set_error(4042, None)
     else:
         set_error(4041, None)
-except Exception, ex:
-    set_error(5000, ex)
+except resolvers.PictureNotFoundError as e:
+    set_error(4043, e)
+except Exception as e:
+    set_error(5000, e)
 
 print_result()

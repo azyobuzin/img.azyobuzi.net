@@ -1,70 +1,73 @@
 # -*- coding: utf-8 -*-
 
 import re
-import MySQLdb
-import urllib2
-from private_constant import *
+from resolvers import *
+from resolvers.private_constant import *
 
-class path:
-	def __str__(self):
-		return "Path"
+class Path(OpenGraphResolver):
+    def __init__(self):
+        super(Path, self).__init__()
+        self.uri_regex = re.compile(r"^(https://[a-z0-9/_\-\.]+/)original(\.\w+)$", re.IGNORECASE)
 
-	regexStr = "^https?://(?:www\\.)?path\\.com/p/(\\w+)(?:\\?.*)?$"
-	regex = re.compile(regexStr, re.IGNORECASE)
+    @property
+    def service_name(self):
+        return "Path"
 
-	originalRegex = re.compile("<meta property=\"og:image\" content=\"(https://[a-z0-9/_\\-\\.]+/)original(\\.\\w+)\" />", re.IGNORECASE)
+    @property
+    def regex_str(self):
+        return r"^https?://(?:www\.)?path\.com/p/(\w+)(?:\?.*)?$"
 
-	last = None
+    def get_parameters(self, match):
+        return match.group(1)
 
-	def getUriData(self, match):
-		id = match.group(1)
+    def _work(self, param, cursor):
+        table = "path"
+        columns = ["id", "prefix", "extension"]
+        result = self.select_one(cursor, table, columns[1:], {columns[0]: param})
+        if result is not None:
+            return dict(zip(columns[1:], result))
 
-		if self.last is not None and str(self.last[0]) == id:
-			return self.last
+        try:
+            uri = self.read_og("https://www.path.com/p/" + param)
+        except urllib2.HTTPError as e:
+            if e.code == 404:
+                raise PictureNotFoundError()
+            else:
+                raise e
 
-		db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")
-		c = db.cursor()
+        uri_match = self.uri_regex.match(uri)
+        prefix = uri_match.group(1)
+        extension = uri_match.group(2)
 
-		c.execute("SELECT * FROM path WHERE id = " + db.literal(id))
-		sqlResult = c.fetchone()
+        self.insert_all(cursor, table, (param, prefix, extension))
+        return dict(zip(columns[1:], (prefix, extension)))
 
-		if sqlResult is None:
-			httpRes = None
+    def get_full(self, match):
+        result = self.work(match)
+        return result["prefix"].replace("https://", "http://", 1) + "original" + result["extension"]
 
-			try:
-				httpRes = urllib2.urlopen("https://www.path.com/p/" + id)
-			except:
-				return None
+    def get_full_https(self, match):
+        result = self.work(match)
+        return result["prefix"] + "original" + result["extension"]
 
-			html = httpRes.read().decode("utf-8")
+    def get_large(self, match):
+        result = self.work(match)
+        return result["prefix"].replace("https://", "http://", 1) + "2x" + result["extension"]
 
-			match = self.originalRegex.search(html)
-			prefix = match.group(1)
-			extension = match.group(2)
+    def get_large_https(self, match):
+        result = self.work(match)
+        return result["prefix"] + "2x" + result["extension"]
 
-			c.execute("INSERT INTO path VALUES (%s, %s, %s)"
-				% (db.literal(id), db.literal(prefix), db.literal(extension))
-			)
+    def get_thumb(self, match):
+        result = self.work(match)
+        return result["prefix"].replace("https://", "http://", 1) + "1x" + result["extension"]
 
-			db.commit()
+    def get_thumb_https(self, match):
+        result = self.work(match)
+        return result["prefix"] + "1x" + result["extension"]
 
-			self.last = [id, prefix, extension]
-		else:
-			self.last = sqlResult
+    def get_video(self, match):
+        return None
 
-		return self.last
-
-	def getFullSize(self, match):
-		data = self.getUriData(match)
-
-		return (data[1] + "original" + data[2]) if data is not None else None
-
-	def getLargeSize(self, match):
-		data = self.getUriData(match)
-
-		return (data[1] + "2x" + data[2]) if data is not None else None
-
-	def getThumbnail(self, match):
-		data = self.getUriData(match)
-
-		return (data[1] + "1x" + data[2]) if data is not None else None
+    def get_video_https(self, match):
+        return None
