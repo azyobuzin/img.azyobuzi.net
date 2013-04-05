@@ -54,7 +54,7 @@ def set_error(error_code, ex):
 
 def iter_resolvers():
     resolvers_members = dir(resolvers)
-    for module_name in (filename[0:-3] for filename in os.listdir("resolvers") if filename.endswith(".py") and filename != "__init__.py"):
+    for module_name in (filename[0:-3] for filename in sorted(os.listdir("resolvers")) if filename.endswith(".py") and filename != "__init__.py"):
         m = getattr(__import__("resolvers." + module_name), module_name)
         classes = (
             c for c in
