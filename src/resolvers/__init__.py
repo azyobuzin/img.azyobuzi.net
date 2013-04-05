@@ -132,7 +132,7 @@ class OpenGraphResolver(StoringResolver):
 
         response = urllib2.urlopen(uri)
 
-        if check is not None and not check(response):
+        if check and not check(response):
             return False
 
         parser = OpenGraphResolver.OpenGraphParser()

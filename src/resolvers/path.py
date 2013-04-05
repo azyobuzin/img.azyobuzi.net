@@ -2,7 +2,6 @@
 
 import re
 from resolvers import *
-from resolvers.private_constant import *
 
 class Path(OpenGraphResolver):
     def __init__(self):
@@ -24,7 +23,7 @@ class Path(OpenGraphResolver):
         table = "path"
         columns = ["id", "prefix", "extension"]
         result = self.select_one(cursor, table, columns[1:], {columns[0]: param})
-        if result is not None:
+        if result:
             return dict(zip(columns[1:], result))
 
         try:
