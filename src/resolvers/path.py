@@ -42,24 +42,21 @@ class Path(OpenGraphResolver):
         return dict(zip(columns[1:], (prefix, extension)))
 
     def get_full(self, match):
-        result = self.work(match)
-        return result["prefix"].replace("https://", "http://", 1) + "original" + result["extension"]
+        return self.get_full_https(match).replace("https://", "http://", 1)
 
     def get_full_https(self, match):
         result = self.work(match)
         return result["prefix"] + "original" + result["extension"]
 
     def get_large(self, match):
-        result = self.work(match)
-        return result["prefix"].replace("https://", "http://", 1) + "2x" + result["extension"]
+        return self.get_large_https(match).replace("https://", "http://", 1)
 
     def get_large_https(self, match):
         result = self.work(match)
         return result["prefix"] + "2x" + result["extension"]
 
     def get_thumb(self, match):
-        result = self.work(match)
-        return result["prefix"].replace("https://", "http://", 1) + "1x" + result["extension"]
+        return self.get_thumb_https(match).replace("https://", "http://", 1)
 
     def get_thumb_https(self, match):
         result = self.work(match)

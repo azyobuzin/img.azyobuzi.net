@@ -22,7 +22,6 @@ class Cameran(OpenGraphResolver):
         if result:
             return result
 
-
         req_uri = "http://cameran.in/posts/get/v1/" + param
         uri = self.read_og(req_uri, lambda res: res.geturl() == req_uri)
 
