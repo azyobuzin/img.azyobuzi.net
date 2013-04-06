@@ -3,7 +3,6 @@
 import json
 import urllib2
 
-from private_constant import *
 from resolvers import *
 
 class CloudApp(StoringResolver):
