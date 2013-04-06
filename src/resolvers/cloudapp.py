@@ -1,67 +1,66 @@
 # -*- coding: utf-8 -*-
 
-import re
-import MySQLdb
-import httplib
 import json
-from private_constant import *
+import urllib2
 
-class cloudapp:
-	def __str__(self):
-		return "CloudApp"
-	
-	regexStr = "^https?://(?:www\\.)?cl\\.ly/(image/\\w+|\\w+)/?(?:\\?.*)?$"
-	regex = re.compile(regexStr, re.IGNORECASE)
-	
-	last = None
-	
-	def getUriData(self, match):
-		id = match.group(1)
-		
-		if self.last is not None and self.last[0] == id:
-			return self.last
-		
-		db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")
-		c = db.cursor()
-		
-		c.execute("SELECT * FROM cloudapp WHERE id = " + db.literal(id))
-		sqlResult = c.fetchone()
-		
-		if sqlResult is None:
-			conn = httplib.HTTPConnection("cl.ly")
-			conn.request("GET", "/" + id, headers = { "Accept": "application/json" })
-			res = conn.getresponse()
-			resStr = res.read()
-			conn.close()
-			
-			if res.status == httplib.NOT_FOUND:
-				return None
-			
-			j = json.loads(resStr)
-			
-			remote = j["remote_url"]
-			thumbnail = j["thumbnail_url"]
-			
-			c.execute("INSERT INTO cloudapp VALUES (%s, %s, %s)"
-				% (db.literal(id), db.literal(remote), db.literal(thumbnail))
-			)
-			
-			db.commit()
-			
-			self.last = [id, remote, thumbnail]
-		else:
-			self.last = sqlResult
-		
-		return self.last
-	
-	def getFullSize(self, match):
-		data = self.getUriData(match)
-		return data[1] if data is not None else None
-	
-	def getLargeSize(self, match):
-		data = self.getUriData(match)
-		return data[1] if data is not None else None
-	
-	def getThumbnail(self, match):
-		data = self.getUriData(match)
-		return data[2] if data is not None else None
+from private_constant import *
+from resolvers import *
+
+class CloudApp(StoringResolver):
+    @property
+    def service_name(self):
+        return "CloudApp"
+
+    @property
+    def regex_str(self):
+        return r"^https?://(?:www\.)?cl\.ly/(image/\w+|\w+)/?(?:\?.*)?$"
+
+    def get_parameters(self, match):
+        return match.group(1)
+
+    def _work(self, param, cursor):
+        table = "cloudapp"
+        columns = ["id", "remote", "thumbnail"]
+        result = self.select_one(cursor, table, columns[1:], {columns[0]: param})
+        if result:
+            return dict(zip(columns[1:], result))
+
+        try:
+            response = urllib2.urlopen(urllib2.Request("http://cl.ly/" + param, headers={"Accept": "application/json"}))
+        except urllib2.HTTPError as e:
+            if e.code == 404:
+                raise PictureNotFoundError()
+            else:
+                raise e
+
+        j = json.load(response)
+
+        remote = j["remote_url"]
+        thumbnail = j["thumbnail_url"]
+
+        self.insert_all(cursor, table, (param, remote, thumbnail))
+        return dict(zip(columns[1:], (remote, thumbnail)))
+
+    def get_full(self, match):
+        return self.work(match)["remote"]
+
+    def get_full_https(self, match):
+        return self.get_full(match).replace("http://", "https://", 1)
+
+    def get_large(self, match):
+        return self.get_full(match)
+
+    def get_large_https(self, match):
+        return self.get_full_https(match)
+
+    def get_thumb(self, match):
+        return self.work(match)["thumbnail"]
+
+    def get_thumb_https(self, match):
+        return self.get_thumb(match).replace("http://", "https://", 1)
+
+    def get_video(self, match):
+        return None
+
+    def get_video_https(self, match):
+        return None

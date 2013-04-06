@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import re
+
 from resolvers import *
 
 class Path(OpenGraphResolver):
