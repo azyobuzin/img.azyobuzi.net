@@ -1,57 +1,65 @@
 # -*- coding: utf-8 -*-
 
-import re
-import MySQLdb
-import httplib
-from private_constant import *
+import urllib2
 
-class dropbox:
-    def __str__(self):
+from resolvers import *
+
+class Dropbox(StoringResolver):
+    @property
+    def service_name(self):
         return "Dropbox"
 
-    regexStr = "^https?://(?:(?:www\\.|dl\\.)?dropbox\\.com/s/(\\w+)/([\\w\\-\\.%]+\\.(?:jpeg?|jpg|png|gif|bmp|dib|tiff?))|(?:www\\.)?db\\.tt/(\\w+))/?(?:\\?.*)?$"
-    regex = re.compile(regexStr, re.IGNORECASE)
+    @property
+    def regex_str(self):
+        return r"^https?://(?:(?:www\.|dl\.)?dropbox\.com/s/(\w+)/([\w\-\.%]+\.(?:jpeg?|jpg|png|gif|bmp|dib|tiff?))|(?:www\.)?db\.tt/(\w+))/?(?:\?.*)?$"
 
-    last = None
+    def get_parameters(self, match):
+        return {"token": match.group(1), "filename": match.group(2), "shorten": match.group(3)}
 
-    def getUri(self, match):
-        shorten = match.group(3)
-        if shorten is not None:
-            if self.last is not None and self.last[0] == shorten:
-                exMatch = self.regex.match(self.last[1])
-                return self.getUri(exMatch) if exMatch is not None else None
-
-            db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")
-            c = db.cursor()
-
-            c.execute("SELECT * FROM dropbox WHERE shorten = %s", shorten)
-            sqlResult = c.fetchone()
-
-            if sqlResult is None:
-                conn = httplib.HTTPConnection("db.tt")
-                conn.request("HEAD", "/" + shorten)
-                res = conn.getresponse()
-                uri = res.getheader("location")
-                res.close()
-                c.execute("INSERT INTO dropbox VALUES (%s, %s)", (shorten, uri))
-                db.commit()
-                self.last = (shorten, uri)
-                exMatch = self.regex.match(uri)
-                return self.getUri(exMatch) if exMatch is not None else None
+    def _work(self, param, cursor):
+        if param["shorten"]:
+            table = "dropbox"
+            columns = ["shorten", "expanded"]
+            result = self.select_one(cursor, table, columns[1:], {columns[0]: param["shorten"]})
+            if result:
+                param = self.get_parameters(self.regex.match(result[0]))
             else:
-                self.last = sqlResult
-                exMatch = self.regex.match(sqlResult[1])
-                return self.getUri(exMatch) if exMatch is not None else None
+                try:
+                    response = urllib2.build_opener(DontRedirectHandler).open(
+                        Request2("http://db.tt/" + param["shorten"], method="HEAD")
+                    )
+                except urllib2.HTTPError as e:
+                    if e.code == 404:
+                        raise PictureNotFoundError()
+                    else:
+                        raise e
 
-        token = match.group(1)
-        filename = match.group(2)
-        return "https://dl.dropbox.com/s/%s/%s" % (token, filename)
+                expanded = response.headers["location"]
+                self.insert_all(cursor, table, (param["shorten"], expanded))
+                param = self.get_parameters(expanded)
 
-    def getFullSize(self, match):
-        return self.getUri(match)
+        return "https://dl.dropbox.com/s/%(token)s/%(filename)s" % param
 
-    def getLargeSize(self, match):
-        return self.getUri(match)
+    def get_full(self, match):
+        return self.work(match)
 
-    def getThumbnail(self, match):
-        return self.getUri(match)
+    def get_full_https(self, match):
+        return get_full(match).replace("https://", "http://", 1)
+
+    def get_large(self, match):
+        return self.get_full(match)
+
+    def get_large_https(self, match):
+        return self.get_full_https(match)
+
+    def get_thumb(self, match):
+        return self.get_full(match)
+
+    def get_thumb_https(self, match):
+        return self.get_full_https(match)
+
+    def get_video(self, match):
+        return None
+
+    def get_video_https(self, match):
+        return None
