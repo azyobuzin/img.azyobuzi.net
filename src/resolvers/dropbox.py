@@ -36,7 +36,7 @@ class Dropbox(StoringResolver):
 
                 expanded = response.headers["location"]
                 self.insert_all(cursor, table, (param["shorten"], expanded))
-                param = self.get_parameters(expanded)
+                param = self.get_parameters(self.regex.match(expanded))
 
         return "https://dl.dropbox.com/s/%(token)s/%(filename)s" % param
 
@@ -44,7 +44,7 @@ class Dropbox(StoringResolver):
         return self.work(match)
 
     def get_full_https(self, match):
-        return get_full(match).replace("https://", "http://", 1)
+        return self.get_full(match).replace("https://", "http://", 1)
 
     def get_large(self, match):
         return self.get_full(match)
