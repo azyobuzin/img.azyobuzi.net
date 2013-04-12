@@ -195,4 +195,4 @@ class DontRedirectHandler(urllib2.HTTPRedirectHandler):
     http_error_301 = http_error_302 = http_error_303 =\
         http_error_307 = lambda self, req, fp, code, msg, headers: fp
 
-urllib2.install_opener(HTTPRedirectHandler2)
+urllib2.install_opener(urllib2.build_opener(HTTPRedirectHandler2))
