@@ -1,22 +1,36 @@
 # -*- coding: utf-8 -*-
 
-import re
+from resolvers import *
 
-class gyazo:
-	def __str__(self):
-		return "Gyazo"
-	
-	regexStr = "^http://(?:www\\.)?gyazo\\.com/(\w+)(?:\\.png)?(?:\\?.*)?$"
-	regex = re.compile(regexStr, re.IGNORECASE)
-	
-	def getUri(self, match):
-		return "http://gyazo.com/" + match.group(1) + ".png"
-	
-	def getFullSize(self, match):
-		return self.getUri(match)
-	
-	def getLargeSize(self, match):
-		return self.getUri(match)
-	
-	def getThumbnail(self, match):
-		return self.getUri(match)
+class Gyazo(Resolver):
+    @property
+    def service_name(self):
+        return "Gyazo"
+
+    @property
+    def regex_str(self):
+        return r"^https?://(?:www\.)?gyazo\.com/(\w+)(?:\.png)?(?:\?.*)?$"
+
+    def get_full(self, match):
+        return "http://gyazo.com/" + match.group(1) + ".png"
+
+    def get_full_https(self, match):
+        return "https://gyazo.com/" + match.group(1) + ".png"
+
+    def get_large(self, match):
+        return self.get_full(match)
+
+    def get_large_https(self, match):
+        return self.get_full_https(match)
+
+    def get_thumb(self, match):
+        return self.get_full(match)
+
+    def get_thumb_https(self, match):
+        return self.get_full_https(match)
+
+    def get_video(self, match):
+        return None
+
+    def get_video_https(self, match):
+        return None
