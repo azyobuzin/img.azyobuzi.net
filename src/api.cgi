@@ -5,6 +5,7 @@ import cgitb
 cgitb.enable() #try ブロック外でエラー起こったらつらい
 
 import cgi
+import datetime
 import json
 import os
 
@@ -79,6 +80,10 @@ def get_imageuri(resolver, match, size, use_https):
         return resolver.get_thumb_https(match) if use_https else resolver.get_thumb(match)
     raise ValueError()
 
+def set_expires(days):
+    expires = datetime.datetime.utcnow() + datetime.timedelta(days=days)
+    headers["expires"] = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
+
 try:
     if os.environ['REQUEST_METHOD'] not in ("GET", "HEAD"):
         set_error(4051, None)
@@ -109,6 +114,7 @@ try:
 
             status = 302
             headers["Location"] = result
+            set_expires(10)
         elif api == "all_sizes.json":
             if "uri" not in form:
                 set_error(4001, None)
@@ -129,6 +135,8 @@ try:
                 "video": resolver.get_video(match),
                 "video_https": resolver.get_video_https(match)
             })
+
+            set_expires(10)
         else:
             set_error(4042, None)
     else:
