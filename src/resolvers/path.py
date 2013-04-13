@@ -5,9 +5,7 @@ import re
 from resolvers import *
 
 class Path(OpenGraphResolver):
-    def __init__(self):
-        super(Path, self).__init__()
-        self.uri_regex = re.compile(r"^(https://[a-z0-9/_\-\.]+/)original(\.\w+)$", re.IGNORECASE)
+    uri_regex = re.compile(r"^(https://[a-z0-9/_\-\.]+/)original(\.\w+)$", re.IGNORECASE)
 
     @property
     def service_name(self):

@@ -19,7 +19,7 @@ class Cameran(OpenGraphResolver):
         columns = ["id", "image"]
         result = self.select_one(cursor, table, columns[1:], {columns[0]: param})
         if result:
-            return result
+            return result[0]
 
         req_uri = "http://cameran.in/posts/get/v1/" + param
         uri = self.read_og(req_uri, lambda res: res.geturl() == req_uri)

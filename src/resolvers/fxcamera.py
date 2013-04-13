@@ -1,65 +1,61 @@
 # -*- coding: utf-8 -*-
 
 import re
-import MySQLdb
-import urllib2
-from private_constant import *
 
-class fxcamera:
-	def __str__(self):
-		return "FxCamera"
-	
-	regexStr = "^https?://fxc\\.am/p/(\\w+)/?(?:\\?.*)?$"
-	regex = re.compile(regexStr, re.IGNORECASE)
-	
-	photoRegex = re.compile("<img id='photo' src='(http://[a-za-z0-9/_\\-\\.]+)'>")
-	
-	last = None
-	
-	def getUriData(self, match):
-		id = match.group(1)
-		
-		if self.last is not None and str(self.last[0]) == id:
-			return self.last
-		
-		db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")
-		c = db.cursor()
-		
-		c.execute("SELECT * FROM fxcamera WHERE id = " + db.literal(id))
-		sqlResult = c.fetchone()
-		
-		if sqlResult is None:
-			httpRes = None
-			
-			try:
-				httpRes = urllib2.urlopen("http://fxc.am/p/" + id)
-			except:
-				return None
-			
-			html = httpRes.read().decode("utf-8")
-			match = self.photoRegex.search(html)
-			scaled = match.group(1)
-			
-			c.execute("INSERT INTO fxcamera VALUES (%s, %s)"
-				% (db.literal(id), db.literal(scaled))
-			)
-			
-			db.commit()
-			
-			self.last = [id, scaled]
-		else:
-			self.last = sqlResult
-		
-		return self.last
-	
-	def getFullSize(self, match):
-		data = self.getUriData(match)
-		return data[1] if data is not None else None
-	
-	def getLargeSize(self, match):
-		data = self.getUriData(match)
-		return data[1] if data is not None else None
-	
-	def getThumbnail(self, match):
-		data = self.getUriData(match)
-		return data[1] if data is not None else None
+from resolvers import *
+
+class FxCamera(TwitterCardResolver):
+    uri_regex = re.compile(r"^http://img\.fxc\.am/scaled/anon/(\w+)+$")
+
+    @property
+    def service_name(self):
+        return "FxCamera"
+
+    @property
+    def regex_str(self):
+        return r"^https?://fxc\.am/p/([\w\-]+)/?(?:\?.*)?$"
+
+    def get_parameters(self, match):
+        return match.group(1)
+
+    def _work(self, param, cursor):
+        table = "fxcamera"
+        columns = ["id", "scaled"]
+        result = self.select_one(cursor, table, columns[1:], {columns[0]: param})
+        if result:
+            return result[0]
+
+        try:
+            scaled = self.read_twitter_card("http://fxc.am/p/" + param)
+        except urllib2.HTTPError as e:
+            if e.code == 404:
+                raise PictureNotFoundError()
+            else:
+                raise e
+
+        self.insert_all(cursor, table, (param, scaled))
+        return scaled
+
+    def get_full(self, match):
+        return self.work(match)
+
+    def get_full_https(self, match):
+        return self.get_full(match).replace("http://", "https://", 1)
+
+    def get_large(self, match):
+        return re.sub(self.uri_regex, r"http://img.fxc.am/thumbs/anon/\1/keep640", self.get_full(match))
+
+    def get_large_https(self, match):
+        return re.sub(self.uri_regex, r"https://img.fxc.am/thumbs/anon/\1/keep640", self.get_full(match))
+
+    def get_thumb(self, match):
+        return self.get_large(match)
+
+    def get_thumb_https(self, match):
+        return self.get_large_https(match)
+
+    def get_video(self, match):
+        return None
+
+    def get_video_https(self, match):
+        return None

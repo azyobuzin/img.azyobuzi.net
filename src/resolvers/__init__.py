@@ -141,6 +141,38 @@ class OpenGraphResolver(StoringResolver):
 
         return parser.uri
 
+class TwitterCardResolver(StoringResolver):
+    class TwitterCardParser(SGMLParser):
+        def __init__(self):
+            SGMLParser.__init__(self)
+            self.uri = None
+
+        def do_meta(self, attributes):
+            dic = dict(attributes)
+            if dic.get("name") == "twitter:image":
+                self.uri = dic["content"]
+
+    @staticmethod
+    def read_twitter_card(uri, check=None, encoding="utf-8"):
+        u"""TwitterCard を読み込みに行きます。
+
+        uri: 取得しに行く URI
+        check: 正しいレスポンスかどうかを確認するラムダ式
+
+        成功時には twitter:image の内容を、 check が False を返した場合には False を、 twitter:image が見つからなかった場合には None を返します。
+        """
+
+        response = urllib2.urlopen(uri)
+
+        if check and not check(response):
+            return False
+
+        parser = TwitterCardResolver.TwitterCardParser()
+        parser.feed(response.read().decode(encoding))
+        parser.close()
+
+        return parser.uri
+
 class PictureNotFoundError(Exception):
     pass
 
