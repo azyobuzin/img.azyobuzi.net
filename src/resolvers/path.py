@@ -34,8 +34,11 @@ class Path(OpenGraphResolver):
                 raise e
 
         uri_match = self.uri_regex.match(uri)
-        prefix = uri_match.group(1)
-        extension = uri_match.group(2)
+        if uri_match:
+            prefix = uri_match.group(1)
+            extension = uri_match.group(2)
+        else:
+            raise IsNotPictureError()
 
         self.insert_all(cursor, table, (param, prefix, extension))
         return dict(zip(columns[1:], (prefix, extension)))

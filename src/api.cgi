@@ -54,6 +54,7 @@ def set_error(error_code, ex):
     exit()
 
 def iter_resolvers():
+    "呼び出すたびに Resolver を列挙します。これは通常の CGI での利用を想定したチューニングです。"
     resolvers_members = dir(resolvers)
     for module_name in (filename[0:-3] for filename in sorted(os.listdir("resolvers")) if filename.endswith(".py") and filename != "__init__.py"):
         m = getattr(__import__("resolvers." + module_name), module_name)
@@ -78,6 +79,8 @@ def get_imageuri(resolver, match, size, use_https):
         return resolver.get_large_https(match) if use_https else resolver.get_large(match)
     elif size == "thumb":
         return resolver.get_thumb_https(match) if use_https else resolver.get_thumb(match)
+    elif size == "video":
+        return resolver.get_video_https(match) if use_https else resolver.get_video(match)
     raise ValueError()
 
 def set_expires(days):
@@ -100,7 +103,7 @@ try:
                 set_error(4001, None)
             uri = form["uri"].value
             size = form.getvalue("size", "full")
-            if size not in ("full", "large", "thumb"):
+            if size not in ("full", "large", "thumb", "video"):
                 set_error(4003, None)
             use_https = form.getvalue("use_https", "false").lower() == "true"
 
@@ -109,8 +112,14 @@ try:
                 set_error(4002, None)
 
             result = get_imageuri(resolver, match, size, use_https)
-            if result is None:
+            if not result and use_https:
                 result = get_imageuri(resolver, match, size, False)
+
+            if not result:
+                if size == "video":
+                    set_error(4045, None)
+                else:
+                    set_error(4043, None)
 
             status = 302
             headers["Location"] = result
@@ -143,6 +152,8 @@ try:
         set_error(4041, None)
 except resolvers.PictureNotFoundError as e:
     set_error(4043, e)
+except resolvers.IsNotPictureError as e:
+    set_error(4044, e)
 except Exception as e:
     set_error(5000, e)
 

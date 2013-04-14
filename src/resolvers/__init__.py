@@ -173,7 +173,13 @@ class TwitterCardResolver(StoringResolver):
 
         return parser.uri
 
-class PictureNotFoundError(Exception):
+class ImgAzyobuziBaseError(Exception):
+    "img.azyobuzi.net 内で定義されている例外クラス"
+
+class PictureNotFoundError(ImgAzyobuziBaseError):
+    pass
+
+class IsNotPictureError(ImgAzyobuziBaseError):
     pass
 
 class Request2(urllib2.Request):
@@ -216,10 +222,10 @@ class HTTPRedirectHandler2(urllib2.HTTPRedirectHandler):
                               if k.lower() not in ("content-length", "content-type")
                              )
             return Request2(newurl,
-                           headers=newheaders,
-                           origin_req_host=req.get_origin_req_host(),
-                           unverifiable=True,
-                           method="GET" if code == 303 else m)
+                            headers=newheaders,
+                            origin_req_host=req.get_origin_req_host(),
+                            unverifiable=True,
+                            method="GET" if code == 303 else m)
         else:
             raise urllib2.HTTPError(req.get_full_url(), code, msg, headers, fp)
 
