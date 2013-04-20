@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import re
-from sgmllib import SGMLParser
+##from sgmllib import SGMLParser
 
 from resolvers import *
 
