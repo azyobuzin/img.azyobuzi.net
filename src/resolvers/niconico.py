@@ -1,69 +1,63 @@
 # -*- coding: utf-8 -*-
 
-import re
-import MySQLdb
 import urllib2
-import xml.etree.ElementTree as ET
-from private_constant import *
+from xml.etree import ElementTree
 
-class niconico:
-	def __str__(self):
-		return u"niconico（ニコニコ動画）"
-	
-	regexStr = "^http://(?:(?:www\.)?nicovideo\\.jp/watch|nico\\.ms)/([sn]m\\d+)?(?:\\?.*)?$"
-	regex = re.compile(regexStr, re.IGNORECASE)
-	
-	last = None
-	
-	def getUriData(self, match):
-		id = match.group(1)
-		
-		if self.last is not None and str(self.last[0]) == str(id):
-			return self.last
-		
-		db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")
-		c = db.cursor()
-		
-		c.execute("SELECT * FROM niconico WHERE id = " + db.literal(id))
-		sqlResult = c.fetchone()
-		
-		if sqlResult is None:
-			httpRes = urllib2.urlopen("http://ext.nicovideo.jp/api/getthumbinfo/" + id)
-			
-			root = ET.fromstring(httpRes.read())
-			thumb = root.find("thumb")
-			
-			if thumb is None:
-				return None
-			
-			thumbnail = thumb.find("thumbnail_url").text
-			
-			c.execute("INSERT INTO niconico VALUES (%s, %s)"
-				% (db.literal(id), db.literal(thumbnail))
-			)
-			
-			db.commit()
-			
-			self.last = [id, thumbnail]
-		else:
-			self.last = sqlResult
-		
-		return self.last
-	
-	def getFullSize(self, match):
-		data = self.getUriData(match)
-		if data is not None:
-			return data[1] + (".L" if int(data[0][2:]) >= 16371850 else "")
-		else:
-			return None
-	
-	def getLargeSize(self, match):
-		data = self.getUriData(match)
-		if data is not None:
-			return data[1] + (".L" if int(data[0][2:]) >= 16371850 else "")
-		else:
-			return None
-	
-	def getThumbnail(self, match):
-		data = self.getUriData(match)
-		return data[1] if data is not None else None
+from resolvers import *
+
+class Niconico(StoringResolver):
+    @property
+    def service_name(self):
+        return u"ニコニコ動画"
+
+    @property
+    def regex_str(self):
+        return r"^http://(?:(?:www\.)?nicovideo\.jp/watch|nico\.ms)/([sn]m\d+)?(?:\?.*)?$"
+
+    def get_parameters(self, match):
+        return match.group(1)
+
+    def _work(self, param, cursor):
+        table = "niconico"
+        columns = ["id", "thumbnail"]
+        result = self.select_one(cursor, table, columns[1:], {columns[0]: param})
+        if result:
+            return result[0]
+
+        response = urllib2.urlopen("http://ext.nicovideo.jp/api/getthumbinfo/" + param)
+
+        root = ElementTree.fromstring(response.read())
+        thumb = root.find("thumb")
+
+        if thumb is None:
+            raise PictureNotFoundError()
+
+        thumbnail = thumb.find("thumbnail_url").text
+
+        self.insert_all(cursor, table, (param, thumbnail))
+        return thumbnail
+
+    def get_full(self, match):
+        result = self.work(match)
+        return result + (".L" if int(match.group(1)[2:]) >= 16371850 else "")
+
+    def get_full_https(self, match):
+        return None
+
+    def get_large(self, match):
+        return self.get_full(match)
+
+    def get_large_https(self, match):
+        return None
+
+    def get_thumb(self, match):
+        return self.work(match)
+
+    def get_thumb_https(self, match):
+        return None
+
+    def get_video(self, match):
+        return None
+
+    def get_video_https(self, match):
+        return None
