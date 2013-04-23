@@ -1,73 +1,55 @@
 # -*- coding: utf-8 -*-
 
-import re
-import MySQLdb
-import urllib2
-from sgmllib import SGMLParser
-from private_constant import *
+from resolvers import *
 
-class PhotohitoParser(SGMLParser):
-    def __init__(self):
-        SGMLParser.__init__(self)
-        self.uri_prefix = None
-
-    def do_meta(self, attributes):
-        dic = dict(attributes)
-        if "property" in dic and dic["property"] == "og:image":
-            content = dic["content"]
-            self.uri_prefix = content[: - len("_s.jpg")]
-
-class photohito:
-    def __str__(self):
+class Photohito(OpenGraphResolver):
+    @property
+    def service_name(self):
         return "PHOTOHITO"
 
-    regexStr = "^https?://(?:www\\.)?photohito\\.com/photo/(\\d+)/?(?:\\?.*)?$"
-    regex = re.compile(regexStr, re.IGNORECASE)
+    @property
+    def regex_str(self):
+        return r"^https?://(?:www\.)?photohito\.com/photo/(\d+)/?(?:\?.*)?$"
 
-    last = None
+    def get_parameters(self, match):
+        return match.group(1)
 
-    def getUriData(self, match):
-        id = match.group(1)
+    def _work(self, param, cursor):
+        table = "photohito"
+        columns = ["id", "prefix"]
+        result = self.select_one(cursor, table, columns[1:], {columns[0]: param})
+        if result:
+            return result[0]
 
-        if self.last is not None and str(self.last[0]) == id:
-            return self.last
+        uri = self.read_og("http://photohito.com/photo/%s/" % param)
+        if not uri:
+            raise PictureNotFoundError()
 
-        db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")
-        c = db.cursor()
+        prefix = uri[:- len("_s.jpg")]
 
-        c.execute("SELECT * FROM photohito WHERE id = %s", id)
-        sqlResult = c.fetchone()
+        self.insert_all(cursor, table, (param, prefix))
+        return prefix
 
-        if sqlResult is None:
-            httpRes = urllib2.urlopen("http://photohito.com/photo/%s/" % id)
-            html = httpRes.read().decode("utf-8")
+    def get_full(self, match):
+        return self.work(match) + "_o.jpg"
 
-            if "<div id=\"error_title\">" in html:
-                return None
+    def get_full_https(self, match):
+        return self.get_full(match).replace("http://", "https://", 1)
 
-            parser = PhotohitoParser()
-            parser.feed(html)
-            parser.close()
+    def get_large(self, match):
+        return self.work(match) + "_m.jpg"
 
-            prefix = parser.uri_prefix
+    def get_large_https(self, match):
+        return self.get_large(match).replace("http://", "https://", 1)
 
-            c.execute("INSERT INTO photohito VALUES (%s, %s)", (id, prefix))
-            db.commit()
+    def get_thumb(self, match):
+        return self.work(match) + "_s.jpg"
 
-            self.last = (id, prefix)
-        else:
-            self.last = sqlResult
+    def get_thumb_https(self, match):
+        return self.get_thumb(match).replace("http://", "https://", 1)
 
-        return self.last
+    def get_video(self, match):
+        return None
 
-    def getFullSize(self, match):
-        data = self.getUriData(match)
-        return data[1] + "_o.jpg" if data is not None else None
-
-    def getLargeSize(self, match):
-        data = self.getUriData(match)
-        return data[1] + "_m.jpg" if data is not None else None
-
-    def getThumbnail(self, match):
-        data = self.getUriData(match)
-        return data[1] + "_s.jpg" if data is not None else None
+    def get_video_https(self, match):
+        return None
