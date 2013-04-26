@@ -1,24 +1,36 @@
 # -*- coding: utf-8 -*-
 
-import re
-import MySQLdb
-import urllib2
-import urlparse
-from sgmllib import SGMLParser
-from private_constant import *
+from resolvers import *
 
-class pixiv:
-    def __str__(self):
+class Pixiv(Resolver):
+    @property
+    def service_name(self):
         return "pixiv"
 
-    regexStr = "^http://(?:www\\.)?pixiv\\.net/(?:index|member_illust)\\.php\\?(?:.*)&?illust_id=(\\d+)(?:&.*)?$"
-    regex = re.compile(regexStr, re.IGNORECASE)
+    @property
+    def regex_str(self):
+       return r"^http://(?:www\.)?pixiv\.net/(?:index|member_illust)\.php\?(?:.*)&?illust_id=(\d+)(?:&.*)?$"
 
-    def getFullSize(self, match):
+    def get_full(self, match):
         return "http://img.azyobuzi.net/api/pixiv_proxy.cgi?size=full&id=" + match.group(1)
 
-    def getLargeSize(self, match):
+    def get_full_https(self, match):
+        return None #誰か SSL サーバ証明書買って…
+
+    def get_large(self, match):
         return "http://img.azyobuzi.net/api/pixiv_proxy.cgi?size=large&id=" + match.group(1)
 
-    def getThumbnail(self, match):
+    def get_large_https(self, match):
+        return None
+
+    def get_thumb(self, match):
         return "http://img.azyobuzi.net/api/pixiv_proxy.cgi?size=thumb&id=" + match.group(1)
+
+    def get_thumb_https(self, match):
+        return None
+
+    def get_video(self, match):
+        return None
+
+    def get_video_https(self, match):
+        return None
