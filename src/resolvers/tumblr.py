@@ -1,136 +1,119 @@
 # -*- coding: utf-8 -*-
 
-import re
-import os
-import MySQLdb
-import httplib
-import urllib2
-import urlparse
 import json
-from private_constant import *
+import re
+import urllib2
 
-class tumblr:
-	def __str__(self):
-		return "Tumblr"
-	
-	regexStr = r"^http://(?:([\w\-]+\.tumblr\.com)/(?:post|image)/(\d+)(?:/(?:[\w\-]+/?)?)?|tmblr\.co/([\w\-]+))(?:\?.*)?$"
-	regex = re.compile(regexStr, re.IGNORECASE)
-	
-	expandedRegex = re.compile("^http://([\\w\\.\\-]+)/post/(\\d+)(?:/(?:[\\w\\-]+/?)?)?$", re.IGNORECASE)
-	
-	last = None
-	
-	def getUriData(self, match):
-		hostname = match.group(1)
-		id = match.group(2)
-		shorten = match.group(3)
-		
-		db = None
-		c = None
-		
-		if shorten is not None:
-			db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")
-			c = db.cursor()
-			
-			c.execute("SELECT * FROM tumblr_shorten WHERE shorten = " + db.literal(shorten))
-			sqlResult = c.fetchone()
-			
-			if sqlResult is None:
-				conn = httplib.HTTPConnection("www.tumblr.com")
-				conn.request("HEAD", "/" + shorten)
-				res = conn.getresponse()
-				exMatch = None
-				try:
-					exMatch = self.expandedRegex.match(res.getheader("location"))
-				except:
-					return None
-				hostname = exMatch.group(1)
-				id = exMatch.group(2)
-				
-				c.execute("INSERT INTO tumblr_shorten VALUES (%s, %s, %s)"
-					% (db.literal(shorten), db.literal(hostname), db.literal(id))
-				)
-				
-				db.commit()
-			else:
-				hostname = sqlResult[1]
-				id = sqlResult[2]
-		
-		if self.last is not None and str(self.last[0]) == str(id):
-			return self.last
-		
-		if db is None:
-			db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")
-			c = db.cursor()
-		
-		c.execute("SELECT * FROM tumblr WHERE id = " + db.literal(id))
-		sqlResult = c.fetchone()
-		
-		if sqlResult is None:
-			httpRes = None
-			
-			try:
-				httpRes = urllib2.urlopen("http://api.tumblr.com/v2/blog/%s/posts?api_key=%s&id=%s"
-					% (hostname, tumblrApiKey, id))
-			except:
-				return None
-			
-			post = json.loads(httpRes.read())["response"]["posts"][0]
-			
-			original = None
-			large = None
-			thumb = None
-			video = ""
-			
-			type = post["type"]
-			
-			if type == "photo":
-				photo = post["photos"][0]
-				original = photo["original_size"]["url"]
-				
-				altSizes = photo["alt_sizes"]
-				for size in altSizes:
-					if size["width"] > 420 and size["width"] <= 500:
-						large = size["url"]
-				
-				if large is None:
-					large = original
-				
-				thumb = altSizes[-2]["url"]
-			elif type == "video":
-				original = large = thumb = post["thumbnail_url"]
-				video = post["video_url"] if "video_url" in post else ""
-			else:
-				return None
-			
-			c.execute("INSERT INTO tumblr VALUES (%s, %s, %s, %s, %s)"
-				% (db.literal(id), db.literal(original), db.literal(large), db.literal(thumb), db.literal(video))
-			)
-			
-			db.commit()
-			
-			self.last = [id, original, large, thumb, video]
-		else:
-			self.last = sqlResult
-		
-		return self.last
-	
-	def getFullSize(self, match):
-		data = self.getUriData(match)
-		
-		if data is None:
-			return None
-		
-		query = dict(urlparse.parse_qsl(os.environ.get("QUERY_STRING", "")))
-		if "movie" in query and query["movie"] == "true" and data[4] != "":
-			return data[4]
-		else:
-			return data[1]
-	
-	def getLargeSize(self, match):
-		data = self.getUriData(match)
-		return data[2] if data is not None else None
-	
-	def getThumbnail(self, match):
-		data = self.getUriData(match)
-		return data[3] if data is not None else None
+from resolvers import *
+from resolvers.private_constant import *
+
+class Tumblr(StoringResolver):
+    @property
+    def service_name(self):
+        return "Tumblr"
+    
+    @property
+    def regex_str(self):
+        return r"^http://(?:([\w\-]+\.tumblr\.com)/(?:post|image)/(\d+)(?:/(?:[\w\-]+/?)?)?|tmblr\.co/([\w\-]+))(?:\?.*)?(?:#.*)?$"
+    
+    expanded_regex = re.compile("^http://([\\w\\.\\-]+)/post/(\\d+)(?:/(?:[\\w\\-]+/?)?)?(?:#.*)?$", re.IGNORECASE)
+    
+    def get_parameters(self, match):
+        return {"hostname": match.group(1), "id": match.group(2), "shorten": match.group(3)}
+    
+    def _work(self, param, cursor):        
+        if param["shorten"]:
+            table = "tumblr_shorten"
+            columns = ["shorten", "hostname", "id"]
+            result = self.select_one(cursor, table, columns[1:], {columns[0]: param["shorten"]})
+            
+            if not result:
+                response = urllib2.build_opener(DontRedirectHandler).open(
+                    Request2("http://www.tumblr.com/" + param["shorten"], method="HEAD")
+                )
+
+                try:
+                    match = self.expanded_regex.match(response.getheader("location"))
+                except:
+                    raise PictureNotFoundError()
+
+                hostname = match.group(1)
+                id = match.group(2)
+                
+                self.insert_all(cursor, table, (param["shorten"], hostname, id))
+            else:
+                hostname = result[0]
+                id = result[1]
+        else:
+            hostname = param["hostname"]
+            id = param["id"]
+
+        table = "tumblr"
+        columns = ["id", "original", "large", "thumb", "video"]
+        result = self.select_one(cursor, table, columns[1:], {columns[0]: id})
+        if result:
+            return dict(zip(columns[1:], result))
+        
+        try:
+            response = urllib2.urlopen("http://api.tumblr.com/v2/blog/%s/posts?api_key=%s&id=%s"
+                % (hostname, tumblr_api_key, id))
+        except urllib2.HTTPError as e:
+            if e.code == 404:
+                raise PictureNotFoundError()
+            else:
+                raise e
+            
+        post = json.load(response)["response"]["posts"][0]
+            
+        original = None
+        large = None
+        thumb = None
+        video = ""
+            
+        type = post["type"]
+            
+        if type == "photo":
+            photo = post["photos"][0]
+            original = photo["original_size"]["url"]
+                
+            alt_sizes = photo["alt_sizes"]
+            for size in alt_sizes:
+                if size["width"] > 420 and size["width"] <= 500:
+                    large = size["url"]
+                
+            if large is None:
+                large = original
+                
+            thumb = alt_sizes[-2]["url"]
+        elif type == "video":
+            original = large = thumb = post["thumbnail_url"]
+            video = post["video_url"] if "video_url" in post else ""
+        else:
+            raise IsNotPictureError()
+
+        self.insert_all(cursor, table, (id, original, large, thumb, video))
+        return dict(zip(columns[1:], (original, large, thumb, video)))
+    
+    def get_full(self, match):
+        return self.work(match)["original"]
+
+    def get_full_https(self, match):
+        return self.get_full(match).replace("http://", "https://", 1)
+    
+    def get_large(self, match):
+        return self.work(match)["large"]
+
+    def get_large_https(self, match):
+        return self.get_large(match).replace("http://", "https://", 1)
+    
+    def get_thumb(self, match):
+        return self.work(match)["thumb"]
+
+    def get_thumb_https(self, match):
+        return self.get_thumb(match).replace("http://", "https://", 1)
+
+    def get_video(self, match):
+        return self.work(match)["video"]
+
+    def get_video_https(self, match):
+        return self.get_video(match).replace("http://", "https://", 1)
