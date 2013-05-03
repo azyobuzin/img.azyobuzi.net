@@ -21,7 +21,7 @@ class Tumblr(StoringResolver):
     def get_parameters(self, match):
         return {"hostname": match.group(1), "id": match.group(2), "shorten": match.group(3)}
     
-    def _work(self, param, cursor):        
+    def _work(self, param, cursor):
         if param["shorten"]:
             table = "tumblr_shorten"
             columns = ["shorten", "hostname", "id"]
