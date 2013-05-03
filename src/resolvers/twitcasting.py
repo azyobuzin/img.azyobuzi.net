@@ -1,68 +1,75 @@
 # -*- coding: utf-8 -*-
 
-import re
-import MySQLdb
-import urllib2
 import json
-from private_constant import *
+import urllib2
 
-class twitcasting:
-	def __str__(self):
-		return "TwitCasting"
-	
-	regexStr = "^https?://(?:www\\.)?twitcasting\\.tv/(?:(\\w+)/?|\\w+/movie/(\\d+))(?:\\?.*)?$"
-	regex = re.compile(regexStr, re.IGNORECASE)
-	
-	last = None
-	
-	def getUriData(self, match):
-		username = match.group(1)
-		id = match.group(2)
-		
-		if username is not None:
-			return [username, "http://twitcasting.tv/%s/thumbstream/liveshot" % username, "http://twitcasting.tv/%s/thumbstream/liveshot-1" % username]
-		
-		if self.last is not None and str(self.last[0]) == id:
-			return self.last
-		
-		db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")
-		c = db.cursor()
-		
-		c.execute("SELECT * FROM twitcasting WHERE id = " + db.literal(id))
-		sqlResult = c.fetchone()
-		
-		if sqlResult is None:
-			httpRes = urllib2.urlopen("http://api.twitcasting.tv/api/moviestatus?type=json&movieid=" + id)
-			content = httpRes.read()
-			
-			if content == "[]":
-				return None
-			
-			j = json.loads(content)
-			
-			thumbnail = j["thumbnail"]
-			thumbnailsmall = j["thumbnailsmall"]
-			
-			c.execute("INSERT INTO twitcasting VALUES (%s, %s, %s)"
-				% (db.literal(id), db.literal(thumbnail), db.literal(thumbnailsmall))
-			)
-			
-			db.commit()
-			
-			self.last = [id, thumbnail, thumbnailsmall]
-		else:
-			self.last = sqlResult
-		
-		return self.last
-	
-	def getFullSize(self, match):
-		data = self.getUriData(match)
-		return data[1] if data is not None else None
-	
-	def getLargeSize(self, match):
-		data = self.getUriData(match)
-		return data[1] if data is not None else None
-	
-	def getThumbnail(self, match):
-		data = self.getUriData(match)
-		return data[2] if data is not None else None
+from resolvers import *
+
+class TwitCasting(StoringResolver):
+    @property
+    def service_name(self):
+        return "TwitCasting"
+    
+    @property
+    def regex_str(self):
+       return r"^https?://(?:www\.)?twitcasting\.tv/(?:(\w+)/?|\w+/movie/(\d+))(?:\?.*)?$"
+    
+    def get_parameters(self, match):
+        return match.group(2)
+
+    def get_thumbnail(self, match):
+        username = match.group(1)
+        return "http://twitcasting.tv/%s/thumbstream/liveshot" % username if username else self.work(match)["thumbnail"]
+
+    def get_thumbnailsmall(self, match):
+        username = match.group(1)
+        return "http://twitcasting.tv/%s/thumbstream/liveshot-1" % username if username else self.work(match)["thumbnailsmall"]
+    
+    def _work(self, param, cursor):
+        table = "twitcasting"
+        columns = ["id", "thumbnail", "thumbnailsmall"]
+        result = self.select_one(cursor, table, columns[1:], {columns[0]: param})
+        if result:
+            return result[0]
+        
+        response = urllib2.urlopen("http://api.twitcasting.tv/api/moviestatus?type=json&movieid=" + param)
+        content = response.read()
+            
+        if content == "[]":
+            raise PictureNotFoundError()
+            
+        j = json.loads(content)
+            
+        thumbnail = j["thumbnail"]
+        thumbnailsmall = j["thumbnailsmall"]
+            
+        self.insert_all(cursor, table, (param, thumbnail, thumbnailsmall))
+        return dict(zip(columns[1:], (thumbnail, thumbnailsmall)))
+    
+    def get_full(self, match):
+        return self.get_thumbnail(match)
+
+    def get_full_https(self, match):
+        return self.get_full(match) \
+            .replace("http://movie.", "https://ssl.", 1) \
+            .replace("http://", "https://ssl.", 1)
+    
+    def get_large(self, match):
+        return self.get_full(match)
+
+    def get_large_https(self, match):
+        return self.get_full_https(match)
+    
+    def get_thumb(self, match):
+        return self.get_thumbnailsmall(match)
+
+    def get_thumb_https(self, match):
+        return self.get_thumb(match) \
+            .replace("http://movie.", "https://ssl.", 1) \
+            .replace("http://", "https://ssl.", 1)
+
+    def get_video(self, match):
+        return None
+
+    def get_video_https(self, match):
+        return None
