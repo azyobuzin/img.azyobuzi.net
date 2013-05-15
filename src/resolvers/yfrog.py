@@ -1,61 +1,66 @@
 # -*- coding: utf-8 -*-
 
-import re
-import MySQLdb
 import urllib2
-import xml.etree.ElementTree as ET
-from private_constant import *
+from xml.etree import ElementTree
 
-class yfrog:
-    def __str__(self):
+from resolvers import *
+
+class Yfrog(StoringResolver):
+    @property
+    def service_name(self):
         return "yfrog"
 
-    regexStr = "^https?://(?:www\\.|twitter\\.)?yfrog\\.com/(\\w+)(?::\\w+)?(?:\\?.*)?$"
-    regex = re.compile(regexStr, re.IGNORECASE)
+    @property
+    def regex_str(self):
+       return r"^https?://(?:www\.|twitter\.)?yfrog\.com/(\w+)(?::\w+)?(?:\?.*)?$"
 
-    last = None
+    def get_parameters(self, match):
+        return match.group(1)
 
-    def getUriData(self, match):
-        hash = match.group(1)
+    def _work(self, param, cursor):
+        table = "yfrog"
+        columns = ["hash", "image"]
+        result = self.select_one(cursor, table, columns[1:], {columns[0]: param})
+        if result:
+            return result[0]
 
-        if self.last is not None and self.last[0] == hash:
-            return self.last
+        try:
+            response = urllib2.urlopen("http://yfrog.com/api/xmlInfo?path=" + param)
+        except urllib2.HTTPError as e:
+            if e.code == 404:
+                raise PictureNotFoundError()
+            else:
+                raise e
 
-        db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")
-        c = db.cursor()
+        root = ElementTree.fromstring(response.read())
+        tag = root.tag
+        ns = tag[: tag.index("}") + 1]
 
-        c.execute("SELECT * FROM yfrog WHERE hash = %s", hash)
-        sqlResult = c.fetchone()
+        image = root.find(ns + "links").find(ns + "image_link").text
 
-        if sqlResult is None:
-            httpRes = None
+        self.insert_all(cursor, table, (param, image))
+        return image
 
-            try:
-                httpRes = urllib2.urlopen("http://yfrog.com/api/xmlInfo?path=" + hash)
-            except:
-                return None
+    def get_full(self, match):
+        return self.work(match)
 
-            root = ET.fromstring(httpRes.read())
-            tag = root.tag
-            ns = tag[: tag.index("}") + 1]
+    def get_full_https(self, match):
+        return None
 
-            image = root.find(ns + "links").find(ns + "image_link").text
-
-            c.execute("INSERT INTO yfrog VALUES (%s, %s)", (hash, image))
-            db.commit()
-
-            self.last = (hash, image)
-        else:
-            self.last = sqlResult
-
-        return self.last
-
-    def getFullSize(self, match):
-        data = self.getUriData(match)
-        return data[1] if data is not None else None
-
-    def getLargeSize(self, match):
+    def get_large(self, match):
         return "http://yfrog.com/%s:iphone" % match.group(1)
 
-    def getThumbnail(self, match):
+    def get_large_https(self, match):
+        return "https://yfrog.com/%s:iphone" % match.group(1)
+
+    def get_thumb(self, match):
         return "http://yfrog.com/%s:small" % match.group(1)
+
+    def get_thumb_https(self, match):
+        return "https://yfrog.com/%s:small" % match.group(1)
+
+    def get_video(self, match):
+        return None
+
+    def get_video_https(self, match):
+        return None

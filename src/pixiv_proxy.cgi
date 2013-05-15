@@ -1,11 +1,8 @@
-#!/virtual/azyobuzin/local/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 import cgitb
 cgitb.enable()
-
-import sys
-sys.path.append("resolvers")
 
 import os
 import re
@@ -15,7 +12,7 @@ import urlparse
 
 import MySQLdb
 
-from private_constant import *
+from resolvers.private_constant import *
 
 class PixivParser(SGMLParser):
     src_regex = re.compile("^(.+)_m(\\.\\w+)$")
@@ -28,7 +25,7 @@ class PixivParser(SGMLParser):
 
     def start_div(self, attributes):
         dic = dict(attributes)
-        if "class" in dic and dic["class"] == "front-centered":
+        if "class" in dic and dic["class"] == "img-container":
             self.flag = True
 
     def do_img(self, attributes):
@@ -58,7 +55,7 @@ if size not in ("full", "large", "thumb"):
     print "\"size\" parameter is invalid."
     exit()
 
-db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")
+db = MySQLdb.connect(user=db_user, passwd=db_password, db=db_name, charset="utf8")
 c = db.cursor()
 c.execute("SELECT prefix, extension FROM pixiv WHERE id = %s", id)
 sqlResult = c.fetchone()
