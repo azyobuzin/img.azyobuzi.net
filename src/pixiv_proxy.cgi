@@ -1,4 +1,4 @@
-#!/virtual/azyobuzin/local/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 import cgitb
@@ -28,7 +28,7 @@ class PixivParser(SGMLParser):
 
     def start_div(self, attributes):
         dic = dict(attributes)
-        if "class" in dic and dic["class"] == "front-centered":
+        if "class" in dic and dic["class"] == "img-container":
             self.flag = True
 
     def do_img(self, attributes):
