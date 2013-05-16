@@ -103,4 +103,4 @@ print "Status: " + str(res.code)
 print "Content-Type: " + res.headers["content-type"]
 print
 
-sys.stdout.write(res.read())
+print res.read(),
