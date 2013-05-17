@@ -7,7 +7,7 @@ import urllib2
 
 import MySQLdb
 
-from private_constant import *
+from resolvers.private_constant import *
 
 class Resolver(object):
     __metaclass__ = abc.ABCMeta
