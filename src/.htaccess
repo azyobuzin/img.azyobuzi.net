@@ -2,4 +2,7 @@
 RewriteEngine On
 RewriteRule ^(.*regex|.*all_sizes)\.json$ $1.cgi
 RewriteRule ^.*redirect$ $0.cgi
+RewriteCond %{ENV:SuspectHardDoS} =1
+RewriteRule .* - [R=503,L]
 </IfModule>
+
