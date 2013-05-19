@@ -1,4 +1,4 @@
-#!/virtual/azyobuzin/local/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from error import handleError
