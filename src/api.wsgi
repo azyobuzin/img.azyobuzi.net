@@ -5,6 +5,7 @@ appdir = "/var/www/test/img3"
 import sys
 sys.path.append(appdir)
 
+import cgi
 import datetime
 import json
 import os
@@ -64,6 +65,10 @@ def get_imageuri(resolver, match, size, use_https):
         return resolver.get_video_https(match) if use_https else resolver.get_video(match)
     raise ValueError()
 
+def create_expires(days):
+    expires = datetime.datetime.utcnow() + datetime.timedelta(days=days)
+    return expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
+
 def error_response(error_code, e):
     error_tuple = errors[error_code]
     return Response(
@@ -86,15 +91,70 @@ def regex(request):
         status=200,
         mimetype=mime_json)
 
+def redirect(request):
+    uri = request.fs.getfirst("uri")
+    size = request.fs.getfirst("size", "full")
+    use_https = request.fs.getfirst("use_https", "false").lower() == "true"
+    if not uri:
+        return error_response(4001, None)
+    if size not in ("full", "large", "thumb", "video"):
+        return error_response(4003, None)
+    
+    resolver, match = search_resolver(uri)
+    if not resolver:
+        return error_response(4002, None)
+
+    result = get_imageuri(resolver, match, size, use_https)
+    if not result and use_https:
+        result = get_imageuri(resolver, match, size, False)
+
+    if not result:
+        if size == "video":
+            return error_response(4045, None)
+        else:
+            return error_response(4043, None)
+
+    return Response("", status=302,
+        headers={"Expires": create_expires(10), "Location": result})
+
+def all_sizes(request):
+    uri = request.fs.getfirst("uri")
+    if not uri:
+        return error_response(4001, None)
+
+    resolver, match = search_resolver(uri)
+    if not resolver:
+        return error_response(4002, None)
+
+    return Response(
+        json.dumps({
+            "service": resolver.service_name,
+            "full": resolver.get_full(match),
+            "full_https": resolver.get_full_https(match),
+            "large": resolver.get_large(match),
+            "large_https": resolver.get_large_https(match),
+            "thumb": resolver.get_thumb(match),
+            "thumb_https": resolver.get_thumb_https(match),
+            "video": resolver.get_video(match),
+            "video_https": resolver.get_video_https(match)
+        }),
+        status=200,
+        headers={"Expires": create_expires(10)},
+        mimetype=mime_json)
+
 url_map = Map([
     Rule("/", endpoint=index),
-    Rule("/regex.json", endpoint=regex, methods=["GET"])
+    Rule("/regex.json", endpoint=regex, methods=["GET"]),
+    Rule("/redirect", endpoint=redirect, methods=["GET"]),
+    Rule("/redirect.json", endpoint=redirect, methods=["GET"]),
+    Rule("/all_sizes.json", endpoint=all_sizes, methods=["GET"])
 ])
 
 @Request.application
 def application(request):
     try:
        endpoint, values = url_map.bind_to_environ(request.environ).match()
+       request.fs = cgi.FieldStorage(fp=request.environ['wsgi.input'], environ=request.environ)
        return endpoint(request)
     except NotFound as e:
         return error_response(4042, e)
