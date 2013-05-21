@@ -16,6 +16,7 @@ from werkzeug.routing import Map, Rule
 from werkzeug.wrappers import Request, Response
 
 import resolvers
+import resolvers.pixiv
 
 errors = {
     4000: (400, "Bad request."),
@@ -147,7 +148,8 @@ url_map = Map([
     Rule("/regex.json", endpoint=regex, methods=["GET"]),
     Rule("/redirect", endpoint=redirect, methods=["GET"]),
     Rule("/redirect.json", endpoint=redirect, methods=["GET"]),
-    Rule("/all_sizes.json", endpoint=all_sizes, methods=["GET"])
+    Rule("/all_sizes.json", endpoint=all_sizes, methods=["GET"]),
+    Rule("/pixiv_proxy.cgi", endpoint=resolvers.pixiv.pixiv_proxy, methods=["GET"])
 ])
 
 @Request.application
