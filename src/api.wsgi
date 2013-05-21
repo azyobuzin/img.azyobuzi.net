@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-appdir = "/var/www/test/img3"
+appdir = "/var/www/test/img3" #環境にあわせて変更
 
 import sys
 sys.path.append(appdir)
