@@ -11,7 +11,7 @@ import json
 import os
 import traceback
 
-from werkzeug.exceptions import HTTPException, NotFound
+from werkzeug.exceptions import MethodNotAllowed, NotFound
 from werkzeug.routing import Map, Rule
 from werkzeug.wrappers import Request, Response
 
@@ -160,5 +160,7 @@ def application(request):
        return endpoint(request)
     except NotFound as e:
         return error_response(4042, e)
-    except HTTPException as e:
-        return e
+    except MethodNotAllowed as e:
+        return error_response(4051, e)
+    except Exception as e:
+        return error_response(5000, e)
