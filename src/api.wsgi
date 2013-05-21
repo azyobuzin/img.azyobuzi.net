@@ -5,7 +5,6 @@ appdir = "/var/www/test/img3" #環境にあわせて変更
 import sys
 sys.path.append(appdir)
 
-import cgi
 import datetime
 import json
 import os
@@ -93,9 +92,9 @@ def regex(request):
         mimetype=mime_json)
 
 def redirect(request):
-    uri = request.fs.getfirst("uri")
-    size = request.fs.getfirst("size", "full")
-    use_https = request.fs.getfirst("use_https", "false").lower() == "true"
+    uri = request.args.get("uri")
+    size = request.args.get("size", "full")
+    use_https = request.args.get("use_https", "false").lower() == "true"
     if not uri:
         return error_response(4001, None)
     if size not in ("full", "large", "thumb", "video"):
@@ -119,7 +118,7 @@ def redirect(request):
         headers={"Expires": create_expires(10), "Location": result})
 
 def all_sizes(request):
-    uri = request.fs.getfirst("uri")
+    uri = request.args.get("uri")
     if not uri:
         return error_response(4001, None)
 
@@ -155,9 +154,8 @@ url_map = Map([
 @Request.application
 def application(request):
     try:
-       endpoint, values = url_map.bind_to_environ(request.environ).match()
-       request.fs = cgi.FieldStorage(fp=request.environ['wsgi.input'], environ=request.environ)
-       return endpoint(request)
+        endpoint, values = url_map.bind_to_environ(request.environ).match()
+        return endpoint(request)
     except NotFound as e:
         return error_response(4042, e)
     except MethodNotAllowed as e:
