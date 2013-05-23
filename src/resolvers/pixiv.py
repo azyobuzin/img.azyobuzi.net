@@ -70,8 +70,8 @@ def pixiv_proxy(request):
     def error_response(status, message):
         return Response(message, status=status, mimetype="text/plain")
 
-    id = request.fs.getfirst("id")
-    size = request.fs.getfirst("size", "full")
+    id = request.args.get("id")
+    size = request.args.get("size", "full")
     if not id:
         return error_response(400, "\"id\" parameter is required.")
     if size not in ("full", "large", "thumb"):
@@ -114,4 +114,4 @@ def pixiv_proxy(request):
     except urllib2.HTTPError as e:
         res = e
 
-    return Response(res.read(), status=res.code, content_type=res.headers["content-type"])
+    return Response(res, status=res.code, content_type=res.headers["content-type"])
