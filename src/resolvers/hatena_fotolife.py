@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from sgmllib import SGMLParser
+import urllib2
 
 from resolvers import *
 

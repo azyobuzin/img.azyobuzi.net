@@ -4,7 +4,7 @@ import urllib2
 from xml.etree import ElementTree
 
 from resolvers import *
-from private_constant import *
+from resolvers.private_constant import *
 
 class Flickr(StoringResolver):
     @property
