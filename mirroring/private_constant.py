@@ -2,6 +2,8 @@
 
 import oauth2
 
+db_host = "<Your Database Host>"
+db_port = <Your Database Port>
 db_name = "<Your Database Name>"
 db_user = "<Your Database User Name>"
 db_password = "<Your Database Password>"

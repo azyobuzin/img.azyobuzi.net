@@ -77,7 +77,7 @@ def pixiv_proxy(request):
     if size not in ("full", "large", "thumb"):
         return error_response(400, "\"size\" parameter is invalid.")
 
-    with MySQLdb.connect(user=db_user, passwd=db_password, db=db_name, charset="utf8") as c:
+    with MySQLdb.connect(host=db_host, port=db_port, user=db_user, passwd=db_password, db=db_name, charset="utf8") as c:
         c.execute("SELECT prefix, extension FROM pixiv WHERE id = %s", id)
         result = c.fetchone()
 

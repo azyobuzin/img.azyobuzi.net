@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 
-appdir = "/var/www/test/img3" #環境にあわせて変更
-
+import os
 import sys
+appdir = os.path.dirname(__file__)
 sys.path.append(appdir)
 
 import datetime
 import json
-import os
 import traceback
 
 from werkzeug.exceptions import MethodNotAllowed, NotFound
