@@ -9,7 +9,7 @@ class Cameran(OpenGraphResolver):
 
     @property
     def regex_str(self):
-        return r"^http://cameran.in/posts/get/v1/(\w+)(?:\?.*)?$"
+        return r"^http://cameran\.in/posts/get/v1/(\w+)(?:\?.*)?$"
 
     def get_parameters(self, match):
         return match.group(1)
