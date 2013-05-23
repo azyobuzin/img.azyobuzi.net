@@ -70,7 +70,7 @@ class StoringResolver(Resolver):
         self._cached_result = None
 
     def _connect_db(self):
-        return MySQLdb.connect(user=db_user, passwd=db_password, db=db_name, charset="utf8")
+        return MySQLdb.connect(host=db_host, port=db_port, user=db_user, passwd=db_password, db=db_name, charset="utf8")
 
     @abc.abstractmethod
     def get_parameters(self, match):
