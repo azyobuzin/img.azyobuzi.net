@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- ホスト: localhost
--- 生成時間: 2013 年 5 月 23 日 19:05
+-- 生成時間: 2013 年 5 月 24 日 20:52
 -- サーバのバージョン: 5.5.31
 -- PHP のバージョン: 5.3.10-1ubuntu3.6
 
@@ -262,7 +262,7 @@ CREATE TABLE IF NOT EXISTS `pick` (
   `id` bigint(20) unsigned NOT NULL,
   `large_size` tinytext NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -275,7 +275,7 @@ CREATE TABLE IF NOT EXISTS `pick_shorten` (
   `username` tinytext NOT NULL,
   `id` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`shorten`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -287,6 +287,19 @@ CREATE TABLE IF NOT EXISTS `pixiv` (
   `id` int(11) NOT NULL,
   `prefix` tinytext NOT NULL,
   `extension` varchar(5) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `streamzoo`
+--
+
+CREATE TABLE IF NOT EXISTS `streamzoo` (
+  `id` int(11) NOT NULL,
+  `thumb` tinytext NOT NULL,
+  `content` tinytext NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -375,13 +388,13 @@ CREATE TABLE IF NOT EXISTS `twitter` (
 --
 
 CREATE TABLE IF NOT EXISTS `ustream` (
-  `channel` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `channel` varchar(255) NOT NULL,
   `id` bigint(20) NOT NULL,
-  `small` tinytext CHARACTER SET utf8 NOT NULL,
-  `medium` tinytext CHARACTER SET utf8 NOT NULL,
+  `small` tinytext NOT NULL,
+  `medium` tinytext NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `channel` (`channel`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -406,7 +419,7 @@ CREATE TABLE IF NOT EXISTS `vine` (
   `id` varchar(15) NOT NULL,
   `image` tinytext NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
