@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import os
-import re
-import MySQLdb
-import urllib2
-import urlparse
 from sgmllib import SGMLParser
-from private_constant import *
+import urllib2
+
+from resolvers import *
 
 class HatenaFotolifeParser(SGMLParser):
     def __init__(self):
@@ -24,100 +21,87 @@ class HatenaFotolifeParser(SGMLParser):
         if "href" in dic and dic["href"].find("_original.") != -1:
             self.original_link = dic["href"]
 
-class hatenaFotolife:
-    def __str__(self):
+class HatenaFotolife(StoringResolver):
+    @property
+    def service_name(self):
         return u"はてなフォトライフ"
 
-    regexStr = "^http://f\\.hatena\\.ne\\.jp/(\\w+)/(\\d+)(?:\\?.*)?$"
-    regex = re.compile(regexStr, re.IGNORECASE)
+    @property
+    def regex_str(self):
+        return r"^http://f\.hatena\.ne\.jp/(\w+)/(\d+)(?:\?.*)?$"
 
-    last = None
+    def get_parameters(self, match):
+        return {"username": match.group(1), "id": match.group(2)}
 
-    def getUriData(self, match):
-        username = match.group(1)
-        id = match.group(2)
+    def _work(self, param, cursor):
+        table = "hatena_fotolife"
+        columns = ["username", "id", "full", "large", "thumb"]
+        result = self.select_one(cursor, table, columns[2:], {columns[0]: param["username"], columns[1]: param["id"]})
+        if result:
+            return dict(zip(columns[2:], result))
 
-        if self.last is not None and self.last[0] == username and str(self.last[1]) == id:
-            return self.last
+        req_uri = "http://f.hatena.ne.jp/%(username)s/%(id)s" % param
 
-        db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")
-        c = db.cursor()
-
-        c.execute("SELECT * FROM hatena_fotolife WHERE username = %s AND id = %s"
-            % (db.literal(username), db.literal(id))
-        )
-
-        sqlResult = c.fetchone()
-
-        if sqlResult is None:
-            reqUri = "http://f.hatena.ne.jp/%s/%s" % (username, id)
-            httpRes = None
-
-            try:
-                httpRes = urllib2.urlopen(reqUri)
-            except:
-                return None
-
-            if httpRes.geturl() != reqUri: #リダイレクトされたと判断
-                return None
-
-            html = httpRes.read().decode("utf-8")
-
-            if html.find("<img src=\"\" alt=\"\" title=\"\" width=\"\" height=\"\" class=\"foto\" style=\"\" />") != -1:
-                return None
-
-            originalSize = None
-            largeSize = None
-            thumbnail = None
-
-            parser = HatenaFotolifeParser()
-            parser.feed(html)
-            parser.close()
-
-            largeSize = parser.foto_src
-
-            if html.find("<object data=\"/tools/flvplayer.swf\" type=\"application/x-shockwave-flash\"") == -1:
-                #画像
-                if parser.original_link is not None:
-                    originalSize = parser.original_link
-                else:
-                    originalSize = largeSize
+        try:
+            response = urllib2.urlopen(req_uri)
+        except urllib2.HTTPError as e:
+            if e.code == 404:
+                raise PictureNotFoundError()
             else:
-                #動画
-                originalSize = "http://cdn-ak.f.st-hatena.com/images/fotolife/%s/%s/%s/%s.flv" % (username[0], username, id[0:8], id)
+                raise e
 
-            thumbnail = "http://cdn-ak.f.st-hatena.com/images/fotolife/%s/%s/%s/%s_120.jpg" % (username[0], username, id[0:8], id)
+        if response.geturl() != req_uri: #リダイレクトされたと判断
+            raise PictureNotFoundError()
 
-            c.execute("INSERT INTO hatena_fotolife VALUES (%s, %s, %s, %s, %s)"
-                % (db.literal(username), db.literal(id), db.literal(originalSize), db.literal(largeSize), db.literal(thumbnail))
-            )
+        html = response.read().decode("utf-8")
 
-            db.commit()
+        if """<img src="" alt="" title="" width="" height="" class="foto" style="" />""" in html:
+            raise PictureNotFoundError()
 
-            self.last = [username, id, originalSize, largeSize, thumbnail]
+        parser = HatenaFotolifeParser()
+        parser.feed(html)
+        parser.close()
+
+        large_size = parser.foto_src
+
+        if """<object data="/tools/flvplayer.swf" type="application/x-shockwave-flash\"""" not in html:
+            #画像
+            if parser.original_link:
+                original_size = parser.original_link
+            else:
+                original_size = large_size
         else:
-            self.last = sqlResult
+            #動画
+            original_size = "http://cdn-ak.f.st-hatena.com/images/fotolife/%s/%s/%s/%s.flv" \
+                % (param["username"][0], param["username"], param["id"][0:8], param["id"])
 
-        return self.last
+        thumbnail = "http://cdn-ak.f.st-hatena.com/images/fotolife/%s/%s/%s/%s_120.jpg" \
+            % (param["username"][0], param["username"], param["id"][0:8], param["id"])
 
-    def getFullSize(self, match):
-        data = self.getUriData(match)
+        self.insert_all(cursor, table, (param["username"], param["id"], original_size, large_size, thumbnail))
+        return dict(zip(columns[2:], (original_size, large_size, thumbnail)))
 
-        if data is None:
-            return None
+    def get_full(self, match):
+        return self.work(match)["full"].replace(".flv", ".jpg")
 
-        ret = data[2]
+    def get_full_https(self, match):
+        return None
 
-        query = dict(urlparse.parse_qsl(os.environ.get("QUERY_STRING", "")))
-        if "movie" in query and query["movie"] == "true":
-            return ret
-        else:
-            return ret.replace(".flv", ".jpg")
+    def get_large(self, match):
+        return self.work(match)["large"]
 
-    def getLargeSize(self, match):
-        data = self.getUriData(match)
-        return data[3] if data is not None else None
+    def get_large_https(self, match):
+        return None
 
-    def getThumbnail(self, match):
-        data = self.getUriData(match)
-        return data[4] if data is not None else None
+    def get_thumb(self, match):
+        return self.work(match)["thumb"]
+
+    def get_thumb_https(self, match):
+        return None
+
+    def get_video(self, match):
+        result = self.work(match)["full"]
+        return result if ".flv" in result else None
+
+    def get_video_https(self, match):
+        return None

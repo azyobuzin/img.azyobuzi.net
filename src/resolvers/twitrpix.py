@@ -1,19 +1,36 @@
 # -*- coding: utf-8 -*-
 
-import re
+from resolvers import *
 
-class twitrpix:
-	def __str__(self):
-		return "TwitrPix"
-	
-	regexStr = "^http://(?:www\\.)?twitrpix\\.com/(\\w+)(?:\\?.*)?$"
-	regex = re.compile(regexStr, re.IGNORECASE)
-	
-	def getFullSize(self, match):
-		return "http://img.twitrpix.com/" + match.group(1)
-	
-	def getLargeSize(self, match):
-		return "http://img.twitrpix.com/" + match.group(1)
-	
-	def getThumbnail(self, match):
-		return "http://img.twitrpix.com/thumb/" + match.group(1)
+class TwitrPix(Resolver):
+    @property
+    def service_name(self):
+        return "TwitrPix"
+
+    @property
+    def regex_str(self):
+        return r"^http://(?:www\.)?twitrpix\.com/(\w+)(?:\?.*)?$"
+
+    def get_full(self, match):
+        return "http://img.twitrpix.com/" + match.group(1)
+
+    def get_full_https(self, match):
+        return None
+
+    def get_large(self, match):
+        return self.get_full(match)
+
+    def get_large_https(self, match):
+        return None
+
+    def get_thumb(self, match):
+        return "http://img.twitrpix.com/thumb/" + match.group(1)
+
+    def get_thumb_https(self, match):
+        return None
+
+    def get_video(self, match):
+        return None
+
+    def get_video_https(self, match):
+        return None

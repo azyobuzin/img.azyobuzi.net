@@ -1,70 +1,69 @@
 # -*- coding: utf-8 -*-
 
-import re
 import json
 import urllib2
-import MySQLdb
-from private_constant import *
 
-class deviantart:
-	def __str__(self):
-		return "deviantART"
-	
-	regexStr = "^https?://([\\w\\-]+)\\.deviantart\\.com/art/([\\w\\-]+)/?(?:\\?.*)?$"
-	regex = re.compile(regexStr, re.IGNORECASE)
-	
-	last = None
-	
-	def getUriData(self, match):
-		username = match.group(1)
-		id = match.group(2)
-		
-		if self.last is not None and self.last[0] == username and self.last[1] == id:
-			return self.last
-		
-		db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")
-		c = db.cursor()
-		
-		c.execute("SELECT * FROM deviantart WHERE username = %s AND id = %s" % (db.literal(username), db.literal(id)))
-		sqlResult = c.fetchone()
-		
-		if sqlResult is None:
-			httpRes = None
-			
-			try:
-				httpRes = urllib2.urlopen(
-					"http://backend.deviantart.com/oembed?url="
-					+ urllib2.quote("http://%s.deviantart.com/art/%s" % (username, id))
-				)
-			except:
-				return None
-			
-			j = json.loads(httpRes.read())
-			
-			full = j["url"]
-			thumbnail = j["thumbnail_url"]
-			thumbnail150 = j["thumbnail_url_150"]
-			
-			c.execute("INSERT INTO deviantart VALUES (%s, %s, %s, %s, %s)"
-				% (db.literal(username), db.literal(id), db.literal(full), db.literal(thumbnail), db.literal(thumbnail150))
-			)
-			
-			db.commit()
-			
-			self.last = [username, id, full, thumbnail, thumbnail150]
-		else:
-			self.last = sqlResult
-		
-		return self.last
-	
-	def getFullSize(self, match):
-		data = self.getUriData(match)
-		return data[2] if data is not None else None
-	
-	def getLargeSize(self, match):
-		data = self.getUriData(match)
-		return data[3] if data is not None else None
-	
-	def getThumbnail(self, match):
-		data = self.getUriData(match)
-		return data[4] if data is not None else None
+from resolvers import *
+
+class DeviantArt(StoringResolver):
+    @property
+    def service_name(self):
+        return "deviantART"
+
+    @property
+    def regex_str(self):
+        return r"^https?://([\w\-]+)\.deviantart\.com/art/([\w\-]+)/?(?:\?.*)?$"
+
+    def get_parameters(self, match):
+        return {"username": match.group(1), "id": match.group(2)}
+
+    def _work(self, param, cursor):
+        table = "deviantart"
+        columns = ["username", "id", "full", "thumbnail", "thumbnail150"]
+        result = self.select_one(cursor, table, columns[2:], {columns[0]: param["username"], columns[1]: param["id"]})
+        if result:
+            return dict(zip(columns[2:], result))
+
+        try:
+            response = urllib2.urlopen(
+                "http://backend.deviantart.com/oembed?url="
+                + urllib2.quote("http://%s.deviantart.com/art/%s" % (param["username"], param["id"]))
+            )
+        except urllib2.HTTPError as e:
+            if e.code == 404:
+                raise PictureNotFoundError()
+            else:
+                raise e
+
+        j = json.load(response)
+
+        full = j["url"]
+        thumbnail = j["thumbnail_url"]
+        thumbnail150 = j["thumbnail_url_150"]
+
+        self.insert_all(cursor, table, (param["username"], param["id"], full, thumbnail, thumbnail150))
+        return dict(zip(columns[2:], (full, thumbnail, thumbnail150)))
+
+    def get_full(self, match):
+        return self.work(match)["full"]
+
+    def get_full_https(self, match):
+        return self.get_full(match).replace("http://", "https://", 1)
+
+    def get_large(self, match):
+        return self.work(match)["thumbnail"]
+
+    def get_large_https(self, match):
+        return self.get_large(match).replace("http://", "https://", 1)
+
+    def get_thumb(self, match):
+        return self.work(match)["thumbnail150"]
+
+    def get_thumb_https(self, match):
+        return self.get_thumb(match).replace("http://", "https://", 1)
+
+    def get_video(self, match):
+        return None
+
+    def get_video_https(self, match):
+        return None

@@ -1,72 +1,70 @@
 # -*- coding: utf-8 -*-
 
-import oauth2
-import re
-import MySQLdb
 import json
-from private_constant import *
 
-class twitter:
-    def __str__(self):
+from resolvers import *
+from resolvers.private_constant import *
+
+class Twitter(StoringResolver):
+    @property
+    def service_name(self):
         return "Twitter"
 
-    regexStr = "^(?:(https?://(?:\\w+\\.twimg\\.com/media|p\\.twimg\\.com)/[\\w\\-]+\\.\\w+)(?::\\w+)?|https?://(?:www\\.)?twitter\\.com/(?:#!/)?\\w+/status(?:es)?/(\\d+)/photo/1(?:/(?:\\w+/?)?)?)(?:\\?.*)?$"
-    regex = re.compile(regexStr, re.IGNORECASE)
+    @property
+    def regex_str(self):
+        return r"^(?:(https?://(?:\w+\.twimg\.com/media|p\.twimg\.com)/[\w\-]+\.\w+)(?::\w+)?|https?://(?:www\.)?twitter\.com/(?:#!/)?\w+/status(?:es)?/(\d+)/photo/1(?:/(?:\w+/?)?)?)(?:\?.*)?$"
+    
+    def get_parameters(self, match):
+        return match.group(2)
 
-    last = None
-
-    def getUriData(self, match):
+    def get_media(self, match):
         media = match.group(1)
+        return media if media else self.work(match)
 
-        if media is not None:
-            return [None, media]
+    def _work(self, param, cursor):
+        table = "twitter"
+        columns = ["id", "media"]
+        result = self.select_one(cursor, table, columns[1:], {columns[0]: param})
+        if result:
+            return result[0]
 
-        id = match.group(2)
+        resp, content = twitter_client.request("https://api.twitter.com/1.1/statuses/show.json?include_entities=true&id=" + param, "GET")
 
-        if self.last is not None and str(self.last[0]) == id:
-            return self.last
+        if resp["status"] == "404":
+            raise PictureNotFoundError()
+        elif resp["status"] != "200":
+            raise Exception("Twitter returned " + resp["status"])
 
-        db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")
-        c = db.cursor()
+        entities = json.loads(content)["entities"]
 
-        c.execute("SELECT * FROM twitter WHERE id = " + db.literal(id))
-        sqlResult = c.fetchone()
+        if "media" not in entities:
+            raise IsNotPictureError()
 
-        if sqlResult is None:
-            resp, content = twitterOAuthClient.request("https://api.twitter.com/1.1/statuses/show.json?include_entities=true&id=" + id, "GET")
+        media = entities["media"][0]["media_url"]
 
-            if resp["status"] == "404":
-                return None
-            elif resp["status"] != "200":
-                raise Exception("Twitter returned " + resp["status"])
+        self.insert_all(cursor, table, (param, media))
+        return media
 
-            entities = json.loads(content)["entities"]
+    def get_full(self, match):
+        return self.get_media(match) + ":orig"
 
-            if "media" not in entities:
-                return None
+    def get_full_https(self, match):
+        return self.get_full(match).replace("http://", "https://")
 
-            media = entities["media"][0]["media_url"]
+    def get_large(self, match):
+        return self.get_media(match)
 
-            c.execute("INSERT INTO twitter VALUES (%s, %s)"
-                % (db.literal(id), db.literal(media))
-            )
+    def get_large_https(self, match):
+        return self.get_large(match).replace("http://", "https://")
 
-            db.commit()
+    def get_thumb(self, match):
+        return self.get_media(match) + ":thumb"
 
-            self.last = [id, media]
-        else:
-            self.last = sqlResult
+    def get_thumb_https(self, match):
+        return self.get_thumb(match).replace("http://", "https://")
 
-        return self.last
+    def get_video(self, match):
+        return None
 
-    def getFullSize(self, match):
-        data = self.getUriData(match)
-        return (data[1] + ":orig") if data is not None else None
-
-    def getLargeSize(self, match):
-        data = self.getUriData(match)
-        return data[1] if data is not None else None
-
-    def getThumbnail(self, match):
-        data = self.getUriData(match)
-        return (data[1] + ":thumb") if data is not None else None
+    def get_video_https(self, match):
+        return None

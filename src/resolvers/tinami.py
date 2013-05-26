@@ -1,67 +1,68 @@
 # -*- coding: utf-8 -*-
 
-import re
-import MySQLdb
 import urllib2
-import xml.etree.ElementTree as ET
-from private_constant import *
+from xml.etree import ElementTree
 
-class tinami:
-	def __str__(self):
-		return "TINAMI"
+from resolvers import *
+from resolvers.private_constant import *
 
-	regexStr = "^https?://(?:www\\.)?tinami\\.(?:com|jp)/(?:view/(\\d+)/?|([a-z0-9]+))(?:\\?.*)?$"
-	regex = re.compile(regexStr, re.IGNORECASE)
+class Tinami(StoringResolver):
+    @property
+    def service_name(self):
+        return "TINAMI"
 
-	last = None
+    @property
+    def regex_str(self):
+        return r"^https?://(?:www\.)?tinami\.(?:com|jp)/(?:view/(\d+)/?|([a-z0-9]+))(?:\?.*)?$"
+    
+    def get_parameters(self, match):
+        param = match.group(1)
+        return param if param else str(int(match.group(2), base=36))
 
-	def getUriData(self, match):
-		id = match.group(1) if match.group(1) is not None else str(int(match.group(2), base = 36))
+    def _work(self, param, cursor):
+        table = "tinami"
+        columns = ["cont_id", "thumbnail", "image"]
+        result = self.select_one(cursor, table, columns[1:], {columns[0]: param})
+        if result:
+            return dict(zip(columns[1:], result))
 
-		if self.last is not None and str(self.last[0]) == id:
-			return self.last
+        response = urllib2.urlopen("http://api.tinami.com/content/info?api_key=%s&cont_id=%s"
+            % (tinami_api_key, param))
 
-		db = MySQLdb.connect(user=dbName, passwd=dbPassword, db=dbName, charset="utf8")
-		c = db.cursor()
+        root = ElementTree.fromstring(response.read())
+        content = root.find("content")
 
-		c.execute("SELECT * FROM tinami WHERE cont_id = " + db.literal(id))
-		sqlResult = c.fetchone()
+        if not content:
+            raise PictureNotFoundError()
 
-		if sqlResult is None:
-			httpRes = urllib2.urlopen("http://api.tinami.com/content/info?api_key=%s&cont_id=%s"
-				% (tinamiApiKey, id))
+        thumbnail = list(content.find("thumbnails"))[0].get("url")
 
-			root = ET.fromstring(httpRes.read())
-			content = root.find("content")
+        images = content.find("images")
+        image = (images if images else content).find("image").find("url").text
 
-			if content is None:
-				return None
+        self.insert_all(cursor, table, (param, thumbnail, image))
+        return dict(zip(columns[1:], (thumbnail, image)))
 
-			thumbnail = list(content.find("thumbnails"))[0].get("url")
+    def get_full(self, match):
+        return self.work(match)["image"]
 
-			images = content.find("images")
-			image = (images if images != None else content).find("image").find("url").text
+    def get_full_https(self, match):
+        return self.get_full(match).replace("http://api.tinami.com", "https://www.tinami.com/api", 1)
 
-			c.execute("INSERT INTO tinami VALUES (%s, %s, %s)"
-				% (db.literal(id), db.literal(thumbnail), db.literal(image))
-			)
+    def get_large(self, match):
+        return self.get_full(match)
 
-			db.commit()
+    def get_large_https(self, match):
+        return self.get_full_https(match)
 
-			self.last = [id, thumbnail, image]
-		else:
-			self.last = sqlResult
+    def get_thumb(self, match):
+        return self.work(match)["thumbnail"]
 
-		return self.last
+    def get_thumb_https(self, match):
+        return None
 
-	def getFullSize(self, match):
-		data = self.getUriData(match)
-		return data[2] if data is not None else None
+    def get_video(self, match):
+        return None
 
-	def getLargeSize(self, match):
-		data = self.getUriData(match)
-		return data[2] if data is not None else None
-
-	def getThumbnail(self, match):
-		data = self.getUriData(match)
-		return data[1] if data is not None else None
+    def get_video_https(self, match):
+        return None
