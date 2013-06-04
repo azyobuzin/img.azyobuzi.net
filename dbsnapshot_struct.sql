@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- ホスト: localhost
--- 生成時間: 2013 年 5 月 24 日 20:52
+-- 生成時間: 2013 年 6 月 04 日 23:39
 -- サーバのバージョン: 5.5.31
 -- PHP のバージョン: 5.3.10-1ubuntu3.6
 
@@ -19,6 +19,18 @@ SET time_zone = "+00:00";
 --
 -- データベース: `azyobuzin_img`
 --
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `500px`
+--
+
+CREATE TABLE IF NOT EXISTS `500px` (
+  `id` int(11) NOT NULL,
+  `image5` tinytext NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
