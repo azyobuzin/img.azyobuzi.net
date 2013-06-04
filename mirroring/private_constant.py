@@ -8,6 +8,7 @@ db_name = "<Your Database Name>"
 db_user = "<Your Database User Name>"
 db_password = "<Your Database Password>"
 
+consumer_key_500px = "jDMkZjOXcidZZex6lhloa95YRnZDVUQhrxX0IHKv"
 flickr_api_key = "341194ea58132794a8d6730b19f92757"
 tinami_api_key = "503cb18fee10e"
 tumblr_api_key = "Rf22FFPnVuWLa9HaRQCPvIMfvTAZYcVRJXLdsg59lkYsnpsTLU"

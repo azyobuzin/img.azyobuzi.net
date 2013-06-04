@@ -40,7 +40,7 @@ def iter_resolvers():
         m = getattr(__import__("resolvers." + module_name), module_name)
         classes = (
             c for c in
-                (getattr(m, class_name) for class_name in dir(m) if not (class_name.startswith("_") or class_name in resolvers_members))
+                (getattr(m, class_name) for class_name in dir(m) if class_name not in resolvers_members)
             if isinstance(c, type) and issubclass(c, resolvers.Resolver))
         for res in classes:
             yield res()
@@ -159,5 +159,7 @@ def application(request):
         return error_response(4042, e)
     except MethodNotAllowed as e:
         return error_response(4051, e)
+    except resolvers.PictureNotFoundError as e:
+        return error_response(4043, e)
     except Exception as e:
         return error_response(5000, e)
