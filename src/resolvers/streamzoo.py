@@ -27,8 +27,11 @@ class Streamzoo(StoringResolver):
         response = urllib2.urlopen("http://www.streamzoo.com/v1/item/" + param)
         j = json.load(response)
 
-        thumb = j["thumbURL"]
-        content = j["contentURL"]
+        try:
+            thumb = j["thumbURL"]
+            content = j["contentURL"]
+        except KeyError:
+            raise PictureNotFoundError()
 
         self.insert_all(cursor, table, (param, thumb, content))
         return dict(zip(columns[1:], (thumb, content)))
