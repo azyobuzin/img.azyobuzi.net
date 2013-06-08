@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- ホスト: localhost
--- 生成時間: 2013 年 6 月 04 日 23:39
+-- 生成時間: 2013 年 6 月 08 日 18:01
 -- サーバのバージョン: 5.5.31
 -- PHP のバージョン: 5.3.10-1ubuntu3.6
 
@@ -150,6 +150,19 @@ CREATE TABLE IF NOT EXISTS `hatena_fotolife` (
   `large` tinytext NOT NULL,
   `thumb` tinytext NOT NULL,
   PRIMARY KEY (`username`,`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `imepic`
+--
+
+CREATE TABLE IF NOT EXISTS `imepic` (
+  `date` int(10) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL,
+  `image` tinytext NOT NULL,
+  PRIMARY KEY (`date`,`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
