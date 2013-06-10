@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- ホスト: localhost
--- 生成時間: 2013 年 6 月 08 日 18:01
+-- 生成時間: 2013 年 6 月 10 日 19:47
 -- サーバのバージョン: 5.5.31
 -- PHP のバージョン: 5.3.10-1ubuntu3.6
 
@@ -41,6 +41,19 @@ CREATE TABLE IF NOT EXISTS `500px` (
 CREATE TABLE IF NOT EXISTS `cameran` (
   `id` varchar(32) NOT NULL,
   `image` tinytext NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `canon_image_gateway`
+--
+
+CREATE TABLE IF NOT EXISTS `canon_image_gateway` (
+  `id` varchar(30) NOT NULL,
+  `image` tinytext NOT NULL,
+  `original` tinytext NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
