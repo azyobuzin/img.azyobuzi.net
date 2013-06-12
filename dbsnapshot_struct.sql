@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- ホスト: localhost
--- 生成時間: 2013 年 6 月 10 日 19:47
+-- 生成時間: 2013 年 6 月 12 日 21:44
 -- サーバのバージョン: 5.5.31
 -- PHP のバージョン: 5.3.10-1ubuntu3.6
 
@@ -325,6 +325,18 @@ CREATE TABLE IF NOT EXISTS `pixiv` (
   `id` int(11) NOT NULL,
   `prefix` tinytext NOT NULL,
   `extension` varchar(5) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `skydrive`
+--
+
+CREATE TABLE IF NOT EXISTS `skydrive` (
+  `id` varchar(10) NOT NULL,
+  `image` tinytext NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
