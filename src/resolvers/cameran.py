@@ -9,25 +9,28 @@ class Cameran(OpenGraphResolver):
 
     @property
     def regex_str(self):
-        return r"^http://cameran\.in/posts/get/v1/(\w+)(?:\?.*)?$"
+        return r"^http://cameran\.in/(?:posts/get/v1/(\w+)|p/v1/(\w+))/?(?:\?.*)?$"
 
     def get_parameters(self, match):
-        return match.group(1)
+        return {"old": match.group(1), "new": match.group(2)}
 
     def _work(self, param, cursor):
+        new = param["new"] != None
+        id = param["new"] if new else param["old"]
+
         table = "cameran"
         columns = ["id", "image"]
-        result = self.select_one(cursor, table, columns[1:], {columns[0]: param})
+        result = self.select_one(cursor, table, columns[1:], {columns[0]: id})
         if result:
             return result[0]
 
-        req_uri = "http://cameran.in/posts/get/v1/" + param
+        req_uri = ("http://cameran.in/p/v1/" if new else "http://cameran.in/posts/get/v1/") + id
         uri = self.read_og(req_uri, lambda res: res.geturl() == req_uri)
 
         if uri == False:
             raise PictureNotFoundError()
 
-        self.insert_all(cursor, table, (param, uri))
+        self.insert_all(cursor, table, (id, uri))
         return uri
 
     def get_full(self, match):
