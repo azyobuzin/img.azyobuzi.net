@@ -12,7 +12,7 @@ class Niconico(StoringResolver):
 
     @property
     def regex_str(self):
-        return r"^http://(?:(?:www\.)?nicovideo\.jp/watch|nico\.ms)/([sn]m\d+)?(?:\?.*)?$"
+        return r"^http://(?:(?:www\.)?nicovideo\.jp/watch|nico\.(?:ms|sc))/([sn]m\d+)?(?:\?.*)?$"
 
     def get_parameters(self, match):
         return match.group(1)
