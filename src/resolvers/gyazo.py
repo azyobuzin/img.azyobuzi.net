@@ -24,10 +24,10 @@ class Gyazo(Resolver):
         return self.get_full_https(match)
 
     def get_thumb(self, match):
-        return self.get_full(match)
+        return "http://gyazo.com/thumb/" + match.group(1) + ".png"
 
     def get_thumb_https(self, match):
-        return self.get_full_https(match)
+        return "https://gyazo.com/thumb/" + match.group(1) + ".png"
 
     def get_video(self, match):
         return None
