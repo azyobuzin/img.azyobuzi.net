@@ -161,5 +161,7 @@ def application(request):
         return error_response(4051, e)
     except resolvers.PictureNotFoundError as e:
         return error_response(4043, e)
+    except resolvers.IsNotPictureError as e:
+        return error_response(4044, e)
     except Exception as e:
         return error_response(5000, e)

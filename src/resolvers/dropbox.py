@@ -37,13 +37,16 @@ class Dropbox(StoringResolver):
             self.insert_all(cursor, table, (param, expanded))
             match = self.regex.match(expanded)
 
+        if not match:
+            raise IsNotPictureError()
+
         return "https://dl.dropbox.com/s/%s/%s" % (match.group(1), match.group(2))
 
     def get_full(self, match):
-        return self.work(match) if match.group(3) else "https://dl.dropbox.com/s/%s/%s" % (match.group(1), match.group(2))
+        return self.get_full_https(match).replace("https://", "http://", 1)
 
     def get_full_https(self, match):
-        return self.get_full(match).replace("https://", "http://", 1)
+        return self.work(match) if match.group(3) else "https://dl.dropbox.com/s/%s/%s" % (match.group(1), match.group(2))
 
     def get_large(self, match):
         return self.get_full(match)
