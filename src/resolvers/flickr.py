@@ -13,7 +13,7 @@ class Flickr(StoringResolver):
 
     @property
     def regex_str(self):
-        return r"^https?://(?:www\.)?(?:flickr\.com/photos/(?:[\w\-_@]+)/(\d+)(?:/in/[\w\-]*)?|flic\.kr/p/(\w+))/?(?:\?.*)?$"
+        return r"^https?://(?:www\.)?(?:flickr\.com/photos/(?:[\w\-_@]+)/(\d+)(?:/in/[\w\-]*|/sizes/\w/in/photostream)?|flic\.kr/p/(\w+))/?(?:\?.*)?$"
 
     @staticmethod
     def b58decode(s): #http://www.flickr.com/groups/api/discuss/72157616713786392/72157621745921901/
@@ -40,7 +40,7 @@ class Flickr(StoringResolver):
         if result:
             return dict(zip(columns[1:], result))
 
-        response = urllib2.urlopen("http://www.flickr.com/services/rest?method=flickr.photos.getSizes&api_key=%s&photo_id=%s"
+        response = urllib2.urlopen("https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=%s&photo_id=%s"
             % (flickr_api_key, param["id"]))
 
         root = ElementTree.fromstring(response.read())
