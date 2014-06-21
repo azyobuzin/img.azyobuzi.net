@@ -25,7 +25,7 @@ class CanonImageGateway(StoringResolver):
 
     @property
     def regex_str(self):
-        return r"^https?://opa\.cig2\.imagegateway\.net/s/(?:t/)?(\w+(?:/\w+)?)/?(?:\?.*)?"
+        return r"^https?://opa\.cig2\.imagegateway\.net/s/(?:t/)?(\w+(?:/\w+)?)/?(?:\?.*)?$"
 
     def get_parameters(self, match):
         return match.group(1)

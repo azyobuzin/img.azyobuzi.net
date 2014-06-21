@@ -22,7 +22,7 @@ class Meshimazu(StoringResolver):
 
     @property
     def regex_str(self):
-        return r"^http://(?:www\.)?meshimazu\.net/posts/(\d+)/?(?:\?.*)?"
+        return r"^http://(?:www\.)?meshimazu\.net/posts/(\d+)/?(?:\?.*)?$"
 
     def get_parameters(self, match):
         return match.group(1)
