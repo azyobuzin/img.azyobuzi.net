@@ -1,13 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 3.4.10.1deb1
+-- version 4.0.6deb1
 -- http://www.phpmyadmin.net
 --
 -- ホスト: localhost
--- 生成時間: 2013 年 6 月 12 日 21:44
--- サーバのバージョン: 5.5.31
--- PHP のバージョン: 5.3.10-1ubuntu3.6
+-- 生成日時: 2014 年 6 月 21 日 07:49
+-- サーバのバージョン: 5.5.37-0ubuntu0.13.10.1
+-- PHP のバージョン: 5.5.3-1ubuntu2.3
 
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 
@@ -212,6 +212,18 @@ CREATE TABLE IF NOT EXISTS `my365` (
 CREATE TABLE IF NOT EXISTS `niconico` (
   `id` varchar(15) NOT NULL,
   `thumbnail` tinytext NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `onedrive`
+--
+
+CREATE TABLE IF NOT EXISTS `onedrive` (
+  `id` varchar(10) NOT NULL,
+  `image` tinytext NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
