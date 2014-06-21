@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- ホスト: localhost
--- 生成日時: 2014 年 6 月 21 日 07:49
+-- 生成日時: 2014 年 6 月 21 日 09:29
 -- サーバのバージョン: 5.5.37-0ubuntu0.13.10.1
 -- PHP のバージョン: 5.5.3-1ubuntu2.3
 
@@ -176,6 +176,18 @@ CREATE TABLE IF NOT EXISTS `imepic` (
   `id` int(10) unsigned NOT NULL,
   `image` tinytext NOT NULL,
   PRIMARY KEY (`date`,`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `meshimazu`
+--
+
+CREATE TABLE IF NOT EXISTS `meshimazu` (
+  `id` int(10) unsigned NOT NULL,
+  `image` tinytext NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
