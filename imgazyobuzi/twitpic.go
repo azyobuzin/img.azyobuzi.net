@@ -1,21 +1,21 @@
-package main
+package imgazyobuzi
 
 import "regexp"
 
-type Twitpic ResolverStruct
+type twitpic resolverStruct
 
-func (self *Twitpic) ServiceName() string {
+func (self *twitpic) ServiceName() string {
 	return "Twitpic"
 }
 
-func (self *Twitpic) Regex() *regexp.Regexp {
+func (self *twitpic) Regex() *regexp.Regexp {
 	if self.re == nil {
 		self.re = regexp.MustCompile(`^https?://(?:www\.)?twitpic\.com/(?:show/\w+/)?(\w+)/?(?:\?.*)?$`)
 	}
 	return self.re
 }
 
-func (self *Twitpic) Sizes(groups []string) ([]ImageInfo, ResolvingErr) {
+func (self *twitpic) Sizes(groups []string) ([]ImageInfo, ResolvingErr) {
 	return []ImageInfo{
 		ImageInfo{
 			"https://twitpic.com/show/large/" + groups[1],
@@ -25,6 +25,8 @@ func (self *Twitpic) Sizes(groups []string) ([]ImageInfo, ResolvingErr) {
 	}, ResolvingErr{}
 }
 
-func (self *Twitpic) Video(groups []string) (*string, ResolvingErr) {
-	return nil, ResolvingErr{}
+func (self *twitpic) Videos(groups []string) ([]string, ResolvingErr) {
+	return []string{}, ResolvingErr{}
 }
+
+var TwitpicInstance = new(twitpic)
