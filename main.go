@@ -1,13 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"github.com/azyobuzin/img.azyobuzi.net/imgazyobuzi"
+	"log"
 	"os"
 	"strconv"
 )
 
 func main() {
+	logger := log.New(os.Stdout, "[img.azyobuzi.net] ", log.LstdFlags)
+
 	portStr := os.Getenv("PORT") //Set by gin
 	var port int
 	if portStr == "" {
@@ -16,10 +18,17 @@ func main() {
 		port, _ = strconv.Atoi(portStr)
 	}
 
-	newRelicLicenseKey := os.Getenv("IMGAZYOBUZI_NR_LICENSE_KEY")
-	newRelicAppName := os.Getenv("IMGAZYOBUZI_NR_APP_NAME")
+	configFile := os.Getenv("IMGAZYOBUZI_CONFIG")
+	if configFile == "" {
+		configFile = "/etc/imgazyobuziv3.json"
+	}
 
-	fmt.Printf("[img.azyobuzi.net] Running on %d\n", port)
+	ctx, err := imgazyobuzi.NewContextFromFile(configFile, port)
+	if err != nil {
+		logger.Panic(err)
+	}
 
-	imgazyobuzi.Run(port, newRelicLicenseKey, newRelicAppName)
+	logger.Printf("Running on %d\n", ctx.Port)
+
+	ctx.Run()
 }

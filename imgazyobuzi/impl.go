@@ -4,6 +4,7 @@ type ImageInfo struct {
 	Full  string `json:"full"`
 	Large string `json:"large"`
 	Thumb string `json:"thumb"`
+	Video string `json:"video"`
 }
 
 type RegexModel struct {
@@ -11,7 +12,7 @@ type RegexModel struct {
 	Regex string `json:"regex"`
 }
 
-func GetRegex() []RegexModel {
+func (self *Context) GetRegex() []RegexModel {
 	a := make([]RegexModel, len(Resolvers))
 	for i, r := range Resolvers {
 		a[i] = RegexModel{r.ServiceName(), r.Regex().String()}
@@ -20,54 +21,45 @@ func GetRegex() []RegexModel {
 }
 
 type SizesModel struct {
-	Pictures []ImageInfo `json:"pictures"`
-	Videos   []string    `json:"videos"`
+	Service string      `json:"service"`
+	Sizes   []ImageInfo `json:"sizes"`
 }
 
-func GetSizes(uri string) (SizesModel, ResolvingErr) {
+func (self *Context) GetSizes(uri string) (SizesModel, ResolvingErr) {
 	for _, r := range Resolvers {
 		g := r.Regex().FindStringSubmatch(uri)
 		if len(g) > 0 {
-			pictures, err := r.Sizes(g)
+			sizes, err := r.Sizes(self, g)
 			if err.Code != 0 {
 				return SizesModel{}, err
 			}
 
-			videos, err := r.Videos(g)
-			if err.Code != 0 {
-				return SizesModel{}, err
-			}
-
-			return SizesModel{pictures, videos}, ResolvingErr{}
+			return SizesModel{r.ServiceName(), sizes}, ResolvingErr{}
 		}
 	}
 
 	return SizesModel{}, ResolvingErr{UriNotSupported, nil}
 }
 
-func Redirect(uri, size string) (string, ResolvingErr) {
+func (self *Context) Redirect(uri, size string) (string, ResolvingErr) {
 	for _, r := range Resolvers {
 		g := r.Regex().FindStringSubmatch(uri)
 		if len(g) > 0 {
-			if size == "video" {
-				videos, err := r.Videos(g)
-
-				if err.Code != 0 {
-					return "", err
-				}
-				if len(videos) == 0 {
-					return "", ResolvingErr{IsNotVideo, nil}
-				}
-
-				return videos[0], ResolvingErr{}
-			}
-
-			pictures, err := r.Sizes(g)
+			sizes, err := r.Sizes(self, g)
 			if err.Code != 0 {
 				return "", err
 			}
 
-			p := pictures[0]
+			if size == "video" {
+				for _, s := range sizes {
+					if s.Video != "" {
+						return s.Video, ResolvingErr{}
+					}
+				}
+				return "", ResolvingErr{IsNotVideo, nil}
+			}
+
+			p := sizes[0]
 			var s string
 			switch size {
 			case "full":

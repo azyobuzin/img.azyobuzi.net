@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/codegangsta/negroni"
+	"github.com/influxdb/influxdb-go"
 	"github.com/jingweno/negroni-gorelic"
 	"github.com/stretchr/graceful"
+	"io/ioutil"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -13,22 +15,41 @@ import (
 	"time"
 )
 
-func Run(port int, newRelicLicenseKey, newRelicAppName string) {
+type Context struct {
+	Port                                     int
+	NewRelicLicenseKey, NewRelicAppName      string
+	RedisServer, RedisAddress, RedisPassword string
+	RedisDatabase                            int
+	InfluxConfig                             *influxdb.ClientConfig
+}
+
+func NewContextFromFile(filename string, port int) (*Context, error) {
+	b, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx := &Context{Port: port}
+	err = json.Unmarshal(b, ctx)
+	return ctx, err
+}
+
+func (self *Context) Run() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", HandleRequest(HandleNotFound))
-	mux.HandleFunc("/regex.json", HandleRequest(HandleRegex))
-	mux.HandleFunc("/sizes.json", HandleRequest(HandleSizes))
-	mux.HandleFunc("/redirect.json", HandleRequest(HandleRedirect))
+	mux.HandleFunc("/", HandleRequest(self.HandleNotFound))
+	mux.HandleFunc("/regex.json", HandleRequest(self.HandleRegex))
+	mux.HandleFunc("/sizes.json", HandleRequest(self.HandleSizes))
+	mux.HandleFunc("/redirect.json", HandleRequest(self.HandleRedirect))
 
 	n := negroni.Classic()
-	if newRelicLicenseKey != "" {
-		if newRelicAppName == "" {
-			newRelicAppName = "img.azyobuzi.net v3"
+	if self.NewRelicLicenseKey != "" {
+		if self.NewRelicAppName == "" {
+			self.NewRelicAppName = "img.azyobuzi.net v3"
 		}
-		n.Use(negronigorelic.New(newRelicLicenseKey, newRelicAppName, true))
+		n.Use(negronigorelic.New(self.NewRelicLicenseKey, self.NewRelicAppName, true))
 	}
 	n.UseHandler(mux)
-	graceful.Run(fmt.Sprintf(":%d", port), 3*time.Second, n)
+	graceful.Run(fmt.Sprintf(":%d", self.Port), 3*time.Second, n)
 }
 
 type ErrorModel struct {
@@ -79,8 +100,7 @@ type ResolvingErr struct {
 type Resolver interface {
 	ServiceName() string
 	Regex() *regexp.Regexp
-	Sizes(groups []string) ([]ImageInfo, ResolvingErr)
-	Videos(groups []string) ([]string, ResolvingErr)
+	Sizes(ctx *Context, groups []string) ([]ImageInfo, ResolvingErr)
 }
 
 type resolverStruct struct {
@@ -159,7 +179,7 @@ func HandleRequest(handler func(*http.Request) Response) func(http.ResponseWrite
 	}
 }
 
-func HandleNotFound(req *http.Request) Response {
+func (self *Context) HandleNotFound(req *http.Request) Response {
 	code := APINotFound
 	if req.URL.Path == "/" {
 		code = SelectAPI
@@ -167,17 +187,17 @@ func HandleNotFound(req *http.Request) Response {
 	return NewErrorResponse(code, nil)
 }
 
-func HandleRegex(req *http.Request) Response {
-	return NewOKResponse(GetRegex(), false)
+func (self *Context) HandleRegex(req *http.Request) Response {
+	return NewOKResponse(self.GetRegex(), false)
 }
 
-func HandleSizes(req *http.Request) Response {
+func (self *Context) HandleSizes(req *http.Request) Response {
 	uri := req.URL.Query().Get("uri")
 	if uri == "" {
 		return NewErrorResponse(RequireUriParam, nil)
 	}
 
-	res, err := GetSizes(uri)
+	res, err := self.GetSizes(uri)
 	if err.Code == 0 {
 		return NewOKResponse(res, true)
 	}
@@ -189,7 +209,7 @@ func HandleSizes(req *http.Request) Response {
 	return NewErrorResponse(err.Code, msg)
 }
 
-func HandleRedirect(req *http.Request) Response {
+func (self *Context) HandleRedirect(req *http.Request) Response {
 	q := req.URL.Query()
 	uri := q.Get("uri")
 	if uri == "" {
@@ -205,7 +225,7 @@ func HandleRedirect(req *http.Request) Response {
 		return NewErrorResponse(InvalidSizeParam, nil)
 	}
 
-	location, err := Redirect(uri, size)
+	location, err := self.Redirect(uri, size)
 	if err.Code == 0 {
 		return NewRedirectResponse(location, true)
 	}
