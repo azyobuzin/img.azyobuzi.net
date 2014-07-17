@@ -15,14 +15,17 @@ type RegexModel struct {
 func (self *Context) GetRegex() []RegexModel {
 	a := make([]RegexModel, len(Resolvers))
 	for i, r := range Resolvers {
-		a[i] = RegexModel{r.ServiceName(), r.Regex().String()}
+		_, name := r.ServiceName()
+		a[i] = RegexModel{name, r.Regex().String()}
 	}
 	return a
 }
 
 type SizesModel struct {
-	Service string      `json:"service"`
-	Sizes   []ImageInfo `json:"sizes"`
+	Service   string      `json:"service"`
+	Sizes     []ImageInfo `json:"sizes"`
+	ServiceId string      `json:"-"`
+	Id        string      `json:"-"`
 }
 
 func (self *Context) GetSizes(uri string) (SizesModel, ResolvingErr) {
@@ -34,29 +37,36 @@ func (self *Context) GetSizes(uri string) (SizesModel, ResolvingErr) {
 				return SizesModel{}, err
 			}
 
-			return SizesModel{r.ServiceName(), sizes}, ResolvingErr{}
+			svcid, name := r.ServiceName()
+			return SizesModel{name, sizes, svcid, r.Id(g)}, ResolvingErr{}
 		}
 	}
 
 	return SizesModel{}, ResolvingErr{UriNotSupported, nil}
 }
 
-func (self *Context) Redirect(uri, size string) (string, ResolvingErr) {
+type RedirectResult struct {
+	Location, ServiceId, Id string
+}
+
+func (self *Context) Redirect(uri, size string) (RedirectResult, ResolvingErr) {
 	for _, r := range Resolvers {
 		g := r.Regex().FindStringSubmatch(uri)
 		if len(g) > 0 {
 			sizes, err := r.Sizes(self, g)
 			if err.Code != 0 {
-				return "", err
+				return RedirectResult{}, err
 			}
+			svcid, _ := r.ServiceName()
+			id := r.Id(g)
 
 			if size == "video" {
 				for _, s := range sizes {
 					if s.Video != "" {
-						return s.Video, ResolvingErr{}
+						return RedirectResult{s.Video, svcid, id}, ResolvingErr{}
 					}
 				}
-				return "", ResolvingErr{IsNotVideo, nil}
+				return RedirectResult{}, ResolvingErr{IsNotVideo, nil}
 			}
 
 			p := sizes[0]
@@ -69,9 +79,10 @@ func (self *Context) Redirect(uri, size string) (string, ResolvingErr) {
 			case "thumb":
 				s = p.Thumb
 			}
-			return s, ResolvingErr{}
+
+			return RedirectResult{s, svcid, id}, ResolvingErr{}
 		}
 	}
 
-	return "", ResolvingErr{UriNotSupported, nil}
+	return RedirectResult{}, ResolvingErr{UriNotSupported, nil}
 }

@@ -3,11 +3,12 @@ package imgazyobuzi
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/azyobuzin/influxdb-go"
 	"github.com/codegangsta/negroni"
-	"github.com/influxdb/influxdb-go"
 	"github.com/jingweno/negroni-gorelic"
 	"github.com/stretchr/graceful"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -16,25 +17,36 @@ import (
 )
 
 type Context struct {
+	Logger                                   *log.Logger
 	Port                                     int
 	NewRelicLicenseKey, NewRelicAppName      string
 	RedisServer, RedisAddress, RedisPassword string
 	RedisDatabase                            int
 	InfluxConfig                             *influxdb.ClientConfig
+
+	influxClient *influxdb.Client
 }
 
-func NewContextFromFile(filename string, port int) (*Context, error) {
+func NewContextFromFile(filename string) (*Context, error) {
 	b, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
 
-	ctx := &Context{Port: port}
+	ctx := new(Context)
 	err = json.Unmarshal(b, ctx)
 	return ctx, err
 }
 
 func (self *Context) Run() {
+	if self.InfluxConfig != nil {
+		c, err := influxdb.NewClient(self.InfluxConfig)
+		if err != nil {
+			self.Logger.Panic(err)
+		}
+		self.influxClient = c
+	}
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", HandleRequest(self.HandleNotFound))
 	mux.HandleFunc("/regex.json", HandleRequest(self.HandleRegex))
@@ -98,8 +110,9 @@ type ResolvingErr struct {
 }
 
 type Resolver interface {
-	ServiceName() string
+	ServiceName() (string, string)
 	Regex() *regexp.Regexp
+	Id(groups []string) string
 	Sizes(ctx *Context, groups []string) ([]ImageInfo, ResolvingErr)
 }
 
@@ -199,6 +212,7 @@ func (self *Context) HandleSizes(req *http.Request) Response {
 
 	res, err := self.GetSizes(uri)
 	if err.Code == 0 {
+		self.WriteAccessLog(req, res.ServiceId, res.Id)
 		return NewOKResponse(res, true)
 	}
 	var msg *string
@@ -225,9 +239,10 @@ func (self *Context) HandleRedirect(req *http.Request) Response {
 		return NewErrorResponse(InvalidSizeParam, nil)
 	}
 
-	location, err := self.Redirect(uri, size)
+	res, err := self.Redirect(uri, size)
 	if err.Code == 0 {
-		return NewRedirectResponse(location, true)
+		self.WriteAccessLog(req, res.ServiceId, res.Id)
+		return NewRedirectResponse(res.Location, true)
 	}
 	var msg *string
 	if err.Error != nil {
@@ -235,4 +250,26 @@ func (self *Context) HandleRedirect(req *http.Request) Response {
 		msg = &tmp
 	}
 	return NewErrorResponse(err.Code, msg)
+}
+
+func (self *Context) WriteAccessLog(req *http.Request, service, id string) {
+	if self.influxClient == nil {
+		return
+	}
+
+	go func() {
+		err := self.influxClient.WriteSeries([]*influxdb.Series{
+			&influxdb.Series{
+				"log",
+				[]string{"service", "id", "version", "api", "user_agent"},
+				[][]interface{}{
+					[]interface{}{service, id, 3, req.URL.Path, req.UserAgent()},
+				},
+			},
+		})
+
+		if err != nil {
+			self.Logger.Printf("InfluxDB: %v\n", err)
+		}
+	}()
 }
