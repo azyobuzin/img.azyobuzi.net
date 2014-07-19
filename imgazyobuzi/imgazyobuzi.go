@@ -2,9 +2,11 @@ package imgazyobuzi
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/azyobuzin/influxdb-go"
 	"github.com/codegangsta/negroni"
+	"github.com/garyburd/redigo/redis"
+	influxdb "github.com/influxdb/influxdb/client"
 	"github.com/jingweno/negroni-gorelic"
 	"github.com/stretchr/graceful"
 	"io/ioutil"
@@ -17,13 +19,14 @@ import (
 )
 
 type Context struct {
-	Logger                                   *log.Logger
-	Port                                     int
-	NewRelicLicenseKey, NewRelicAppName      string
-	RedisServer, RedisAddress, RedisPassword string
-	RedisDatabase                            int
-	InfluxConfig                             *influxdb.ClientConfig
+	Logger                                    *log.Logger
+	Port                                      int
+	NewRelicLicenseKey, NewRelicAppName       string
+	RedisNetwork, RedisAddress, RedisPassword string
+	RedisDatabase                             int
+	InfluxConfig                              *influxdb.ClientConfig
 
+	redisPool    *redis.Pool
 	influxClient *influxdb.Client
 }
 
@@ -38,7 +41,32 @@ func NewContextFromFile(filename string) (*Context, error) {
 	return ctx, err
 }
 
-func (self *Context) Run() {
+func (self *Context) initializeRedis() {
+	self.redisPool = &redis.Pool{
+		Dial: func() (redis.Conn, error) {
+			c, err := redis.Dial(self.RedisNetwork, self.RedisAddress)
+			if err != nil {
+				return nil, err
+			}
+
+			if self.RedisPassword != "" {
+				if _, err := c.Do("AUTH", self.RedisPassword); err != nil {
+					c.Close()
+					return nil, err
+				}
+			}
+
+			return c, nil
+		},
+		TestOnBorrow: func(c redis.Conn, t time.Time) error {
+			_, err := c.Do("PING")
+			return err
+		},
+		MaxIdle: 3,
+	}
+}
+
+func (self *Context) initializeInfluxDB() {
 	if self.InfluxConfig != nil {
 		c, err := influxdb.NewClient(self.InfluxConfig)
 		if err != nil {
@@ -46,6 +74,11 @@ func (self *Context) Run() {
 		}
 		self.influxClient = c
 	}
+}
+
+func (self *Context) Run() {
+	self.initializeRedis()
+	self.initializeInfluxDB()
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", HandleRequest(self.HandleNotFound))
@@ -261,9 +294,9 @@ func (self *Context) WriteAccessLog(req *http.Request, service, id string) {
 		err := self.influxClient.WriteSeries([]*influxdb.Series{
 			&influxdb.Series{
 				"log",
-				[]string{"service", "id", "version", "api", "user_agent"},
+				[]string{"service", "id", "version", "api", "user_agent", "referer"},
 				[][]interface{}{
-					[]interface{}{service, id, 3, req.URL.Path, req.UserAgent()},
+					[]interface{}{service, id, 3, req.URL.Path, req.UserAgent(), req.Referer()},
 				},
 			},
 		})
@@ -272,4 +305,104 @@ func (self *Context) WriteAccessLog(req *http.Request, service, id string) {
 			self.Logger.Printf("InfluxDB: %v\n", err)
 		}
 	}()
+}
+
+const CacheExpire = 259200 //3 days
+var UpdateExpireErr = errors.New("Redis returned 0")
+
+func (self *Context) updateExpireImpl(c redis.Conn, key string) error {
+	r, err := redis.Bool(c.Do("EXPIRE", key, CacheExpire))
+	if !r && err == nil {
+		err = UpdateExpireErr
+	}
+	if err != nil {
+		self.Logger.Printf("UpdateExpire(%v): %v\n", key, err)
+	}
+	return err
+}
+
+func (self *Context) UpdateExpire(key string) error {
+	c := self.redisPool.Get()
+	defer c.Close()
+	return self.updateExpireImpl(c, key)
+}
+
+func (self *Context) Set(key string, value interface{}) error {
+	c := self.redisPool.Get()
+	defer c.Close()
+	_, err := c.Do("SETEX", key, CacheExpire, value)
+	if err != nil {
+		self.Logger.Printf("Set(%v,%v): %v\n", key, value, err)
+	}
+	return err
+}
+
+func (self *Context) HmSet(key string, value ...interface{}) error {
+	c := self.redisPool.Get()
+	defer c.Close()
+	_, err := c.Do("HMSET", redis.Args{}.Add(key).Add(value...)...)
+	if err != nil {
+		self.Logger.Printf("HmSet(%v,%v): %v\n", key, value, err)
+		return err
+	}
+	return self.updateExpireImpl(c, key)
+}
+
+func (self *Context) HSet(key, field string, value interface{}) error {
+	c := self.redisPool.Get()
+	defer c.Close()
+	_, err := c.Do("HSET", key, field, value)
+	if err != nil {
+		self.Logger.Printf("HSet(%v,%v,%v): %v\n", key, field, value, err)
+		return err
+	}
+	return self.updateExpireImpl(c, key)
+}
+
+func (self *Context) Get(key string) (string, error) {
+	c := self.redisPool.Get()
+	defer c.Close()
+	r, err := redis.String(c.Do("GET", key))
+	if err == redis.ErrNil {
+		return "", nil
+	}
+	if err != nil {
+		self.Logger.Printf("Get(%v): %v\n", key, err)
+		return "", err
+	}
+	return r, self.updateExpireImpl(c, key)
+}
+
+func (self *Context) HmGet(key string, fields ...interface{}) ([]string, error) {
+	c := self.redisPool.Get()
+	defer c.Close()
+	exists, err := redis.Bool(c.Do("EXISTS", key))
+	if err != nil {
+		self.Logger.Printf("HmGet(%v,%v): %v\n", key, fields, err)
+		return []string{}, err
+	}
+	if !exists {
+		return make([]string, len(fields)), nil
+	}
+
+	r, err := redis.Strings(c.Do("HMGET", redis.Args{}.Add(key).Add(fields...)...))
+	if err != nil {
+		self.Logger.Printf("HmGet(%v,%v): %v\n", key, fields, err)
+		return []string{}, err
+	}
+	return r, self.updateExpireImpl(c, key)
+}
+
+func (self *Context) HGet(key, field string) (string, error) {
+	c := self.redisPool.Get()
+	defer c.Close()
+	r, err := redis.String(c.Do("HGET", key, field))
+	if err == redis.ErrNil {
+		return "", nil
+	}
+	if err != nil {
+		self.Logger.Printf("HGet(%v,%v): %v\n", key, field, err)
+		return "", err
+	}
+	return r, self.updateExpireImpl(c, key)
 }
