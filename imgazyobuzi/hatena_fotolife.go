@@ -54,7 +54,9 @@ func (self *hatenaFotolife) Sizes(ctx *Context, groups []string) ([]ImageInfo, R
 		hasOriginal = doc.Find("a:contains('オリジナルサイズを表示')").Length() != 0
 		isVideo = doc.Find("#flvplayer").Length() != 0
 
-		ctx.HmSet(key, "ext", ext, "orig", hasOriginal, "video", isVideo)
+		title := strings.TrimSpace(doc.Find(".fototitle").Text())
+
+		ctx.HmSet(key, "ext", ext, "orig", hasOriginal, "video", isVideo, "title", title)
 	}
 
 	video := ""

@@ -56,6 +56,13 @@ func (self *Context) initializeRedis() {
 				}
 			}
 
+			if self.RedisDatabase != 0 {
+				if _, err := c.Do("SELECT", self.RedisDatabase); err != nil {
+					c.Close()
+					return nil, err
+				}
+			}
+
 			return c, nil
 		},
 		TestOnBorrow: func(c redis.Conn, t time.Time) error {
