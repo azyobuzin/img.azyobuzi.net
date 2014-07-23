@@ -37,7 +37,7 @@ func (self *cameran) Sizes(ctx *Context, groups []string) ([]ImageInfo, Resolvin
 			return []ImageInfo{}, ResolvingErr{UnknownError, err}
 		}
 
-		og := doc.Find("meta[property='twitter:image:src']")
+		og := doc.Find("meta[name='twitter:image:src']")
 		if og.Length() == 0 {
 			return []ImageInfo{}, ResolvingErr{PictureNotFound, nil}
 		}
