@@ -1,7 +1,7 @@
 package imgazyobuzi
 
 import (
-	"github.com/puerkitobio/goquery"
+	"github.com/PuerkitoBio/goquery"
 	"regexp"
 	"strings"
 )

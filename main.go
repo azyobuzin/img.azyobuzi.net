@@ -12,7 +12,7 @@ func main() {
 
 	configFile := os.Getenv("IMGAZYOBUZI_CONFIG")
 	if configFile == "" {
-		configFile = "/etc/imgazyobuziv3.json"
+		configFile = "/etc/imgazyobuziv3.toml"
 	}
 
 	ctx, err := imgazyobuzi.NewContextFromFile(configFile)

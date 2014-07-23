@@ -2,7 +2,7 @@ package imgazyobuzi
 
 import (
 	"fmt"
-	"github.com/puerkitobio/goquery"
+	"github.com/PuerkitoBio/goquery"
 	"regexp"
 	"strings"
 )

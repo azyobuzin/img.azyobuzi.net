@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/BurntSushi/toml"
 	"github.com/codegangsta/negroni"
 	"github.com/garyburd/redigo/redis"
 	influxdb "github.com/influxdb/influxdb/client"
 	"github.com/jingweno/negroni-gorelic"
 	"github.com/stretchr/graceful"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
@@ -31,13 +31,8 @@ type Context struct {
 }
 
 func NewContextFromFile(filename string) (*Context, error) {
-	b, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-
 	ctx := new(Context)
-	err = json.Unmarshal(b, ctx)
+	_, err := toml.DecodeFile(filename, ctx)
 	return ctx, err
 }
 
