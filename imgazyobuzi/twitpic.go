@@ -21,7 +21,7 @@ func (self *twitpic) Id(groups []string) string {
 
 func (self *twitpic) Sizes(ctx *Context, groups []string) ([]ImageInfo, ResolvingErr) {
 	return []ImageInfo{
-		ImageInfo{
+		{
 			"https://twitpic.com/show/large/" + groups[1],
 			"https://twitpic.com/show/large/" + groups[1],
 			"https://twitpic.com/show/thumb/" + groups[1],

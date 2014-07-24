@@ -124,19 +124,19 @@ const (
 )
 
 var Errors = map[int]ErrorInfo{
-	4000:             ErrorInfo{400, "Bad request."},
-	RequireUriParam:  ErrorInfo{400, "\"uri\" parameter is required."},
-	UriNotSupported:  ErrorInfo{400, "\"uri\" parameter you requested is not supported."},
-	InvalidSizeParam: ErrorInfo{400, "\"size\" parameter is invalid."},
-	4040:             ErrorInfo{404, "Not Found."},
-	SelectAPI:        ErrorInfo{404, "Select API."},
-	APINotFound:      ErrorInfo{404, "API you requested is not found."},
-	PictureNotFound:  ErrorInfo{404, "The picture you requested is not found."},
-	IsNotPicture:     ErrorInfo{404, "Your request is not a picture."},
-	IsNotVideo:       ErrorInfo{404, "Your request is not a video."},
-	4050:             ErrorInfo{405, "The method is not allowed."},
-	InvalidMethod:    ErrorInfo{405, "Call with GET or HEAD method."},
-	UnknownError:     ErrorInfo{500, "Raised unknown exception on server."},
+	4000:             {400, "Bad request."},
+	RequireUriParam:  {400, "\"uri\" parameter is required."},
+	UriNotSupported:  {400, "\"uri\" parameter you requested is not supported."},
+	InvalidSizeParam: {400, "\"size\" parameter is invalid."},
+	4040:             {404, "Not Found."},
+	SelectAPI:        {404, "Select API."},
+	APINotFound:      {404, "API you requested is not found."},
+	PictureNotFound:  {404, "The picture you requested is not found."},
+	IsNotPicture:     {404, "Your request is not a picture."},
+	IsNotVideo:       {404, "Your request is not a video."},
+	4050:             {405, "The method is not allowed."},
+	InvalidMethod:    {405, "Call with GET or HEAD method."},
+	UnknownError:     {500, "Raised unknown exception on server."},
 }
 
 type ResolvingErr struct {
@@ -294,11 +294,11 @@ func (self *Context) WriteAccessLog(req *http.Request, service, id string) {
 
 	go func() {
 		err := self.influxClient.WriteSeries([]*influxdb.Series{
-			&influxdb.Series{
+			{
 				"log",
 				[]string{"service", "id", "version", "api", "user_agent", "referer"},
 				[][]interface{}{
-					[]interface{}{service, id, 3, req.URL.Path, req.UserAgent(), req.Referer()},
+					{service, id, 3, req.URL.Path, req.UserAgent(), req.Referer()},
 				},
 			},
 		})

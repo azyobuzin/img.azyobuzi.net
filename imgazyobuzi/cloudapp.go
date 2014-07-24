@@ -60,7 +60,7 @@ func (self *cloudApp) Sizes(ctx *Context, groups []string) ([]ImageInfo, Resolvi
 		ctx.HmSet(key, "remote", remote, "thumb", thumb, "title", j.Name)
 	}
 
-	return []ImageInfo{ImageInfo{remote, remote, thumb, ""}}, ResolvingErr{}
+	return []ImageInfo{{remote, remote, thumb, ""}}, ResolvingErr{}
 }
 
 var CloudAppInstance = new(cloudApp)

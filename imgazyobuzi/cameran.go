@@ -47,7 +47,7 @@ func (self *cameran) Sizes(ctx *Context, groups []string) ([]ImageInfo, Resolvin
 		ctx.HmSet(key, "image", r, "title", title)
 	}
 
-	return []ImageInfo{ImageInfo{r, r, r, ""}}, ResolvingErr{}
+	return []ImageInfo{{r, r, r, ""}}, ResolvingErr{}
 }
 
 var CameranInstance = new(cameran)

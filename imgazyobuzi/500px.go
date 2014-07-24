@@ -53,7 +53,7 @@ func (self *fiveHundredPx) Sizes(ctx *Context, groups []string) ([]ImageInfo, Re
 
 	base := r[:len(r)-5]
 	return []ImageInfo{
-		ImageInfo{
+		{
 			r,
 			base + "4.jpg",
 			base + "2.jpg",

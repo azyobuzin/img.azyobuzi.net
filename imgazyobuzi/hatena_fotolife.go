@@ -72,7 +72,7 @@ func (self *hatenaFotolife) Sizes(ctx *Context, groups []string) ([]ImageInfo, R
 			username[0], username, id[:8], id, ext)
 	}
 	return []ImageInfo{
-		ImageInfo{
+		{
 			full, large,
 			fmt.Sprintf("http://cdn-ak.f.st-hatena.com/images/fotolife/%c/%s/%s/%s_120.jpg",
 				username[0], username, id[:8], id),
