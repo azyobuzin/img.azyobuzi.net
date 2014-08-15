@@ -1,2 +1,4 @@
-*.pyc
-/src/resolvers/private_constant.py
+*.iml
+.idea
+*.exe
+*.log
