@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.Composition;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Text.RegularExpressions;
 using ImgAzyobuziV3.Core.DataModels;
 
@@ -27,7 +28,7 @@ namespace ImgAzyobuziV3.Core.Resolvers
             return match.Groups[1].Value;
         }
 
-        public override ImageInfo[] GetImages(ImgAzyobuziContext context, Match match)
+        public override IReadOnlyCollection<ImageInfo> GetImages(ImgAzyobuziContext context, Match match)
         {
             var id = this.GetId(match);
             return new[]

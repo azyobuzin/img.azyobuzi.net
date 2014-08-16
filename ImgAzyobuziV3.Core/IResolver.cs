@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using ImgAzyobuziV3.Core.DataModels;
 
 namespace ImgAzyobuziV3.Core
@@ -9,7 +10,7 @@ namespace ImgAzyobuziV3.Core
         string ServiceName { get; }
         Regex Pattern { get; }
         string GetId(Match match);
-        ImageInfo[] GetImages(ImgAzyobuziContext context, Match match);
+        IReadOnlyCollection<ImageInfo> GetImages(ImgAzyobuziContext context, Match match);
     }
 
     public abstract class ResolverBase : IResolver
@@ -18,7 +19,7 @@ namespace ImgAzyobuziV3.Core
         public abstract string ServiceName { get; }
         public abstract string PatternString { get; }
         public abstract string GetId(Match match);
-        public abstract ImageInfo[] GetImages(ImgAzyobuziContext context, Match match);
+        public abstract IReadOnlyCollection<ImageInfo> GetImages(ImgAzyobuziContext context, Match match);
 
         private Regex pattern;
         public Regex Pattern

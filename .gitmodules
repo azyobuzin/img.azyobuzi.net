@@ -1,0 +1,3 @@
+[submodule "influxdb-csharp"]
+	path = influxdb-csharp
+	url = https://github.com/pingfu/influxdb-csharp.git

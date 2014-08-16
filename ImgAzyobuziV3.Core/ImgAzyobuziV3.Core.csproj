@@ -48,14 +48,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\influxdb-csharp\influxdb-csharp\Database.cs">
+      <Link>InfluxDb\Database.cs</Link>
+    </Compile>
+    <Compile Include="..\influxdb-csharp\influxdb-csharp\Influxdb.cs">
+      <Link>InfluxDb\Influxdb.cs</Link>
+    </Compile>
+    <Compile Include="..\influxdb-csharp\influxdb-csharp\Series.cs">
+      <Link>InfluxDb\Series.cs</Link>
+    </Compile>
+    <Compile Include="..\influxdb-csharp\influxdb-csharp\TimeSeriesContainer.cs">
+      <Link>InfluxDb\TimeSeriesContainer.cs</Link>
+    </Compile>
+    <Compile Include="ApiImplements.cs" />
+    <Compile Include="DataModels\ErrorModel.cs" />
     <Compile Include="DataModels\ImageInfo.cs" />
+    <Compile Include="DataModels\RedirectResult.cs" />
     <Compile Include="DataModels\RegexModel.cs" />
     <Compile Include="DataModels\SizesModel.cs" />
+    <Compile Include="Errors.cs" />
     <Compile Include="ImgAzyobuziContext.cs" />
     <Compile Include="ImgAzyobuziSettings.cs" />
     <Compile Include="IResolver.cs" />
+    <Compile Include="Logging.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resolvers\Twitpic.cs" />
+    <Compile Include="SizeType.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
