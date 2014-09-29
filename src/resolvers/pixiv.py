@@ -12,19 +12,19 @@ class Pixiv(Resolver):
        return r"^http://(?:www\.)?pixiv\.net/(?:index|member_illust)\.php\?(?:.*)&?illust_id=(\d+)(?:&.*)?$"
 
     def get_full(self, match):
-        return "http://img.azyobuzi.net/api/pixiv_proxy.cgi?size=full&id=" + match.group(1)
+        return "http://img.azyobuzi.net/api/pixiv_proxy.cgi?id=" + match.group(1)
 
     def get_full_https(self, match):
         return None #誰か SSL サーバ証明書買って…
 
     def get_large(self, match):
-        return "http://img.azyobuzi.net/api/pixiv_proxy.cgi?size=large&id=" + match.group(1)
+        return self.get_full(match)
 
     def get_large_https(self, match):
         return None
 
     def get_thumb(self, match):
-        return "http://img.azyobuzi.net/api/pixiv_proxy.cgi?size=thumb&id=" + match.group(1)
+        return self.get_full(match)
 
     def get_thumb_https(self, match):
         return None
@@ -46,7 +46,7 @@ from werkzeug.wrappers import Response
 from resolvers.private_constant import *
 
 class PixivParser(SGMLParser):
-    src_regex = re.compile("^(.+)_m(\\.\\w+)$")
+    src_regex = re.compile("^(.+)(\\.\\w+)$")
 
     def __init__(self):
         SGMLParser.__init__(self)
@@ -71,11 +71,8 @@ def pixiv_proxy(request):
         return Response(message, status=status, mimetype="text/plain")
 
     id = request.args.get("id")
-    size = request.args.get("size", "full")
     if not id:
         return error_response(400, "\"id\" parameter is required.")
-    if size not in ("full", "large", "thumb"):
-        return error_response(400, "\"size\" parameter is invalid.")
 
     with MySQLdb.connect(host=db_host, port=db_port, user=db_user, passwd=db_password, db=db_name, charset="utf8") as c:
         c.execute("SELECT prefix, extension FROM pixiv WHERE id = %s", id)
@@ -102,9 +99,7 @@ def pixiv_proxy(request):
                 (id, prefix, extension)
             )
 
-    table = { "full": "", "large": "_m", "thumb": "_s" }
-
-    req = urllib2.Request(prefix + table[size] + extension, headers={
+    req = urllib2.Request(prefix + extension, headers={
         "User-Agent": "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/537.22 (KHTML, like Gecko) Chrome/25.0.1364.36 Safari/537.22",
         "Referer": "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + urllib.quote(id)
     })
