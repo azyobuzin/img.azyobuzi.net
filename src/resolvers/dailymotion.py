@@ -12,7 +12,7 @@ class Dailymotion(StoringResolver):
 
     @property
     def regex_str(self):
-        return r"^https?://(?:www\.)?dailymotion\.com/video/([\w\-]+)/?(?:\?.*)?$"
+        return r"^https?://(?:www\.)?dailymotion\.com/video/([^/\?]+)/?(?:\?.*)?$"
 
     def get_parameters(self, match):
         return match.group(1)
