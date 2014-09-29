@@ -33,7 +33,7 @@ class Tumblr(StoringResolver):
                 )
 
                 try:
-                    match = self.expanded_regex.match(response.getheader("location"))
+                    match = self.expanded_regex.match(response.headers.getheader("location"))
                 except:
                     raise PictureNotFoundError()
 
