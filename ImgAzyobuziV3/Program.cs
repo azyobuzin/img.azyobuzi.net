@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 using HyperTomlProcessor;
 using ImgAzyobuziV3.Core;
 using Nancy.Hosting.Self;
@@ -14,10 +13,12 @@ namespace ImgAzyobuziV3
             using (var sr = new StreamReader(args[0]))
                 MainModule.context = new ImgAzyobuziContext(TomlConvert.DeserializeObject<ImgAzyobuziSettings>(sr));
             var port = Environment.GetEnvironmentVariable("PORT") ?? "61482";
-            using (var host = new NancyHost(new UriBuilder("http", "localhost", int.Parse(port)).Uri))
+            var listenUri = new UriBuilder("http", "localhost", int.Parse(port)).Uri;
+            using (var host = new NancyHost(listenUri))
             {
                 host.Start();
-                Thread.Sleep(Timeout.Infinite);
+                Console.WriteLine(listenUri.AbsoluteUri);
+                Console.ReadLine();
             }
         }
     }
