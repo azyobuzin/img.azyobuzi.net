@@ -1,0 +1,38 @@
+﻿{
+  "webroot": "wwwroot",
+  "version": "3.0.0-*",
+  "authors": [ "azyobuzin" ],
+  "projectUrl": "http://img.azyobuzi.net/",
+  "licenseUrl": "https://github.com/azyobuzin/img.azyobuzi.net/blob/master/LICENSE.txt",
+
+  "dependencies": {
+    "ImgAzyobuziNet.Core": "",
+    "Microsoft.AspNet.IISPlatformHandler": "1.0.0-beta8",
+    "Microsoft.AspNet.Diagnostics": "1.0.0-beta8",
+    "Microsoft.AspNet.Mvc": "6.0.0-beta8",
+    "Microsoft.AspNet.Server.Kestrel": "1.0.0-beta8",
+    "Microsoft.AspNet.StaticFiles": "1.0.0-beta8",
+    "Microsoft.Framework.Caching.Memory": "1.0.0-beta8",
+    "Microsoft.Framework.Logging": "1.0.0-beta8",
+    "Microsoft.Framework.Logging.Console": "1.0.0-beta8",
+    "Microsoft.Framework.Logging.Debug" : "1.0.0-beta8"
+  },
+
+  "commands": {
+    "web": "Microsoft.AspNet.Server.Kestrel"
+  },
+
+  "frameworks": {
+    "dnx451": { },
+    "dnxcore50": { }
+  },
+
+  "exclude": [
+    "wwwroot",
+    "node_modules"
+  ],
+  "publishExclude": [
+    "**.user",
+    "**.vspscc"
+  ]
+}
