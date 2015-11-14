@@ -34,7 +34,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         private static async Task<string> GetOgImage(string id)
         {
-            using (var hc = new HttpClient())
+            using (var hc = new HttpClient(new HttpClientHandler() { AllowAutoRedirect = false }))
             {
                 var res = await hc.GetAsync("http://cameran.in/p/v1/" + id).ConfigureAwait(false);
 
