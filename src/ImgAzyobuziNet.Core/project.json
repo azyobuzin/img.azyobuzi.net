@@ -7,18 +7,23 @@
     "defaultNamespace": "ImgAzyobuziNet.Core"
   },
   "dependencies": {
-    "Microsoft.Framework.Caching.Memory": "1.0.0-beta8"
+    "Microsoft.Framework.Caching.Memory": "1.0.0-beta8",
+    "Newtonsoft.Json": "6.0.8"
   },
   "frameworks": {
-    "dnx451": { },
+    "dnx451": {
+      "frameworkAssemblies": {
+        "System.Net.Http": ""
+      }
+    },
     "dnxcore50": {
       "dependencies": {
-        "Microsoft.CSharp": "4.0.0-*",
-        "System.Collections.Concurrent": "4.0.0-*",
-        "System.Linq": "4.0.0-*",
-        "System.Runtime": "4.0.21-beta-23409",
-        "System.Threading.Tasks": "4.0.0-*",
-        "System.Text.RegularExpressions": "4.0.0-*"
+        "Microsoft.CSharp": "4.0.1-beta-23409",
+        "System.Collections.Concurrent": "4.0.11-beta-23409",
+        "System.Linq": "4.0.1-beta-23409",
+        "System.Net.Http": "4.0.1-beta-23409",
+        "System.Text.RegularExpressions": "4.0.11-beta-23409",
+        "System.Threading.Tasks": "4.0.11-beta-23427"
       }
     }
   }
