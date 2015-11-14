@@ -53,18 +53,17 @@ namespace ImgAzyobuziNet.Core.Resolvers
         [TestMethod(TestType.Static)]
         private static void RegexIdTitle()
         {
-            var match = Regex.Match(
-                "https://500px.com/photo/128754325/t-v-winter-by-ray-green?ctx_page=1&from=popular",
-                new _500px().Pattern);
-            match.Success.Is(true);
+            var match = new _500px().GetRegex().Match(
+                "https://500px.com/photo/128754325/t-v-winter-by-ray-green?ctx_page=1&from=popular");
+            Assert.True(() => match.Success);
             match.Groups[1].Value.Is("128754325");
         }
 
         [TestMethod(TestType.Static)]
         private static void RegexId()
         {
-            var match = Regex.Match("https://500px.com/photo/128742743", new _500px().Pattern);
-            match.Success.Is(true);
+            var match = new _500px().GetRegex().Match("https://500px.com/photo/128742743");
+            Assert.True(() => match.Success);
             match.Groups[1].Value.Is("128742743");
         }
 
