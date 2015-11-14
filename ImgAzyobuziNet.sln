@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B0C6B63E-B
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ImgAzyobuziNet.Core.Test", "test\ImgAzyobuziNet.Core.Test\ImgAzyobuziNet.Core.Test.xproj", "{EB447FEC-AA8D-4FDE-AC71-156661DCFEC1}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "AngleSharp", "src\AngleSharp\AngleSharp.xproj", "{8B45C880-2737-4B4B-A164-EF40CF5CB583}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{EB447FEC-AA8D-4FDE-AC71-156661DCFEC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB447FEC-AA8D-4FDE-AC71-156661DCFEC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB447FEC-AA8D-4FDE-AC71-156661DCFEC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B45C880-2737-4B4B-A164-EF40CF5CB583}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B45C880-2737-4B4B-A164-EF40CF5CB583}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B45C880-2737-4B4B-A164-EF40CF5CB583}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B45C880-2737-4B4B-A164-EF40CF5CB583}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -45,5 +51,6 @@ Global
 		{6742F54D-36DB-4F01-9591-6AB3456A4DF1} = {F4D6235D-41A2-49AE-84C0-C95D4B1E8EAF}
 		{3F0870D7-772D-41EA-8C75-20A1204A4177} = {F4D6235D-41A2-49AE-84C0-C95D4B1E8EAF}
 		{EB447FEC-AA8D-4FDE-AC71-156661DCFEC1} = {B0C6B63E-B92C-4F09-9214-D7DC5F3D66F3}
+		{8B45C880-2737-4B4B-A164-EF40CF5CB583} = {F4D6235D-41A2-49AE-84C0-C95D4B1E8EAF}
 	EndGlobalSection
 EndGlobal

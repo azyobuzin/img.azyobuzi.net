@@ -1,0 +1,24 @@
+﻿{
+  "version": "0.9.3-*",
+  "description": "AngleSharp is the ultimate angle brackets parser library. It parses HTML5, CSS3, and XML to construct a DOM based on the official W3C specification.",
+  "authors": [ "AngleSharp" ],
+  "owners": [ "Florian Rappl" ],
+  "projectUrl": "https://anglesharp.github.io",
+  "licenseUrl": "https://github.com/AngleSharp/AngleSharp/blob/master/LICENSE",
+  "iconUrl": "https://raw.github.com/AngleSharp/AngleSharp/master/logo.png",
+  "copyright": "Copyright 2015, AngleSharp.",
+  "compile": [ "../../external/AngleSharp/AngleSharp/**/*.cs" ],
+  "compileExclude": [ "../../external/AngleSharp/AngleSharp/DTD/**/*" ],
+  "frameworks": {
+    "dnx451": { },
+    "dnxcore50": {
+      "dependencies": {
+        "Microsoft.CSharp": "4.0.1-beta-23409",
+        "System.Dynamic.Runtime": "4.0.11-beta-23409",
+        "System.Net.Requests": "4.0.11-beta-23409",
+        "System.Runtime": "4.0.21-beta-23409",
+        "System.Text.RegularExpressions": "4.0.11-beta-23409"
+      }
+    }
+  }
+}
