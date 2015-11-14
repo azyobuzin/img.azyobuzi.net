@@ -7,6 +7,7 @@
     "defaultNamespace": "ImgAzyobuziNet.Core"
   },
   "dependencies": {
+    "AngleSharp": "0.9.3-*",
     "Microsoft.Framework.Caching.Memory": "1.0.0-beta8",
     "Newtonsoft.Json": "6.0.8"
   },
