@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AngleSharp.Parser.Html;
 using ImgAzyobuziNet.Core.Test;
 using Microsoft.Framework.Caching.Memory;
 
@@ -48,7 +49,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
                 res.EnsureSuccessStatusCode();
 
-                return await ParseUtils.GetOgImage(await res.Content.ReadAsStreamAsync().ConfigureAwait(false)).ConfigureAwait(false);
+                return ParseUtils.GetOgImage(
+                    await new HtmlParser().ParseAsync(
+                        await res.Content.ReadAsStreamAsync().ConfigureAwait(false)
+                    ).ConfigureAwait(false));
             }
         }
 

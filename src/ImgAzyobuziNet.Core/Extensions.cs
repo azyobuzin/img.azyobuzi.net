@@ -17,5 +17,16 @@ namespace ImgAzyobuziNet.Core
         {
             return m.Set(key, value, defaultOptions);
         }
+
+        internal static TResult[] ConvertAll<TSource, TResult>(this TSource[] source, Func<TSource, TResult> selector)
+        {
+            var len = source.Length;
+            var result = new TResult[len];
+            for (var i = 0; i < len; i++)
+            {
+                result[i] = selector(source[i]);
+            }
+            return result;
+        }
     }
 }

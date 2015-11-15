@@ -54,13 +54,12 @@ namespace ImgAzyobuziNet.Controllers
             return res;
         }
 
-        [HttpGet]
         public JsonResult Index()
         {
             return this.ErrorResponse(4041);
         }
 
-        [HttpGet("regex.json")]
+        [AcceptVerbs(new[] { "GET", "HEAD" }, Route = "regex.json")]
         public JsonResult Regex()
         {
             return this.Json(
@@ -76,28 +75,22 @@ namespace ImgAzyobuziNet.Controllers
                 : 5000, ex);
         }
 
-        [HttpGet("redirect"), HttpGet("redirect.json")]
-        public async Task<ActionResult> Redirect()
+        [AcceptVerbs(new[] { "GET", "HEAD" }, Route = "redirect")]
+        [AcceptVerbs(new[] { "GET", "HEAD" }, Route = "redirect.json")]
+        public async Task<ActionResult> RedirectAction([FromQuery] string uri, [FromQuery] string size = "full")
         {
-            var uri = this.Request.Query["uri"].FirstOrDefault();
             if (string.IsNullOrEmpty(uri))
                 return this.ErrorResponse(4001);
 
-            var size = (string)this.Request.Query["size"];
-            if (string.IsNullOrEmpty(size))
-                size = "full";
-            else
+            switch (size)
             {
-                switch (size)
-                {
-                    case "full":
-                    case "large":
-                    case "thumb":
-                    case "video":
-                        break;
-                    default:
-                        return this.ErrorResponse(4003);
-                }
+                case "full":
+                case "large":
+                case "thumb":
+                case "video":
+                    break;
+                default:
+                    return this.ErrorResponse(4003);
             }
 
             var result = await ImgAzyobuziNetService.Resolve(new WebResolveContext(this.HttpContext), uri).ConfigureAwait(false);
@@ -137,7 +130,7 @@ namespace ImgAzyobuziNet.Controllers
             return this.Redirect(location);
         }
 
-        [HttpGet("all_sizes.json")]
+        [AcceptVerbs(new[] { "GET", "HEAD" }, Route = "all_sizes.json")]
         public async Task<ActionResult> AllSizes()
         {
             var uri = this.Request.Query["uri"].FirstOrDefault();

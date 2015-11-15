@@ -77,14 +77,20 @@ namespace ImgAzyobuziNet.Core.Test
                     Console.ResetColor();
                     Console.WriteLine(" in {0}ms", stopwatch.ElapsedMilliseconds);
                 }
-                catch (TargetInvocationException ex)
+                catch (Exception ex)
                 {
                     stopwatch.Stop();
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.Write("Failed");
                     Console.ResetColor();
                     Console.WriteLine(" in {0}ms", stopwatch.ElapsedMilliseconds);
-                    Console.WriteLine(ex.InnerException.ToString());
+
+                    if (ex is TargetInvocationException)
+                        ex = ex.InnerException;
+                    var aex = ex as AggregateException;
+                    if (aex != null && aex.InnerExceptions.Count == 1)
+                        ex = aex.InnerException;
+                    Console.WriteLine(ex);
                 }
             }
         }
