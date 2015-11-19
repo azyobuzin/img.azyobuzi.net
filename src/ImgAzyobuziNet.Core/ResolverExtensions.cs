@@ -1,15 +1,15 @@
-using System.Runtime.CompilerServices;
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
 namespace ImgAzyobuziNet.Core
 {
     public static class ResolverExtensions
     {
-        private static readonly ConditionalWeakTable<IResolver, Regex> regexCache = new ConditionalWeakTable<IResolver, Regex>();
+        private static readonly ConcurrentDictionary<string, Regex> regexCache = new ConcurrentDictionary<string, Regex>();
 
         public static Regex GetRegex(this IResolver resolver)
         {
-            return regexCache.GetValue(resolver, r => new Regex(r.Pattern, RegexOptions.IgnoreCase));
+            return regexCache.GetOrAdd(resolver.Pattern, x => new Regex(x, RegexOptions.IgnoreCase));
         }
     }
 }
