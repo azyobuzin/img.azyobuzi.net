@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.Test;
-using Microsoft.Framework.Caching.Memory;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json.Linq;
 
 namespace ImgAzyobuziNet.Core.Resolvers

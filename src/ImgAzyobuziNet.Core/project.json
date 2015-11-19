@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "AngleSharp": "0.9.3-*",
-    "Microsoft.Framework.Caching.Memory": "1.0.0-beta8",
+    "Microsoft.Extensions.Caching.Memory": "1.0.0-rc1-final",
     "Newtonsoft.Json": "6.0.8"
   },
   "frameworks": {
@@ -19,12 +19,11 @@
     },
     "dnxcore50": {
       "dependencies": {
-        "Microsoft.CSharp": "4.0.1-beta-23409",
-        "System.Collections.Concurrent": "4.0.11-beta-23409",
-        "System.Linq": "4.0.1-beta-23409",
-        "System.Net.Http": "4.0.1-beta-23409",
-        "System.Text.RegularExpressions": "4.0.11-beta-23409",
-        "System.Threading.Tasks": "4.0.11-beta-23427"
+        "Microsoft.CSharp": "4.0.1-beta-23516",
+        "System.Linq": "4.0.1-beta-23516",
+        "System.Net.Http": "4.0.1-beta-23516",
+        "System.Text.RegularExpressions": "4.0.11-beta-23516",
+        "System.Threading.Tasks": "4.0.11-beta-23516"
       }
     }
   }

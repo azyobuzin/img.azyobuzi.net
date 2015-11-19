@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AngleSharp.Parser.Html;
 using ImgAzyobuziNet.Core.Test;
-using Microsoft.Framework.Caching.Memory;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {

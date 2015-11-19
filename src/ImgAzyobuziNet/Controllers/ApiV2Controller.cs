@@ -4,12 +4,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core;
 using Microsoft.AspNet.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace ImgAzyobuziNet.Controllers
 {
     [Route("api")]
     public class ApiV2Controller : Controller
     {
+        public ApiV2Controller(IMemoryCache memoryCache)
+        {
+            this.resolveContext = new DefaultResolveContext()
+            {
+                MemoryCache = memoryCache
+            };
+        }
+
+        private readonly IResolveContext resolveContext;
+
         private struct StatusAndMessage
         {
             public int StatusCode;
@@ -93,7 +104,7 @@ namespace ImgAzyobuziNet.Controllers
                     return this.ErrorResponse(4003);
             }
 
-            var result = await ImgAzyobuziNetService.Resolve(new WebResolveContext(this.HttpContext), uri).ConfigureAwait(false);
+            var result = await ImgAzyobuziNetService.Resolve(this.resolveContext, uri).ConfigureAwait(false);
 
             if (result == null)
                 return this.ErrorResponse(4002);
@@ -137,7 +148,7 @@ namespace ImgAzyobuziNet.Controllers
             if (string.IsNullOrEmpty(uri))
                 return this.ErrorResponse(4001);
 
-            var result = await ImgAzyobuziNetService.Resolve(new WebResolveContext(this.HttpContext), uri).ConfigureAwait(false);
+            var result = await ImgAzyobuziNetService.Resolve(this.resolveContext, uri).ConfigureAwait(false);
 
             if (result == null)
                 return this.ErrorResponse(4002);

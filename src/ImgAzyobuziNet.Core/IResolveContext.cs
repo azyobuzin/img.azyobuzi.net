@@ -1,4 +1,4 @@
-using Microsoft.Framework.Caching.Memory;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace ImgAzyobuziNet.Core
 {
@@ -9,6 +9,6 @@ namespace ImgAzyobuziNet.Core
 	
 	public class DefaultResolveContext : IResolveContext
 	{
-		public IMemoryCache MemoryCache { get; } = new MemoryCache(new MemoryCacheOptions());
+		public IMemoryCache MemoryCache { get; set; } = new MemoryCache(new MemoryCacheOptions());
 	}
 }

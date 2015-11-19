@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
-using Microsoft.Framework.DependencyInjection;
-using Microsoft.Framework.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet
 {
@@ -30,7 +30,7 @@ namespace ImgAzyobuziNet
         // Configure is called after ConfigureServices is called.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.MinimumLevel = LogLevel.Information;
+            loggerFactory.MinimumLevel = env.IsDevelopment() ? LogLevel.Verbose : LogLevel.Warning;
             loggerFactory.AddConsole();
             loggerFactory.AddDebug();
 
