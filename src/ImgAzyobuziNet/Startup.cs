@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Builder;
+﻿using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
+using Microsoft.AspNet.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -11,10 +8,6 @@ namespace ImgAzyobuziNet
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
-        {
-        }
-
         // This method gets called by a runtime.
         // Use this method to add services to the container
         public void ConfigureServices(IServiceCollection services)
@@ -30,12 +23,13 @@ namespace ImgAzyobuziNet
         // Configure is called after ConfigureServices is called.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.MinimumLevel = env.IsDevelopment() ? LogLevel.Verbose : LogLevel.Warning;
-            loggerFactory.AddConsole();
-            loggerFactory.AddDebug();
+            loggerFactory.MinimumLevel = env.IsDevelopment() ? LogLevel.Debug : LogLevel.Warning;
+            loggerFactory.AddConsole(LogLevel.Debug);
+            loggerFactory.AddDebug(LogLevel.Debug);
 
             // Add the platform handler to the request pipeline.
-            app.UseIISPlatformHandler();
+            // app.UseIISPlatformHandler();
+            app.UseOverrideHeaders(new OverrideHeaderMiddlewareOptions { ForwardedOptions = ForwardedHeaders.All });
 
             app.UseDeveloperExceptionPage();
 

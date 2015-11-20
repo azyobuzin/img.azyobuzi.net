@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -5,7 +6,7 @@ using ImgAzyobuziNet.Core.Test;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    public class Twitpic : IResolver
+    public class TwitpicProvider : IPatternProvider
     {
         public string ServiceId => "twitpic";
 
@@ -13,7 +14,13 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public string Pattern => @"^https?://(?:www\.)?twitpic\.com/(?:show/\w+/)?(\w+)/?(?:\?.*)?(?:#.*)?$";
 
-        public Task<ImageInfo[]> GetImages(IResolveContext context, Match match)
+        private static readonly ResolverFactory f = PPUtils.CreateFactory<TwitpicResolver>();
+        public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
+    }
+
+    public class TwitpicResolver : IResolver
+    {
+        public Task<ImageInfo[]> GetImages(Match match)
         {
             var id = match.Groups[1].Value;
             return Task.FromResult(new[] {
@@ -24,30 +31,40 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 )
             });
         }
+    }
+
+    class TwitpicTest
+    {
+        public TwitpicTest(ITestActivator activator)
+        {
+            this.provider = activator.CreateInstance<TwitpicProvider>();
+            this.resolver = activator.CreateInstance<TwitpicResolver>();
+        }
+
+        private readonly TwitpicProvider provider;
+        private readonly TwitpicResolver resolver;
 
         [TestMethod(TestType.Static)]
-        private static void RegexTest()
+        private void RegexTest()
         {
-            var match = new Twitpic().GetRegex().Match("http://twitpic.com/bh7827");
+            var match = this.provider.GetRegex().Match("http://twitpic.com/bh7827");
             Assert.True(() => match.Success);
             match.Groups[1].Value.Is("bh7827");
         }
 
         [TestMethod(TestType.Static)]
-        private static void RegexShowTest()
+        private void RegexShowTest()
         {
-            var match = new Twitpic().GetRegex().Match("http://twitpic.com/show/large/bfbwoc");
+            var match = this.provider.GetRegex().Match("http://twitpic.com/show/large/bfbwoc");
             Assert.True(() => match.Success);
             match.Groups[1].Value.Is("bfbwoc");
         }
 
         [TestMethod(TestType.Network)]
-        private static async Task TestAvailability()
+        private async Task TestAvailability()
         {
-            var t = new Twitpic();
-            var i = await t.GetImages(
-                new DefaultResolveContext(),
-                t.GetRegex().Match("http://twitpic.com/bh7827")
+            var i = await this.resolver.GetImages(
+                this.provider.GetRegex().Match("http://twitpic.com/bh7827")
             ).ConfigureAwait(false);
 
             using (var hc = new HttpClient())

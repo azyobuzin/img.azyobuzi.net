@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet.Core.Test
 {
@@ -43,45 +45,52 @@ namespace ImgAzyobuziNet.Core.Test
 
             Console.WriteLine("{0} tests will be run.", testMethods.Length);
 
+            var serviceProvider = BuildServiceProvider();
+            var lf = serviceProvider.GetRequiredService<ILoggerFactory>();
+            lf.MinimumLevel = LogLevel.Debug;
+            lf.AddConsole(LogLevel.Debug);
+
+            var instanceCache = new Dictionary<Type, object>();
             var stopwatch = new Stopwatch();
 
             foreach (var m in testMethods)
             {
-                Console.Write("{0}.{1} ", m.DeclaringType.Name, m.Name);
-
-                if (!m.IsStatic)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("is not a static method");
-                    Console.ResetColor();
-                    continue;
-                }
+                var testName = m.DeclaringType.Name + "." + m.Name;
 
                 if (m.GetParameters().Length > 0)
                 {
+                    Console.Write(testName);
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("has parameters");
+                    Console.WriteLine(" has parameters");
                     Console.ResetColor();
                     continue;
                 }
+
+                object instance = null;
+                if (!m.IsStatic && !instanceCache.TryGetValue(m.DeclaringType, out instance))
+                    instanceCache.Add(
+                        m.DeclaringType,
+                        instance = ActivatorUtilities.CreateInstance(serviceProvider, m.DeclaringType));
 
                 stopwatch.Restart();
 
                 try
                 {
-                    (m.Invoke(null, null) as Task)?.Wait();
+                    (m.Invoke(instance, null) as Task)?.Wait();
 
                     stopwatch.Stop();
+                    Console.Write(testName);
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write("OK");
+                    Console.Write(" OK");
                     Console.ResetColor();
                     Console.WriteLine(" in {0}ms", stopwatch.ElapsedMilliseconds);
                 }
                 catch (Exception ex)
                 {
                     stopwatch.Stop();
+                    Console.Write(testName);
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Write("Failed");
+                    Console.Write(" Failed");
                     Console.ResetColor();
                     Console.WriteLine(" in {0}ms", stopwatch.ElapsedMilliseconds);
 
@@ -93,6 +102,16 @@ namespace ImgAzyobuziNet.Core.Test
                     Console.WriteLine(ex);
                 }
             }
+        }
+
+        private IServiceProvider BuildServiceProvider()
+        {
+            var services = new ServiceCollection()
+                .AddLogging()
+                .AddCaching();
+            return services
+                .AddInstance(typeof(ITestActivator), new TestActivator(services.BuildServiceProvider()))
+                .BuildServiceProvider();
         }
     }
 }

@@ -5,19 +5,19 @@ namespace ImgAzyobuziNet.Core
 {
     public class ResolveResult
     {
-        public ResolveResult(IResolver resolver, IReadOnlyList<ImageInfo> images)
+        public ResolveResult(IPatternProvider patternProvider, IReadOnlyList<ImageInfo> images)
         {
-            this.Resolver = resolver;
+            this.PatternProvider = patternProvider;
             this.Images = images;
         }
 
-        public ResolveResult(IResolver resolver, Exception exception)
+        public ResolveResult(IPatternProvider patternProvider, Exception exception)
         {
-            this.Resolver = resolver;
+            this.PatternProvider = patternProvider;
             this.Exception = exception;
         }
 
-        public IResolver Resolver { get; }
+        public IPatternProvider PatternProvider { get; }
         public IReadOnlyList<ImageInfo> Images { get; }
         public Exception Exception { get; }
     }

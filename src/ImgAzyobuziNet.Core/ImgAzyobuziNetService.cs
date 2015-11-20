@@ -8,31 +8,31 @@ namespace ImgAzyobuziNet.Core
 {
     public static class ImgAzyobuziNetService
     {
-        private static readonly Lazy<IResolver[]> resolvers = new Lazy<IResolver[]>(
+        private static readonly Lazy<IPatternProvider[]> providers = new Lazy<IPatternProvider[]>(
             () => typeof(ImgAzyobuziNetService).GetTypeInfo().Assembly.GetTypes()
-                .Where(x => x.GetTypeInfo().IsClass && typeof(IResolver).IsAssignableFrom(x))
-                .Select(x => Activator.CreateInstance(x) as IResolver)
+                .Where(x => x.GetTypeInfo().IsClass && typeof(IPatternProvider).IsAssignableFrom(x))
+                .Select(x => Activator.CreateInstance(x) as IPatternProvider)
                 .ToArray());
 
-        public static IReadOnlyList<IResolver> GetResolvers()
+        public static IReadOnlyList<IPatternProvider> GetResolvers()
         {
-            return resolvers.Value;
+            return providers.Value;
         }
 
-        public static async Task<ResolveResult> Resolve(IResolveContext context, string uri)
+        public static async Task<ResolveResult> Resolve(IServiceProvider serviceProvider, string uri)
         {
-            foreach (var r in resolvers.Value)
+            foreach (var p in providers.Value)
             {
-                var m = r.GetRegex().Match(uri);
+                var m = p.GetRegex().Match(uri);
                 if (m.Success)
                 {
                     try
                     {
-                        return new ResolveResult(r, await r.GetImages(context, m).ConfigureAwait(false));
+                        return new ResolveResult(p, await p.GetResolver(serviceProvider).GetImages(m).ConfigureAwait(false));
                     }
                     catch (Exception ex)
                     {
-                        return new ResolveResult(r, ex);
+                        return new ResolveResult(p, ex);
                     }
                 }
             }
