@@ -7,7 +7,6 @@ namespace ImgAzyobuziNet.Core
         string ServiceId { get; }
         string ServiceName { get; }
         string Pattern { get; }
-        // Type ResolverType { get; }
         IResolver GetResolver(IServiceProvider serviceProvider);
     }
 }

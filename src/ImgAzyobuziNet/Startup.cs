@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Builder;
+﻿using ImgAzyobuziNet.Middlewares;
+using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +35,7 @@ namespace ImgAzyobuziNet
             app.UseDeveloperExceptionPage();
 
             // Configure the HTTP request pipeline.
+            app.UseMiddleware(typeof(ApiV2Middleware));
             app.UseDefaultFiles().UseStaticFiles();
 
             // Add MVC to the request pipeline.
