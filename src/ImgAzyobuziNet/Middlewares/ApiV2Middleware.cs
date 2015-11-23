@@ -21,12 +21,13 @@ namespace ImgAzyobuziNet.Middlewares
 
         public async Task Invoke(HttpContext context)
         {
-            PathString path = context.Request.Path;
-            if (path.StartsWithSegments("/api/v3") || !path.StartsWithSegments("/api", out path))
+            PathString path;
+            if (!context.Request.Path.StartsWithSegments("/api", out path) || path.StartsWithSegments("/v3"))
             {
                 await this.next(context).ConfigureAwait(false);
                 return;
             }
+
             var impl = new Impl(context);
 
             if (!context.Request.Method.Equals("GET", StringComparison.OrdinalIgnoreCase))
@@ -74,32 +75,21 @@ namespace ImgAzyobuziNet.Middlewares
             private HttpRequest Request => this.HttpContext.Request;
             private HttpResponse Response => this.HttpContext.Response;
 
-            private struct StatusAndMessage
+            private static readonly IReadOnlyDictionary<int, ErrorDefinition> errors = new Dictionary<int, ErrorDefinition>
             {
-                public int StatusCode;
-                public string Message;
-            }
-
-            private static StatusAndMessage S(int statusCode, string message)
-            {
-                return new StatusAndMessage { StatusCode = statusCode, Message = message };
-            }
-
-            private static readonly IReadOnlyDictionary<int, StatusAndMessage> errors = new Dictionary<int, StatusAndMessage>
-            {
-                [4000] = S(400, "Bad request."),
-                [4001] = S(400, "\"uri\" parameter is required."),
-                [4002] = S(400, "\"uri\" parameter you requested is not supported."),
-                [4003] = S(400, "\"size\" parameter is invalid."),
-                [4040] = S(404, "Not Found."),
-                [4041] = S(404, "Select API."),
-                [4042] = S(404, "API you requested is not found."),
-                [4043] = S(404, "The picture you requested is not found."),
-                [4044] = S(404, "Your request is not a picture."),
-                [4045] = S(404, "Your request is not a video."),
-                [4050] = S(405, "The method is not allowed."),
-                [4051] = S(405, "Call with GET or HEAD method."),
-                [5000] = S(500, "Raised unknown exception on server.")
+                [4000] = new ErrorDefinition(400, "Bad request."),
+                [4001] = new ErrorDefinition(400, "\"uri\" parameter is required."),
+                [4002] = new ErrorDefinition(400, "\"uri\" parameter you requested is not supported."),
+                [4003] = new ErrorDefinition(400, "\"size\" parameter is invalid."),
+                [4040] = new ErrorDefinition(404, "Not Found."),
+                [4041] = new ErrorDefinition(404, "Select API."),
+                [4042] = new ErrorDefinition(404, "API you requested is not found."),
+                [4043] = new ErrorDefinition(404, "The picture you requested is not found."),
+                [4044] = new ErrorDefinition(404, "Your request is not a picture."),
+                [4045] = new ErrorDefinition(404, "Your request is not a video."),
+                [4050] = new ErrorDefinition(405, "The method is not allowed."),
+                [4051] = new ErrorDefinition(405, "Call with GET or HEAD method."),
+                [5000] = new ErrorDefinition(500, "Raised unknown exception on server.")
             };
 
             private void Json(object obj)
@@ -125,6 +115,14 @@ namespace ImgAzyobuziNet.Middlewares
                 });
             }
 
+            public void HandleException(Exception ex)
+            {
+                this.ErrorResponse(
+                    ex is ImageNotFoundException ? 4043
+                    : ex is IsNotPictureException ? 4044
+                    : 5000, ex);
+            }
+
             public void Index()
             {
                 this.ErrorResponse(4041);
@@ -135,14 +133,6 @@ namespace ImgAzyobuziNet.Middlewares
                 this.Json(
                     ImgAzyobuziNetService.GetResolvers()
                     .Select(x => new { name = x.ServiceName, regex = x.Pattern }));
-            }
-
-            public void HandleException(Exception ex)
-            {
-                this.ErrorResponse(
-                    ex is ImageNotFoundException ? 4043
-                    : ex is IsNotPictureException ? 4044
-                    : 5000, ex);
             }
 
             public async Task Redirect()
