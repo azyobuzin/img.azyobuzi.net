@@ -119,7 +119,7 @@ namespace ImgAzyobuziNet.Middlewares
             {
                 this.ErrorResponse(
                     ex is ImageNotFoundException ? 4043
-                    : ex is IsNotPictureException ? 4044
+                    : ex is NotPictureException ? 4044
                     : 5000, ex);
             }
 
@@ -197,16 +197,23 @@ namespace ImgAzyobuziNet.Middlewares
                         break;
                     case "video":
                         location = img.Video;
-                        if (location == null)
+                        if (string.IsNullOrEmpty(location))
                         {
                             this.ErrorResponse(4045);
                             return;
                         }
-                        break;
+                        goto RETURN;
                     default:
                         throw new Exception("unreachable");
                 }
 
+                if (string.IsNullOrEmpty(location))
+                {
+                    this.ErrorResponse(4044);
+                    return;
+                }
+
+            RETURN:
                 this.Response.StatusCode = 302;
                 this.Response.GetTypedHeaders().Location = new Uri(location);
             }

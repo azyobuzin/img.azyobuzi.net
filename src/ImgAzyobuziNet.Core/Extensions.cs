@@ -8,7 +8,7 @@ namespace ImgAzyobuziNet.Core
 {
     internal static class Extensions
     {
-        private static readonly MemoryCacheEntryOptions defaultOptions = new MemoryCacheEntryOptions()
+        private static readonly MemoryCacheEntryOptions defaultOptions = new MemoryCacheEntryOptions
         {
             SlidingExpiration = new TimeSpan(TimeSpan.TicksPerDay)
         };

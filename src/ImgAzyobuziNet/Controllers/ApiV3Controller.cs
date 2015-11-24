@@ -43,7 +43,7 @@ namespace ImgAzyobuziNet.Controllers
         {
             return this.ErrorResponse(
                 ex is ImageNotFoundException ? 4043
-                : ex is IsNotPictureException ? 4044
+                : ex is NotPictureException ? 4044
                 : 5000, serviceId, ex);
         }
 
@@ -53,7 +53,7 @@ namespace ImgAzyobuziNet.Controllers
                 .Select(x => new { id = x.ServiceId, name = x.ServiceName, pattern = x.Pattern }));
         }
 
-        public async Task<IActionResult> Redirect([FromQuery]string uri, [FromQuery]string size = "full")
+        public async Task<IActionResult> Redirect([FromQuery] string uri, [FromQuery] string size = "full")
         {
             if (string.IsNullOrEmpty(uri))
                 return this.ErrorResponse(4001);
@@ -100,13 +100,17 @@ namespace ImgAzyobuziNet.Controllers
                     break;
                 case "video":
                     location = img.Video;
-                    if (location == null)
+                    if (string.IsNullOrEmpty(location))
                         return this.ErrorResponse(4045, result.PatternProvider.ServiceId);
-                    break;
+                    goto RETURN;
                 default:
                     throw new Exception("unreachable");
             }
 
+            if (string.IsNullOrEmpty(location))
+                return this.ErrorResponse(4044, result.PatternProvider.ServiceId);
+
+            RETURN:
             return base.Redirect(location);
         }
 

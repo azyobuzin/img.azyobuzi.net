@@ -6,5 +6,5 @@ namespace ImgAzyobuziNet.Core
 
     public class ImageNotFoundException : ImgAzyobuziNetException { }
 
-    public class IsNotPictureException : ImgAzyobuziNetException { }
+    public class NotPictureException : ImgAzyobuziNetException { }
 }

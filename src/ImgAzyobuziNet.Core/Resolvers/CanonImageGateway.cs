@@ -13,11 +13,11 @@ namespace ImgAzyobuziNet.Core.Resolvers
 {
     public class CanonImageGatewayProvider : IPatternProvider
     {
-        public string Pattern => @"^https?://opa\.cig2\.imagegateway\.net/s/([tm]/)?(?:album/)?(\w+(?:/\w+)?)/?(?:\?.*)?(?:#.*)?$";
-
         public string ServiceId => "CanonImageGateway";
 
         public string ServiceName => "CANON iMAGE GATEWAY";
+
+        public string Pattern => @"^https?://opa\.cig2\.imagegateway\.net/s/([tm]/)?(?:album/)?(\w+(?:/\w+)?)/?(?:\?.*)?(?:#.*)?$";
 
         private static readonly ResolverFactory f = PPUtils.CreateFactory<CanonImageGatewayResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
@@ -72,7 +72,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         }
 
         private readonly IMemoryCache memoryCache;
-        private readonly ILogger<CanonImageGatewayResolver> logger;
+        private readonly ILogger logger;
 
         public async Task<ImageInfo[]> GetImages(Match match)
         {

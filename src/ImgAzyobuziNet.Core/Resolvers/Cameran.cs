@@ -14,11 +14,11 @@ namespace ImgAzyobuziNet.Core.Resolvers
     {
         // http://cameran.in/posts/get/v1/{hex} は現存するものが見つからないのでサポートやめます
 
-        public string Pattern => @"^http://cameran\.in/p/v1/(\w+)/?(?:\?.*)?(?:#.*)?$";
-
         public string ServiceId => "cameran";
 
         public string ServiceName => "cameran";
+
+        public string Pattern => @"^http://cameran\.in/p/v1/(\w+)/?(?:\?.*)?(?:#.*)?$";
 
         private static readonly ResolverFactory f = PPUtils.CreateFactory<CameranResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
@@ -41,7 +41,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         }
 
         private readonly IMemoryCache memoryCache;
-        private readonly ILogger<CameranResolver> logger;
+        private readonly ILogger logger;
 
         public async Task<ImageInfo[]> GetImages(Match match)
         {

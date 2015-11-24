@@ -49,7 +49,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         }
 
         private readonly IMemoryCache memoryCache;
-        private readonly ILogger<_500pxResolver> logger;
+        private readonly ILogger logger;
 
         public async Task<ImageInfo[]> GetImages(Match match)
         {
