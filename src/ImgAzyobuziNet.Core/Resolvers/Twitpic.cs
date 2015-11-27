@@ -8,7 +8,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 {
     public class TwitpicProvider : IPatternProvider
     {
-        public string ServiceId => "twitpic";
+        public string ServiceId => "Twitpic";
 
         public string ServiceName => "Twitpic";
 

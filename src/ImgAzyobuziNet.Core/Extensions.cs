@@ -18,6 +18,17 @@ namespace ImgAzyobuziNet.Core
             return m.Set(key, value, defaultOptions);
         }
 
+        internal static async Task<T> GetOrSet<T>(this IMemoryCache m, object key, Func<Task<T>> valueFactory)
+        {
+            T result;
+            if (!m.TryGetValue(key, out result))
+            {
+                result = await valueFactory().ConfigureAwait(false);
+                m.SetWithDefaultExpiration(key, result);
+            }
+            return result;
+        }
+
         internal static TResult[] ConvertAll<TSource, TResult>(this TSource[] source, Func<TSource, TResult> selector)
         {
             var len = source.Length;

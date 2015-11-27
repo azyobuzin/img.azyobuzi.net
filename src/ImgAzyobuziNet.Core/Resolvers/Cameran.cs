@@ -46,14 +46,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
         public async Task<ImageInfo[]> GetImages(Match match)
         {
             var id = match.Groups[1].Value;
-            var key = "cameran-" + id;
-
-            string result;
-            if (!this.memoryCache.TryGetValue(key, out result))
-            {
-                result = await this.GetOgImage(id).ConfigureAwait(false);
-                this.memoryCache.SetWithDefaultExpiration(key, result);
-            }
+            var result = await this.memoryCache.GetOrSet(
+                "cameran-" + id,
+                () => this.GetOgImage(id)
+            ).ConfigureAwait(false);
 
             return new[] { new ImageInfo(result, result, result) };
         }

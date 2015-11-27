@@ -65,12 +65,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
             var id = match.Groups[1].Value;
             var key = "cloudapp-" + id;
 
-            CacheItem result;
-            if (!this.memoryCache.TryGetValue(key, out result))
-            {
-                result = await this.GetContentUrl(match.Value).ConfigureAwait(false);
-                this.memoryCache.SetWithDefaultExpiration(key, result);
-            }
+            var result = await this.memoryCache.GetOrSet(
+                "cloudapp-" + id,
+                () => this.GetContentUrl(match.Value)
+            ).ConfigureAwait(false);
 
             ImageInfo i;
             switch (result.ItemType)

@@ -56,12 +56,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
             var id = match.Groups[1].Value;
             var key = "500px-" + id;
 
-            string result;
-            if (!this.memoryCache.TryGetValue(key, out result))
-            {
-                result = await this.GetImageUrl(id).ConfigureAwait(false);
-                this.memoryCache.SetWithDefaultExpiration(key, result);
-            }
+            var result = await this.memoryCache.GetOrSet(
+                "500px-" + id,
+                () => this.GetImageUrl(id)
+            ).ConfigureAwait(false);
 
             return new[] { new ImageInfo(result, result, result) };
         }

@@ -84,21 +84,13 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
             if (id.Contains("/"))
             {
-                string result;
-                if (!this.memoryCache.TryGetValue(key, out result))
-                {
-                    result = await this.GetImage(t, id).ConfigureAwait(false);
-                    this.memoryCache.SetWithDefaultExpiration(key, result);
-                }
+                var result = await this.memoryCache.GetOrSet(key,
+                    () => this.GetImage(t, id)).ConfigureAwait(false);
                 return new[] { new ImageInfo(result, result, result) };
             }
 
-            string[] thumbs;
-            if (!this.memoryCache.TryGetValue(key, out thumbs))
-            {
-                thumbs = await this.GetAlbumThumbnails(t, id).ConfigureAwait(false);
-                this.memoryCache.SetWithDefaultExpiration(key, thumbs);
-            }
+            var thumbs = await this.memoryCache.GetOrSet(key,
+                () => this.GetAlbumThumbnails(t, id)).ConfigureAwait(false);
             return thumbs.ConvertAll(x => new ImageInfo(x, x, x));
         }
 
