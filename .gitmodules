@@ -1,3 +1,6 @@
 [submodule "external/AngleSharp"]
 	path = external/AngleSharp
 	url = https://github.com/AngleSharp/AngleSharp.git
+[submodule "external/Jil"]
+	path = external/Jil
+	url = https://github.com/kevin-montrose/Jil.git

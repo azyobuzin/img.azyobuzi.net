@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
-using Newtonsoft.Json;
 
 namespace ImgAzyobuziNet.Middlewares
 {
@@ -92,10 +90,10 @@ namespace ImgAzyobuziNet.Middlewares
                 [5000] = new ErrorDefinition(500, "Raised unknown exception on server.")
             };
 
-            private void Json(object obj)
+            private void Json<T>(T obj)
             {
                 this.Response.ContentType = "application/json; charset=utf-8";
-                var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(obj));
+                var body = JsonUtils.Serialize(obj);
                 this.Response.ContentLength = body.Length;
                 this.Response.Body.Write(body, 0, body.Length);
             }
@@ -132,7 +130,7 @@ namespace ImgAzyobuziNet.Middlewares
             {
                 this.Json(
                     ImgAzyobuziNetService.GetResolvers()
-                    .Select(x => new { name = x.ServiceName, regex = x.Pattern }));
+                    .ConvertAll(x => new { name = x.ServiceName, regex = x.Pattern }));
             }
 
             public async Task Redirect()

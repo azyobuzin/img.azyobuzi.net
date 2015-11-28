@@ -2,12 +2,13 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.Test;
+using Jil;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -52,11 +53,11 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public class CacheItem
         {
-            [JsonProperty("item_type")]
+            [DataMember(Name = "item_type")]
             public string ItemType { get; set; }
-            [JsonProperty("content_url")]
+            [DataMember(Name = "content_url")]
             public string ContentUrl { get; set; }
-            [JsonProperty("thumbnail_url")]
+            [DataMember(Name = "thumbnail_url")]
             public string ThumbnailUrl { get; set; }
         }
 
@@ -105,7 +106,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
                     var s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
                     ResolverUtils.HttpResponseMessage(this.logger, s, null);
 
-                    return JsonConvert.DeserializeObject<CacheItem>(s);
+                    return JSON.Deserialize<CacheItem>(s);
                 }
             }
         }

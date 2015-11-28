@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core;
 using Microsoft.AspNet.Mvc;
@@ -22,10 +21,10 @@ namespace ImgAzyobuziNet.Controllers
         };
 
         [NonAction]
-        private JsonResult ErrorResponse(int error, string serviceId = null, Exception ex = null)
+        private IActionResult ErrorResponse(int error, string serviceId = null, Exception ex = null)
         {
             var s = errors[error];
-            var result = this.Json(new
+            return JilJsonResult.CreateWithStatusCode(new
             {
                 error = new
                 {
@@ -33,13 +32,11 @@ namespace ImgAzyobuziNet.Controllers
                     message = s.Message,
                     exception = ex?.ToString()
                 }
-            });
-            result.StatusCode = s.StatusCode;
-            return result;
+            }, s.StatusCode);
         }
 
         [NonAction]
-        private JsonResult HandleException(string serviceId, Exception ex)
+        private IActionResult HandleException(string serviceId, Exception ex)
         {
             return this.ErrorResponse(
                 ex is ImageNotFoundException ? 4043
@@ -47,10 +44,10 @@ namespace ImgAzyobuziNet.Controllers
                 : 5000, serviceId, ex);
         }
 
-        public JsonResult Services()
+        public IActionResult Services()
         {
-            return this.Json(ImgAzyobuziNetService.GetResolvers()
-                .Select(x => new { id = x.ServiceId, name = x.ServiceName, pattern = x.Pattern }));
+            return JilJsonResult.Create(ImgAzyobuziNetService.GetResolvers()
+                .ConvertAll(x => new { id = x.ServiceId, name = x.ServiceName, pattern = x.Pattern }));
         }
 
         public async Task<IActionResult> Redirect([FromQuery] string uri, [FromQuery] string size = "full")
@@ -114,7 +111,7 @@ namespace ImgAzyobuziNet.Controllers
             return base.Redirect(location);
         }
 
-        public async Task<JsonResult> Resolve([FromQuery] string uri)
+        public async Task<IActionResult> Resolve([FromQuery] string uri)
         {
             if (string.IsNullOrEmpty(uri))
                 return this.ErrorResponse(4001);
@@ -127,11 +124,11 @@ namespace ImgAzyobuziNet.Controllers
             if (result.Exception != null)
                 return this.HandleException(result.PatternProvider.ServiceId, result.Exception);
 
-            return this.Json(new
+            return JilJsonResult.Create(new
             {
                 service_id = result.PatternProvider.ServiceId,
                 service_name = result.PatternProvider.ServiceName,
-                images = result.Images.Select(x => new { full = x.Full, large = x.Large, thumb = x.Thumb, video = x.Video })
+                images = result.Images.ConvertAll(x => new { full = x.Full, large = x.Large, thumb = x.Thumb, video = x.Video })
             });
         }
     }

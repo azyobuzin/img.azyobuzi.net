@@ -8,9 +8,9 @@
   },
   "dependencies": {
     "AngleSharp": "0.9.3-*",
+    "Jil": "2.13.0-beta1",
     "Microsoft.Extensions.Caching.Memory": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
-    "Newtonsoft.Json": "6.0.8"
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final"
   },
   "frameworks": {
     "dnx451": {

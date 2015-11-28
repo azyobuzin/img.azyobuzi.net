@@ -4,9 +4,9 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.Test;
+using Jil;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -80,8 +80,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
                     var s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
                     ResolverUtils.HttpResponseMessage(this.logger, s, null);
-                    var j = JObject.Parse(s);
-                    return (string)j["photo"]["image_url"];
+                    return JSON.DeserializeDynamic(s).photo.image_url;
                 }
             }
         }

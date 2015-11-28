@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace ImgAzyobuziNet.Core
 {
-    internal static class Extensions
+    public static class Extensions
     {
         private static readonly MemoryCacheEntryOptions defaultOptions = new MemoryCacheEntryOptions
         {
@@ -29,13 +28,33 @@ namespace ImgAzyobuziNet.Core
             return result;
         }
 
-        internal static TResult[] ConvertAll<TSource, TResult>(this TSource[] source, Func<TSource, TResult> selector)
+        public static TResult[] ConvertAll<TSource, TResult>(this TSource[] source, Func<TSource, TResult> selector)
         {
             var len = source.Length;
             var result = new TResult[len];
             for (var i = 0; i < len; i++)
             {
                 result[i] = selector(source[i]);
+            }
+            return result;
+        }
+
+        public static TResult[] ConvertAll<TSource, TResult>(this IReadOnlyCollection<TSource> source, Func<TSource, TResult> selector)
+        {
+            var array = source as TSource[];
+            if (array != null) return ConvertAll(array, selector);
+
+            var count = source.Count;
+            var result = new TResult[count];
+            if (count == 0) return result;
+            using (var enumerator = source.GetEnumerator())
+            {
+                for (var i = 0; i < count; i++)
+                {
+                    if (!enumerator.MoveNext())
+                        throw new InvalidOperationException();
+                    result[i] = selector(enumerator.Current);
+                }
             }
             return result;
         }

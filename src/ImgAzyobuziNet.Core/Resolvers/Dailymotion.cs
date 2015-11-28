@@ -6,9 +6,9 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.Test;
+using Jil;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -85,7 +85,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 var s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
                 ResolverUtils.HttpResponseMessage(this.logger, s, null);
 
-                return JsonConvert.DeserializeObject<CacheItem>(s);
+                return JSON.Deserialize<CacheItem>(s);
             }
         }
 
