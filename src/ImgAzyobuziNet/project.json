@@ -19,7 +19,7 @@
   },
 
   "commands": {
-    "web": "Microsoft.AspNet.Server.Kestrel"
+    "web": "Microsoft.AspNet.Hosting"
   },
 
   "frameworks": {
