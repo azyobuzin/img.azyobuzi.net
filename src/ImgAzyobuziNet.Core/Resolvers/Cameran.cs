@@ -34,55 +34,57 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class CameranResolver : IResolver
     {
+        private readonly IMemoryCache _memoryCache;
+        private readonly ILogger _logger;
+
         public CameranResolver(IMemoryCache memoryCache, ILogger<CameranResolver> logger)
         {
-            this.memoryCache = memoryCache;
-            this.logger = logger;
+            this._memoryCache = memoryCache;
+            this._logger = logger;
         }
-
-        private readonly IMemoryCache memoryCache;
-        private readonly ILogger logger;
 
         public async Task<ImageInfo[]> GetImages(Match match)
         {
             var id = match.Groups[1].Value;
-            var result = await this.memoryCache.GetOrSet(
+            var result = await this._memoryCache.GetOrSet(
                 "cameran-" + id,
-                () => this.GetOgImage(id)
+                () => this.Fetch(id)
             ).ConfigureAwait(false);
 
             return new[] { new ImageInfo(result, result, result) };
         }
 
-        private async Task<string> GetOgImage(string id)
+        private async Task<string> Fetch(string id)
         {
-            using (var hc = new HttpClient(new HttpClientHandler() { AllowAutoRedirect = false }))
+            using (var hc = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false }))
             {
                 var requestUri = "http://cameran.in/p/v1/" + id;
-                ResolverUtils.RequestingMessage(this.logger, requestUri, null);
-                var res = await hc.GetAsync(requestUri).ConfigureAwait(false);
+                ResolverUtils.RequestingMessage(this._logger, requestUri, null);
 
-                switch (res.StatusCode)
+                using (var res = await hc.GetAsync(requestUri).ConfigureAwait(false))
                 {
-                    case HttpStatusCode.NotFound:
-                    case HttpStatusCode.Found:
-                    case HttpStatusCode.SeeOther:
-                        throw new ImageNotFoundException();
+                    switch (res.StatusCode)
+                    {
+                        case HttpStatusCode.NotFound:
+                        case HttpStatusCode.Found:
+                        case HttpStatusCode.SeeOther:
+                            throw new ImageNotFoundException();
+                    }
+
+                    res.EnsureSuccessStatusCode();
+
+                    return ResolverUtils.GetOgImage(
+                        await new HtmlParser().ParseAsync(
+                            await res.Content.ReadAsStreamAsync().ConfigureAwait(false)
+                        ).ConfigureAwait(false));
                 }
-
-                res.EnsureSuccessStatusCode();
-
-                return ResolverUtils.GetOgImage(
-                    await new HtmlParser().ParseAsync(
-                        await res.Content.ReadAsStreamAsync().ConfigureAwait(false)
-                    ).ConfigureAwait(false));
             }
         }
 
         [TestMethod(TestType.Network)]
-        private async Task GetOgImageTest()
+        private async Task FetchTest()
         {
-            var image = await this.GetOgImage("3hbTqO2U4W").ConfigureAwait(false);
+            var image = await this.Fetch("3hbTqO2U4W").ConfigureAwait(false);
             Assert.True(() => !string.IsNullOrEmpty(image));
         }
     }

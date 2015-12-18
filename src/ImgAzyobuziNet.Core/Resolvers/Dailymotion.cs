@@ -36,41 +36,41 @@ namespace ImgAzyobuziNet.Core.Resolvers
     {
         // 動画の取得には投稿者のアクセストークンが必要
 
+        private readonly IMemoryCache _memoryCache;
+        private readonly ILogger _logger;
+
         public DailymotionResolver(IMemoryCache memoryCache, ILogger<DailymotionResolver> logger)
         {
-            this.memoryCache = memoryCache;
-            this.logger = logger;
+            this._memoryCache = memoryCache;
+            this._logger = logger;
         }
-
-        private readonly IMemoryCache memoryCache;
-        private readonly ILogger logger;
 
         public class CacheItem
         {
-            public string thumbnail_url { get; set; }
-            public string thumbnail_480_url { get; set; }
-            public string thumbnail_180_url { get; set; }
+            public string thumbnail_url;
+            public string thumbnail_480_url;
+            public string thumbnail_180_url;
         }
 
         private static readonly string fields =
-            string.Join(",", typeof(CacheItem).GetTypeInfo().DeclaredProperties.Select(x => x.Name));
+            string.Join(",", typeof(CacheItem).GetTypeInfo().DeclaredFields.Select(x => x.Name));
 
         public async Task<ImageInfo[]> GetImages(Match match)
         {
             var id = match.Groups[1].Value;
-            var result = await this.memoryCache.GetOrSet(
+            var result = await this._memoryCache.GetOrSet(
                 "dailymotion-" + id,
-                () => this.GetThumbnailUrl(id)
+                () => this.Fetch(id)
             ).ConfigureAwait(false);
             return new[] { new ImageInfo(result.thumbnail_url, result.thumbnail_480_url, result.thumbnail_180_url) };
         }
 
-        private async Task<CacheItem> GetThumbnailUrl(string id)
+        private async Task<CacheItem> Fetch(string id)
         {
             using (var hc = new HttpClient())
             {
                 var requestUri = "https://api.dailymotion.com/video/" + id + "?fields=" + fields;
-                ResolverUtils.RequestingMessage(this.logger, requestUri, null);
+                ResolverUtils.RequestingMessage(this._logger, requestUri, null);
                 var res = await hc.GetAsync(requestUri).ConfigureAwait(false);
 
                 switch (res.StatusCode)
@@ -83,16 +83,16 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 res.EnsureSuccessStatusCode();
 
                 var s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
-                ResolverUtils.HttpResponseMessage(this.logger, s, null);
+                ResolverUtils.HttpResponseMessage(this._logger, s, null);
 
                 return JSON.Deserialize<CacheItem>(s);
             }
         }
 
         [TestMethod(TestType.Network)]
-        private async Task GetThumbnailUrlTest()
+        private async Task FetchTest()
         {
-            var result = await this.GetThumbnailUrl("x26m1j4_wildlife_animals").ConfigureAwait(false);
+            var result = await this.Fetch("x26m1j4_wildlife_animals").ConfigureAwait(false);
             Assert.True(() => !string.IsNullOrEmpty(result.thumbnail_url));
             Assert.True(() => !string.IsNullOrEmpty(result.thumbnail_480_url));
             Assert.True(() => !string.IsNullOrEmpty(result.thumbnail_180_url));

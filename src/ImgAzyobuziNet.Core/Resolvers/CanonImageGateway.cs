@@ -65,14 +65,14 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class CanonImageGatewayResolver : IResolver
     {
+        private readonly IMemoryCache _memoryCache;
+        private readonly ILogger _logger;
+
         public CanonImageGatewayResolver(IMemoryCache memoryCache, ILogger<CanonImageGatewayResolver> logger)
         {
-            this.memoryCache = memoryCache;
-            this.logger = logger;
+            this._memoryCache = memoryCache;
+            this._logger = logger;
         }
-
-        private readonly IMemoryCache memoryCache;
-        private readonly ILogger logger;
 
         public async Task<ImageInfo[]> GetImages(Match match)
         {
@@ -84,12 +84,12 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
             if (id.Contains("/"))
             {
-                var result = await this.memoryCache.GetOrSet(key,
+                var result = await this._memoryCache.GetOrSet(key,
                     () => this.GetImage(t, id)).ConfigureAwait(false);
                 return new[] { new ImageInfo(result, result, result) };
             }
 
-            var thumbs = await this.memoryCache.GetOrSet(key,
+            var thumbs = await this._memoryCache.GetOrSet(key,
                 () => this.GetAlbumThumbnails(t, id)).ConfigureAwait(false);
             return thumbs.ConvertAll(x => new ImageInfo(x, x, x));
         }
@@ -109,7 +109,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             using (var hc = new HttpClient())
             {
                 var requestUri = "http://opa.cig2.imagegateway.net/s/" + t + id;
-                ResolverUtils.RequestingMessage(this.logger, requestUri, null);
+                ResolverUtils.RequestingMessage(this._logger, requestUri, null);
                 var res = await hc.GetAsync(requestUri).ConfigureAwait(false);
                 content = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
                 CheckResponseError(res, content);
@@ -124,7 +124,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             using (var hc = new HttpClient())
             {
                 var requestUri = "http://opa.cig2.imagegateway.net/s/" + t + "album/" + id;
-                ResolverUtils.RequestingMessage(this.logger, requestUri, null);
+                ResolverUtils.RequestingMessage(this._logger, requestUri, null);
                 var res = await hc.GetAsync(requestUri).ConfigureAwait(false);
                 content = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
                 CheckResponseError(res, content);

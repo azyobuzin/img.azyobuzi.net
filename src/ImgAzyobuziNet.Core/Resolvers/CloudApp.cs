@@ -42,23 +42,20 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class CloudAppResolver : IResolver
     {
+        private readonly IMemoryCache _memoryCache;
+        private readonly ILogger _logger;
+
         public CloudAppResolver(IMemoryCache memoryCache, ILogger<CloudAppResolver> logger)
         {
-            this.memoryCache = memoryCache;
-            this.logger = logger;
+            this._memoryCache = memoryCache;
+            this._logger = logger;
         }
-
-        private readonly IMemoryCache memoryCache;
-        private readonly ILogger logger;
 
         public class CacheItem
         {
-            [DataMember(Name = "item_type")]
-            public string ItemType { get; set; }
-            [DataMember(Name = "content_url")]
-            public string ContentUrl { get; set; }
-            [DataMember(Name = "thumbnail_url")]
-            public string ThumbnailUrl { get; set; }
+            public string item_type;
+            public string content_url;
+            public string thumbnail_url;
         }
 
         public async Task<ImageInfo[]> GetImages(Match match)
@@ -66,20 +63,20 @@ namespace ImgAzyobuziNet.Core.Resolvers
             var id = match.Groups[1].Value;
             var key = "cloudapp-" + id;
 
-            var result = await this.memoryCache.GetOrSet(
+            var result = await this._memoryCache.GetOrSet(
                 "cloudapp-" + id,
-                () => this.GetContentUrl(match.Value)
+                () => this.Fetch(match.Value)
             ).ConfigureAwait(false);
 
             ImageInfo i;
-            switch (result.ItemType)
+            switch (result.item_type)
             {
                 case "image":
-                    i = new ImageInfo(result.ContentUrl, result.ContentUrl, result.ThumbnailUrl ?? result.ContentUrl);
+                    i = new ImageInfo(result.content_url, result.content_url, result.thumbnail_url ?? result.content_url);
                     break;
                 case "video":
                     // ThumbnailUrl is probably null.
-                    i = new ImageInfo(result.ThumbnailUrl, result.ThumbnailUrl, result.ThumbnailUrl, result.ContentUrl);
+                    i = new ImageInfo(result.thumbnail_url, result.thumbnail_url, result.thumbnail_url, result.content_url);
                     break;
                 default:
                     throw new NotPictureException();
@@ -88,13 +85,13 @@ namespace ImgAzyobuziNet.Core.Resolvers
             return new[] { i };
         }
 
-        private async Task<CacheItem> GetContentUrl(string uri)
+        private async Task<CacheItem> Fetch(string uri)
         {
             using (var hc = new HttpClient())
             {
                 hc.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                ResolverUtils.RequestingMessage(this.logger, uri, null);
+                ResolverUtils.RequestingMessage(this._logger, uri, null);
 
                 using (var res = await hc.GetAsync(uri).ConfigureAwait(false))
                 {
@@ -104,7 +101,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
                     res.EnsureSuccessStatusCode();
 
                     var s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ResolverUtils.HttpResponseMessage(this.logger, s, null);
+                    ResolverUtils.HttpResponseMessage(this._logger, s, null);
 
                     return JSON.Deserialize<CacheItem>(s);
                 }
@@ -114,18 +111,18 @@ namespace ImgAzyobuziNet.Core.Resolvers
         [TestMethod(TestType.Network)]
         private async Task ImageTest()
         {
-            var result = await this.GetContentUrl("http://cl.ly/image/1u1T2k2N2F1L").ConfigureAwait(false);
-            result.ItemType.Is("image");
-            Assert.True(() => !string.IsNullOrEmpty(result.ContentUrl));
-            Assert.True(() => !string.IsNullOrEmpty(result.ThumbnailUrl));
+            var result = await this.Fetch("http://cl.ly/image/1u1T2k2N2F1L").ConfigureAwait(false);
+            result.item_type.Is("image");
+            Assert.True(() => !string.IsNullOrEmpty(result.content_url));
+            Assert.True(() => !string.IsNullOrEmpty(result.thumbnail_url));
         }
 
         [TestMethod(TestType.Network)]
         private async Task VideoTest()
         {
-            var result = await this.GetContentUrl("http://cl.ly/2V2a2R1E1v3F").ConfigureAwait(false);
-            result.ItemType.Is("video");
-            Assert.True(() => !string.IsNullOrEmpty(result.ContentUrl));
+            var result = await this.Fetch("http://cl.ly/2V2a2R1E1v3F").ConfigureAwait(false);
+            result.item_type.Is("video");
+            Assert.True(() => !string.IsNullOrEmpty(result.content_url));
         }
 
         [TestMethod(TestType.Network)]

@@ -10,42 +10,32 @@ using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    public class _500pxProvider : IPatternProvider
+    public class DeviantArtProvider : IPatternProvider
     {
-        public string ServiceId => "500px";
+        public string ServiceId => "DeviantArt";
 
-        public string ServiceName => "500px";
+        public string ServiceName => "DeviantArt";
 
-        // https://500px.com/photo/{id}/{title}
-        public string Pattern => @"^https?://(?:www\.)?500px\.com/photo/(\d+)(?:/.*)?$";
+        public string Pattern => @"^https?://(?:[\w\-]+)\.deviantart\.com/art/([\w\-]+)/?(?:\?.*)?(?:#.*)?$";
 
-        private static readonly ResolverFactory f = PPUtils.CreateFactory<_500pxResolver>();
+        private static readonly ResolverFactory f = PPUtils.CreateFactory<DeviantArtResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
 
         [TestMethod(TestType.Static)]
-        private void RegexIdTitle()
+        private void RegexTest()
         {
-            var match = this.GetRegex().Match(
-                "https://500px.com/photo/128754325/t-v-winter-by-ray-green?ctx_page=1&from=popular");
+            var match = this.GetRegex().Match("http://aenea-jones.deviantart.com/art/Stillness-578505886");
             Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("128754325");
-        }
-
-        [TestMethod(TestType.Static)]
-        private void RegexId()
-        {
-            var match = this.GetRegex().Match("https://500px.com/photo/128742743");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("128742743");
+            match.Groups[1].Value.Is("Stillness-578505886");
         }
     }
 
-    public class _500pxResolver : IResolver
+    public class DeviantArtResolver : IResolver
     {
         private readonly IMemoryCache _memoryCache;
         private readonly ILogger _logger;
 
-        public _500pxResolver(IMemoryCache memoryCache, ILogger<_500pxResolver> logger)
+        public DeviantArtResolver(IMemoryCache memoryCache, ILogger<DeviantArtResolver> logger)
         {
             this._memoryCache = memoryCache;
             this._logger = logger;
@@ -54,21 +44,24 @@ namespace ImgAzyobuziNet.Core.Resolvers
         public async Task<ImageInfo[]> GetImages(Match match)
         {
             var id = match.Groups[1].Value;
-            var key = "500px-" + id;
-
             var result = await this._memoryCache.GetOrSet(
-                "500px-" + id,
-                () => this.Fetch(id)
+                "deviantart-" + id,
+                () => this.Fetch(match.Value)
             ).ConfigureAwait(false);
-
-            return new[] { new ImageInfo(result, result, result) };
+            return new[] { new ImageInfo(result.url, result.url, result.thumbnail_url) };
         }
 
-        private async Task<string> Fetch(string id)
+        public class CacheItem
+        {
+            public string url;
+            public string thumbnail_url;
+        }
+
+        private async Task<CacheItem> Fetch(string uri)
         {
             using (var hc = new HttpClient())
             {
-                var requestUri = "https://api.500px.com/v1/photos/" + id + "?image_size=5&consumer_key=" + Constants._500pxConsumerKey;
+                var requestUri = "http://backend.deviantart.com/oembed?url=" + Uri.EscapeDataString(uri);
                 ResolverUtils.RequestingMessage(this._logger, requestUri, null);
 
                 using (var res = await hc.GetAsync(requestUri).ConfigureAwait(false))
@@ -80,7 +73,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
                     var s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
                     ResolverUtils.HttpResponseMessage(this._logger, s, null);
-                    return JSON.DeserializeDynamic(s).photo.image_url;
+
+                    return JSON.Deserialize<CacheItem>(s);
                 }
             }
         }
@@ -88,8 +82,9 @@ namespace ImgAzyobuziNet.Core.Resolvers
         [TestMethod(TestType.Network)]
         private async Task FetchTest()
         {
-            var imageUrl = await this.Fetch("128836907").ConfigureAwait(false);
-            Assert.True(() => !string.IsNullOrEmpty(imageUrl));
+            var result = await this.Fetch("http://kirokaze.deviantart.com/art/Mountain-town-578514456").ConfigureAwait(false);
+            Assert.True(() => !string.IsNullOrEmpty(result.url));
+            Assert.True(() => !string.IsNullOrEmpty(result.thumbnail_url));
         }
     }
 }
