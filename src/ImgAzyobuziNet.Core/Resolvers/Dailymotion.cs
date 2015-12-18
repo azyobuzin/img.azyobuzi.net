@@ -71,21 +71,23 @@ namespace ImgAzyobuziNet.Core.Resolvers
             {
                 var requestUri = "https://api.dailymotion.com/video/" + id + "?fields=" + fields;
                 ResolverUtils.RequestingMessage(this._logger, requestUri, null);
-                var res = await hc.GetAsync(requestUri).ConfigureAwait(false);
 
-                switch (res.StatusCode)
+                string json;
+                using (var res = await hc.GetAsync(requestUri).ConfigureAwait(false))
                 {
-                    case HttpStatusCode.BadRequest:
-                    case HttpStatusCode.NotFound:
-                        throw new ImageNotFoundException();
+                    switch (res.StatusCode)
+                    {
+                        case HttpStatusCode.BadRequest:
+                        case HttpStatusCode.NotFound:
+                            throw new ImageNotFoundException();
+                    }
+
+                    res.EnsureSuccessStatusCode();
+                    json = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
 
-                res.EnsureSuccessStatusCode();
-
-                var s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
-                ResolverUtils.HttpResponseMessage(this._logger, s, null);
-
-                return JSON.Deserialize<CacheItem>(s);
+                ResolverUtils.HttpResponseMessage(this._logger, json, null);
+                return JSON.Deserialize<CacheItem>(json);
             }
         }
 

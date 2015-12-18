@@ -93,18 +93,18 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
                 ResolverUtils.RequestingMessage(this._logger, uri, null);
 
+                string s;
                 using (var res = await hc.GetAsync(uri).ConfigureAwait(false))
                 {
                     if (res.StatusCode == HttpStatusCode.NotFound)
                         throw new ImageNotFoundException();
 
                     res.EnsureSuccessStatusCode();
-
-                    var s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ResolverUtils.HttpResponseMessage(this._logger, s, null);
-
-                    return JSON.Deserialize<CacheItem>(s);
+                    s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
+
+                ResolverUtils.HttpResponseMessage(this._logger, s, null);
+                return JSON.Deserialize<CacheItem>(s);
             }
         }
 

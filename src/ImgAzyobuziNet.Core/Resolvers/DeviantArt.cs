@@ -64,18 +64,18 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 var requestUri = "http://backend.deviantart.com/oembed?url=" + Uri.EscapeDataString(uri);
                 ResolverUtils.RequestingMessage(this._logger, requestUri, null);
 
+                string json;
                 using (var res = await hc.GetAsync(requestUri).ConfigureAwait(false))
                 {
                     if (res.StatusCode == HttpStatusCode.NotFound)
                         throw new ImageNotFoundException();
 
                     res.EnsureSuccessStatusCode();
-
-                    var s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ResolverUtils.HttpResponseMessage(this._logger, s, null);
-
-                    return JSON.Deserialize<CacheItem>(s);
+                    json = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
+
+                ResolverUtils.HttpResponseMessage(this._logger, json, null);
+                return JSON.Deserialize<CacheItem>(json);
             }
         }
 

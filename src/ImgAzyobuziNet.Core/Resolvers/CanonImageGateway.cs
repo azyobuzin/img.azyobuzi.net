@@ -132,8 +132,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
             return new HtmlParser().Parse(content)
                 .QuerySelectorAll("#jsAlbumItemList img")
-                .Select(x => x.GetAttribute("src"))
-                .ToArray();
+                .ConvertAll(x => x.GetAttribute("src"));
         }
 
         [TestMethod(TestType.Network)]
