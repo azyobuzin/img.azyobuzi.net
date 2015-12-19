@@ -23,6 +23,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private static readonly ResolverFactory f = PPUtils.CreateFactory<DailymotionResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
 
+        #region Tests
+
         [TestMethod(TestType.Static)]
         private void RegexTest()
         {
@@ -30,6 +32,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
             Assert.True(() => match.Success);
             match.Groups[1].Value.Is("x26m1j4_wildlife_animals");
         }
+
+        #endregion
     }
 
     public class DailymotionResolver : IResolver
@@ -91,6 +95,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
             }
         }
 
+        #region Tests
+
         [TestMethod(TestType.Network)]
         private async Task FetchTest()
         {
@@ -99,5 +105,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             Assert.True(() => !string.IsNullOrEmpty(result.thumbnail_480_url));
             Assert.True(() => !string.IsNullOrEmpty(result.thumbnail_180_url));
         }
+
+        #endregion
     }
 }

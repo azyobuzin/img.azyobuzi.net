@@ -16,6 +16,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private static readonly ResolverFactory f = PPUtils.CreateFactory<DroplrResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
 
+        #region Tests
+
         [TestMethod(TestType.Static)]
         private void RegexTest()
         {
@@ -33,6 +35,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
             Assert.True(() => !match.Groups[1].Success);
             match.Groups[2].Value.Is("180AL");
         }
+
+        #endregion
     }
 
     public class DroplrResolver : IResolver

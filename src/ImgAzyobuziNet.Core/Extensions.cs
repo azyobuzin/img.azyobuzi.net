@@ -58,5 +58,11 @@ namespace ImgAzyobuziNet.Core
             }
             return result;
         }
+
+        public static TValue GetOrDefault<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> source, TKey key)
+        {
+            TValue value;
+            return source.TryGetValue(key, out value) ? value : default(TValue);
+        }
     }
 }

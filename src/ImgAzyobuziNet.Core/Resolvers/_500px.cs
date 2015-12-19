@@ -22,6 +22,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private static readonly ResolverFactory f = PPUtils.CreateFactory<_500pxResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
 
+        #region Tests
+
         [TestMethod(TestType.Static)]
         private void RegexIdTitle()
         {
@@ -38,6 +40,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
             Assert.True(() => match.Success);
             match.Groups[1].Value.Is("128742743");
         }
+
+        #endregion
     }
 
     public class _500pxResolver : IResolver
@@ -64,6 +68,20 @@ namespace ImgAzyobuziNet.Core.Resolvers
             return new[] { new ImageInfo(result, result, result) };
         }
 
+#pragma warning disable 649
+
+        private struct ApiResponse
+        {
+            public Photo photo;
+        }
+
+        private struct Photo
+        {
+            public string image_url;
+        }
+
+#pragma warning restore 649
+
         private async Task<string> Fetch(string id)
         {
             using (var hc = new HttpClient())
@@ -80,10 +98,12 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
                     var s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
                     ResolverUtils.HttpResponseMessage(this._logger, s, null);
-                    return JSON.DeserializeDynamic(s).photo.image_url;
+                    return JSON.Deserialize<ApiResponse>(s).photo.image_url;
                 }
             }
         }
+
+        #region Tests
 
         [TestMethod(TestType.Network)]
         private async Task FetchTest()
@@ -91,5 +111,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             var imageUrl = await this.Fetch("128836907").ConfigureAwait(false);
             Assert.True(() => !string.IsNullOrEmpty(imageUrl));
         }
+
+        #endregion
     }
 }

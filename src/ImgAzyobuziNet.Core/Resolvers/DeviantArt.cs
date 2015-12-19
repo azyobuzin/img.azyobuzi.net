@@ -21,6 +21,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private static readonly ResolverFactory f = PPUtils.CreateFactory<DeviantArtResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
 
+        #region Tests
+
         [TestMethod(TestType.Static)]
         private void RegexTest()
         {
@@ -28,6 +30,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
             Assert.True(() => match.Success);
             match.Groups[1].Value.Is("Stillness-578505886");
         }
+
+        #endregion
     }
 
     public class DeviantArtResolver : IResolver
@@ -79,6 +83,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
             }
         }
 
+        #region Tests
+
         [TestMethod(TestType.Network)]
         private async Task FetchTest()
         {
@@ -86,5 +92,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             Assert.True(() => !string.IsNullOrEmpty(result.url));
             Assert.True(() => !string.IsNullOrEmpty(result.thumbnail_url));
         }
+
+        #endregion
     }
 }

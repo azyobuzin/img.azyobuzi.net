@@ -22,6 +22,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private static readonly ResolverFactory f = PPUtils.CreateFactory<CanonImageGatewayResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
 
+        #region Tests
+
         [TestMethod(TestType.Static)]
         private void RegexTest()
         {
@@ -61,6 +63,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 match.Groups[2].Value.Is("HPJmdf4wwci");
             }
         }
+
+        #endregion
     }
 
     public class CanonImageGatewayResolver : IResolver
@@ -137,6 +141,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 .ToArray();
         }
 
+        #region Tests
+
         [TestMethod(TestType.Network)]
         private async Task GetImageTest()
         {
@@ -155,5 +161,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             thumbs.Length.Is(49);
             foreach (var x in thumbs) Assert.True(() => !string.IsNullOrEmpty(x));
         }
+
+        #endregion
     }
 }

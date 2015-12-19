@@ -23,6 +23,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private static readonly ResolverFactory f = PPUtils.CreateFactory<CameranResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
 
+        #region Tests
+
         [TestMethod(TestType.Static)]
         private void RegexTest()
         {
@@ -30,6 +32,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
             Assert.True(() => match.Success);
             match.Groups[1].Value.Is("3hbTqO2U4W");
         }
+
+        #endregion
     }
 
     public class CameranResolver : IResolver
@@ -80,11 +84,15 @@ namespace ImgAzyobuziNet.Core.Resolvers
             }
         }
 
+        #region Tests
+
         [TestMethod(TestType.Network)]
         private async Task FetchTest()
         {
             var image = await this.Fetch("3hbTqO2U4W").ConfigureAwait(false);
             Assert.True(() => !string.IsNullOrEmpty(image));
         }
+
+        #endregion
     }
 }

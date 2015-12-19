@@ -27,6 +27,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private static readonly ResolverFactory f = PPUtils.CreateFactory<DropboxResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
 
+        #region Tests
+
         [TestMethod(TestType.Static)]
         private void RegexFileTest()
         {
@@ -53,6 +55,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
             Assert.True(() => !match.Groups[1].Success);
             match.Groups[2].Value.Is("sc/9k6de4c89fqxsf6/AAAm9DDjcDE0-4zuk3Dx2vCSa");
         }
+
+        #endregion
     }
 
     public class DropboxResolver : IResolver
@@ -179,6 +183,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 .ToArray();
         }
 
+        #region Tests
+
         [TestMethod(TestType.Network)]
         private async Task FetchPhotoTest()
         {
@@ -209,5 +215,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             Assert.True(() => result[0].IsVideo);
             Assert.True(() => !result[1].IsVideo && !result[2].IsVideo);
         }
+
+        #endregion
     }
 }

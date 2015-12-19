@@ -33,6 +33,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
         }
     }
 
+    #region Tests
+
     class TwitpicTest
     {
         public TwitpicTest(ITestActivator activator)
@@ -75,4 +77,6 @@ namespace ImgAzyobuziNet.Core.Resolvers
             }
         }
     }
+
+    #endregion
 }

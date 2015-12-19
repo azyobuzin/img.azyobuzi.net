@@ -23,6 +23,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private static readonly ResolverFactory f = PPUtils.CreateFactory<CloudAppResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
 
+        #region Tests
+
         [TestMethod(TestType.Static)]
         private void RegexId()
         {
@@ -38,6 +40,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
             Assert.True(() => match.Success);
             match.Groups[1].Value.Is("1u1T2k2N2F1L");
         }
+
+        #endregion
     }
 
     public class CloudAppResolver : IResolver
@@ -108,6 +112,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
             }
         }
 
+        #region Tests
+
         [TestMethod(TestType.Network)]
         private async Task ImageTest()
         {
@@ -140,5 +146,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
             throw new AssertionException("No exception has been thrown.");
         }
+
+        #endregion
     }
 }
