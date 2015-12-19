@@ -131,8 +131,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
             }
 
             return new HtmlParser().Parse(content)
-                .QuerySelectorAll("#jsAlbumItemList img")
-                .ConvertAll(x => x.GetAttribute("src"));
+                .GetElementById("jsAlbumItemList")
+                .GetElementsByTagName("img")
+                .Select(x => x.GetAttribute("src"))
+                .ToArray();
         }
 
         [TestMethod(TestType.Network)]

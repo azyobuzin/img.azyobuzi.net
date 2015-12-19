@@ -73,10 +73,9 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
                     res.EnsureSuccessStatusCode();
 
-                    return ResolverUtils.GetOgImage(
-                        await new HtmlParser().ParseAsync(
-                            await res.Content.ReadAsStreamAsync().ConfigureAwait(false)
-                        ).ConfigureAwait(false));
+                    using (var stream = await res.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                        return ResolverUtils.GetOgImage(
+                            await new HtmlParser().ParseAsync(stream).ConfigureAwait(false));
                 }
             }
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AngleSharp.Dom;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace ImgAzyobuziNet.Core
@@ -51,26 +50,6 @@ namespace ImgAzyobuziNet.Core
             using (var enumerator = source.GetEnumerator())
             {
                 for (var i = 0; i < count; i++)
-                {
-                    if (!enumerator.MoveNext())
-                        throw new InvalidOperationException();
-                    result[i] = selector(enumerator.Current);
-                }
-            }
-            return result;
-        }
-
-        public static TResult[] ConvertAll<TSource, TResult>(this IHtmlCollection<TSource> source, Func<TSource, TResult> selector)
-            where TSource : IElement
-        {
-            // AngleSharp の HtmlCollection の実装は source[i] をすると Skip(i).FirstOrDefault() するので使わない
-
-            var len = source.Length;
-            var result = new TResult[len];
-            if (len == 0) return result;
-            using (var enumerator = source.GetEnumerator())
-            {
-                for (var i = 0; i < len; i++)
                 {
                     if (!enumerator.MoveNext())
                         throw new InvalidOperationException();

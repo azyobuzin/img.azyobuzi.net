@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AngleSharp.Dom.Html;
+using AngleSharp.Extensions;
 using AngleSharp.Parser.Html;
 using ImgAzyobuziNet.Core.Test;
 using Microsoft.Extensions.Caching.Memory;
@@ -135,9 +136,9 @@ namespace ImgAzyobuziNet.Core.Resolvers
                         throw new ImageNotFoundException();
 
                     res.EnsureSuccessStatusCode();
-                    document = await new HtmlParser().ParseAsync(
-                        await res.Content.ReadAsStreamAsync().ConfigureAwait(false)
-                    ).ConfigureAwait(false);
+
+                    using (var stream = await res.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                        document = await new HtmlParser().ParseAsync(stream).ConfigureAwait(false);
                 }
             }
 
@@ -164,9 +165,12 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         private async Task<AlbumItem[]> FetchAlbum(string id)
         {
+            // IParentNode.Children は ChildNodes.OfType<IElement>() とほぼ同じ
             var document = await this.DownloadHtml(id).ConfigureAwait(false);
-            return document.QuerySelectorAll("meta[property=\"og:image\"]")
-                .Zip(document.QuerySelectorAll("#gallery-view-media>li"), (og, li) => new AlbumItem
+            var ogImages = document.Head.ChildNodes.OfType<IHtmlMetaElement>().Where(x => x.GetAttribute("property") == "og:image");
+            var galleryItems = document.GetElementById("gallery-view-media").ChildNodes.OfType<IHtmlListItemElement>();
+            return ogImages.Zip(galleryItems,
+                (og, li) => new AlbumItem
                 {
                     OgImage = og.GetAttribute("content"),
                     Permalink = li.GetElementsByClassName("file-link")[0].GetAttribute("href"),
@@ -203,7 +207,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             }
 
             Assert.True(() => result[0].IsVideo);
-            Assert.True(() => !result[1].IsVideo && !result[1].IsVideo);
+            Assert.True(() => !result[1].IsVideo && !result[2].IsVideo);
         }
     }
 }
