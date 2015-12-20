@@ -17,7 +17,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         public string ServiceName => "500px";
 
         // https://500px.com/photo/{id}/{title}
-        public string Pattern => @"^https?://(?:www\.)?500px\.com/photo/(\d+)(?:/.*)?$";
+        public string Pattern => @"^https?://(?:www\.)?500px\.com/photo/(\d+)(?:[/\?#].*)?$";
 
         private static readonly ResolverFactory f = PPUtils.CreateFactory<_500pxResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
@@ -84,6 +84,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         private async Task<string> Fetch(string id)
         {
+            string s;
             using (var hc = new HttpClient())
             {
                 var requestUri = "https://api.500px.com/v1/photos/" + id + "?image_size=5&consumer_key=" + Constants._500pxConsumerKey;
@@ -96,11 +97,12 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
                     res.EnsureSuccessStatusCode();
 
-                    var s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    ResolverUtils.HttpResponseMessage(this._logger, s, null);
-                    return JSON.Deserialize<ApiResponse>(s).photo.image_url;
+                    s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
             }
+
+            ResolverUtils.HttpResponseMessage(this._logger, s, null);
+            return JSON.Deserialize<ApiResponse>(s).photo.image_url;
         }
 
         #region Tests

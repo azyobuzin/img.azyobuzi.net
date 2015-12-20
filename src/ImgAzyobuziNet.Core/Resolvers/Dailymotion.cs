@@ -71,12 +71,12 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         private async Task<CacheItem> Fetch(string id)
         {
+            string json;
             using (var hc = new HttpClient())
             {
                 var requestUri = "https://api.dailymotion.com/video/" + id + "?fields=" + fields;
                 ResolverUtils.RequestingMessage(this._logger, requestUri, null);
 
-                string json;
                 using (var res = await hc.GetAsync(requestUri).ConfigureAwait(false))
                 {
                     switch (res.StatusCode)
@@ -89,10 +89,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
                     res.EnsureSuccessStatusCode();
                     json = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
-
-                ResolverUtils.HttpResponseMessage(this._logger, json, null);
-                return JSON.Deserialize<CacheItem>(json);
             }
+
+            ResolverUtils.HttpResponseMessage(this._logger, json, null);
+            return JSON.Deserialize<CacheItem>(json);
         }
 
         #region Tests

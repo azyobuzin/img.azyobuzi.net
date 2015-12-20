@@ -63,12 +63,12 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         private async Task<CacheItem> Fetch(string uri)
         {
+            string json;
             using (var hc = new HttpClient())
             {
                 var requestUri = "http://backend.deviantart.com/oembed?url=" + Uri.EscapeDataString(uri);
                 ResolverUtils.RequestingMessage(this._logger, requestUri, null);
 
-                string json;
                 using (var res = await hc.GetAsync(requestUri).ConfigureAwait(false))
                 {
                     if (res.StatusCode == HttpStatusCode.NotFound)
@@ -77,10 +77,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
                     res.EnsureSuccessStatusCode();
                     json = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
-
-                ResolverUtils.HttpResponseMessage(this._logger, json, null);
-                return JSON.Deserialize<CacheItem>(json);
             }
+
+            ResolverUtils.HttpResponseMessage(this._logger, json, null);
+            return JSON.Deserialize<CacheItem>(json);
         }
 
         #region Tests

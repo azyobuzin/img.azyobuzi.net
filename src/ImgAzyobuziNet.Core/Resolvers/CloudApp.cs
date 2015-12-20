@@ -91,13 +91,13 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         private async Task<CacheItem> Fetch(string uri)
         {
+            string s;
             using (var hc = new HttpClient())
             {
                 hc.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                 ResolverUtils.RequestingMessage(this._logger, uri, null);
 
-                string s;
                 using (var res = await hc.GetAsync(uri).ConfigureAwait(false))
                 {
                     if (res.StatusCode == HttpStatusCode.NotFound)
@@ -106,10 +106,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
                     res.EnsureSuccessStatusCode();
                     s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
-
-                ResolverUtils.HttpResponseMessage(this._logger, s, null);
-                return JSON.Deserialize<CacheItem>(s);
             }
+
+            ResolverUtils.HttpResponseMessage(this._logger, s, null);
+            return JSON.Deserialize<CacheItem>(s);
         }
 
         #region Tests

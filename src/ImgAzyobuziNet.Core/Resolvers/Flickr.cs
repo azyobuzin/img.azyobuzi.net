@@ -82,7 +82,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
                     return new[] { result };
                 }
-                else {
+                else
+                {
                     var id = match.Groups[2].Value;
                     var task = match.Groups[1].Value == "albums"
                         ? this._memoryCache.GetOrSet("flickralbum-" + id, () => this.FetchAlbum(id))
@@ -200,9 +201,9 @@ namespace ImgAzyobuziNet.Core.Resolvers
             using (var hc = new HttpClient())
             {
                 var requestUri = "https://api.flickr.com/services/rest/?format=json&nojsoncallback=1&"
-                    + query
                     + "&api_key=" + Constants.FlickrApiKey
-                    + "&method=" + method;
+                    + "&method=" + method
+                    + "&" + query;
                 ResolverUtils.RequestingMessage(this._logger, requestUri, null);
 
                 json = await hc.GetStringAsync(requestUri).ConfigureAwait(false);
@@ -238,7 +239,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
             return res.photo.ConvertAll(x => new ImageInfo(
                 x.url_o ?? x.url_l ?? x.url_m,
-                x.url_m,
+                x.url_l ?? x.url_m,
                 x.url_s,
                 x.media == "video" ? CreateVideoUri(x.id, res.owner, x.secret) : null));
         }
@@ -252,7 +253,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
             return res.photos.photo.ConvertAll(x => new ImageInfo(
                 x.url_o ?? x.url_l ?? x.url_m,
-                x.url_m,
+                x.url_l ?? x.url_m,
                 x.url_s,
                 x.media == "video" ? CreateVideoUri(x.id, x.owner, x.secret) : null));
         }
@@ -276,7 +277,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             // https://www.flickr.com/photos/85669226@N02/23816761306
             var result = await this.FetchPhoto("23816761306").ConfigureAwait(false);
             result.Full.Is("https://farm6.staticflickr.com/5725/23816761306_d95dabb2be_o.jpg");
-            result.Large.Is("https://farm6.staticflickr.com/5725/23816761306_123ded3e11.jpg");
+            result.Large.Is("https://farm6.staticflickr.com/5725/23816761306_123ded3e11_b.jpg");
             result.Thumb.Is("https://farm6.staticflickr.com/5725/23816761306_123ded3e11_m.jpg");
             result.Video.Is("https://www.flickr.com/photos/85669226@N02/23816761306/play/hd/123ded3e11/");
         }
