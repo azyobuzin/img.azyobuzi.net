@@ -17,7 +17,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public string ServiceName => "Flickr";
 
-        public string Pattern => @"^https?://(?:www\.)?(?:flickr\.com/photos/(?:[\w\-_@]+)/(?:(albums|galleries)/)?(\d+)(?:/(?:in|with|sizes)(?:/.*)?)?|flic\.kr/p/([1-9a-zA-Z]+))/?(?:\?.*)?(?:#.*)?$";
+        public string Pattern => @"^https?://(?:www\.)?(?:flickr\.com/photos/(?:[\w\-_@]+)/(?:(albums|galleries)/)?(\d+)(?:/(?:in|with|sizes)(?:/.*)?)?|flic\.kr/p/([1-9a-zA-Z]+))/?(?:[\?#].*)?$";
 
         private static readonly ResolverFactory f = PPUtils.CreateFactory<FlickrResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);

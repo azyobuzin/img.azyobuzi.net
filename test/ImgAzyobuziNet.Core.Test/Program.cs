@@ -52,6 +52,7 @@ namespace ImgAzyobuziNet.Core.Test
 
             var instanceCache = new Dictionary<Type, object>();
             var stopwatch = new Stopwatch();
+            var failedCount = 0;
 
             foreach (var m in testMethods)
             {
@@ -88,6 +89,7 @@ namespace ImgAzyobuziNet.Core.Test
                 catch (Exception ex)
                 {
                     stopwatch.Stop();
+                    failedCount++;
                     Console.Write(testName);
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.Write(" Failed");
@@ -101,6 +103,14 @@ namespace ImgAzyobuziNet.Core.Test
                         ex = aex.InnerException;
                     Console.WriteLine(ex);
                 }
+            }
+
+            if (failedCount > 0)
+            {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("{0} tests failed.", failedCount);
+                Console.ResetColor();
             }
         }
 

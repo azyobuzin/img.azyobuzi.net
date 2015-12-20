@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AngleSharp.Dom;
+using AngleSharp.Extensions;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace ImgAzyobuziNet.Core
@@ -63,6 +66,11 @@ namespace ImgAzyobuziNet.Core
         {
             TValue value;
             return source.TryGetValue(key, out value) ? value : default(TValue);
+        }
+
+        public static T GetElementById<T>(this INode node, string id) where T : IElement
+        {
+            return node.Descendents<T>().FirstOrDefault(x => x.Id == id);
         }
     }
 }

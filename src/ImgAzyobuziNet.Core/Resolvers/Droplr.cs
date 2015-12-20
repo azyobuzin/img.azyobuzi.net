@@ -11,7 +11,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public string ServiceName => "Droplr";
 
-        public string Pattern => @"^https?://d\.pr/(?:([iv])/)?(\w+)\+?(?:/\w+/?)?(?:\?.*)?(?:#.*)?$";
+        public string Pattern => @"^https?://d\.pr/(?:([iv])/)?(\w+)\+?(?:/\w+/?)?(?:[\?#].*)?$";
 
         private static readonly ResolverFactory f = PPUtils.CreateFactory<DroplrResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);

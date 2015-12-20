@@ -18,7 +18,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public string ServiceName => "cameran";
 
-        public string Pattern => @"^http://cameran\.in/p/v1/(\w+)/?(?:\?.*)?(?:#.*)?$";
+        public string Pattern => @"^http://cameran\.in/p/v1/(\w+)/?(?:[\?#].*)?$";
 
         private static readonly ResolverFactory f = PPUtils.CreateFactory<CameranResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);

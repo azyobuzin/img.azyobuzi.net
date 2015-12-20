@@ -16,7 +16,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public string ServiceName => "DeviantArt";
 
-        public string Pattern => @"^https?://(?:[\w\-]+)\.deviantart\.com/art/([\w\-]+)/?(?:\?.*)?(?:#.*)?$";
+        public string Pattern => @"^https?://(?:[\w\-]+)\.deviantart\.com/art/([\w\-]+)/?(?:[\?#].*)?$";
 
         private static readonly ResolverFactory f = PPUtils.CreateFactory<DeviantArtResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);

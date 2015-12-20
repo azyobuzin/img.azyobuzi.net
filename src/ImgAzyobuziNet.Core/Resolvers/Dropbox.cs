@@ -22,7 +22,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         public string Pattern => @"^https?://(?:www\.|dl\.)?dropbox\.com/(?:"
             + @"(s/\w+/[^/\?]+|sc/\w+/[\w\-]+/\d+)" // file or one of the album
             + @"|(sc/\w+/[\w\-]+)" // album
-            + @")/?(?:\?.*)?(?:#.*)?$";
+            + @")/?(?:[\?#].*)?$";
 
         private static readonly ResolverFactory f = PPUtils.CreateFactory<DropboxResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);

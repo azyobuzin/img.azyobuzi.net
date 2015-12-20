@@ -12,7 +12,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public string ServiceName => "Twitpic";
 
-        public string Pattern => @"^https?://(?:www\.)?twitpic\.com/(?:show/\w+/)?(\w+)/?(?:\?.*)?(?:#.*)?$";
+        public string Pattern => @"^https?://(?:www\.)?twitpic\.com/(?:show/\w+/)?(\w+)/?(?:[\?#].*)?$";
 
         private static readonly ResolverFactory f = PPUtils.CreateFactory<TwitpicResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);

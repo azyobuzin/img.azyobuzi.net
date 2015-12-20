@@ -16,7 +16,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public string ServiceName => "Gyazo";
 
-        public string Pattern => @"^https?://(?:(?:www|i|bot)\.)?gyazo\.com/(\w+)(\.\w+)?(?:\?.*)?(?:#.*)?$";
+        public string Pattern => @"^https?://(?:(?:www|i|bot)\.)?gyazo\.com/(\w+)(\.\w+)?(?:[\?#].*)?$";
 
         private static readonly ResolverFactory f = PPUtils.CreateFactory<GyazoResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
@@ -49,7 +49,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private readonly IMemoryCache _memoryCache;
         private readonly ILogger _logger;
 
-        public GyazoResolver(IMemoryCache memoryCache, ILogger<_500pxResolver> logger)
+        public GyazoResolver(IMemoryCache memoryCache, ILogger<GyazoResolver> logger)
         {
             this._memoryCache = memoryCache;
             this._logger = logger;

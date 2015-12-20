@@ -18,7 +18,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public string ServiceName => "CloudApp";
 
-        public string Pattern => @"^https?://(?:www\.)?cl\.ly/(?:image/)?(\w+)/?(?:\?.*)?(?:#.*)?$";
+        public string Pattern => @"^https?://(?:www\.)?cl\.ly/(?:image/)?(\w+)/?(?:[\?#].*)?$";
 
         private static readonly ResolverFactory f = PPUtils.CreateFactory<CloudAppResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);

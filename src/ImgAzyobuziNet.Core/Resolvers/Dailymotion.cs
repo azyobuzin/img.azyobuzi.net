@@ -18,7 +18,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public string ServiceName => "Dailymotion";
 
-        public string Pattern => @"^https?://(?:www\.)?dailymotion\.com/video/([^/\?]+)/?(?:\?.*)?(?:#.*)?$";
+        public string Pattern => @"^https?://(?:www\.)?dailymotion\.com/video/([^/\?]+)/?(?:[\?#].*)?$";
 
         private static readonly ResolverFactory f = PPUtils.CreateFactory<DailymotionResolver>();
         public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
