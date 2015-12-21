@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AngleSharp.Dom.Html;
 using AngleSharp.Extensions;
-using AngleSharp.Parser.Html;
 using ImgAzyobuziNet.Core.Test;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -104,9 +103,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
                     }
 
                     res.EnsureSuccessStatusCode();
-
-                    using (var stream = await res.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                        document = await new HtmlParser().ParseAsync(stream).ConfigureAwait(false);
+                    document = await res.Content.ReadAsHtmlDocument().ConfigureAwait(false);
                 }
             }
 
