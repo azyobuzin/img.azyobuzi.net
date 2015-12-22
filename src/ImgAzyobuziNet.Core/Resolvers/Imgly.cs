@@ -29,7 +29,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         [TestMethod(TestType.Static)]
         private void RegexShowTest()
         {
-            var match = this.GetRegex().Match("http://twitpic.com/show/large/D6sU");
+            var match = this.GetRegex().Match("http://img.ly/show/large/D6sU");
             Assert.True(() => match.Success);
             match.Groups[1].Value.Is("D6sU");
         }
