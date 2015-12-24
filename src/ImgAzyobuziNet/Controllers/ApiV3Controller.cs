@@ -55,16 +55,24 @@ namespace ImgAzyobuziNet.Controllers
             if (string.IsNullOrEmpty(uri))
                 return this.ErrorResponse(4001);
 
+            bool isVideo;
+
             switch (size)
             {
                 case "full":
                 case "large":
                 case "thumb":
-                case "video":
+                    isVideo = false;
+                    break;
+                case "video_full":
+                case "video_large":
+                case "video_mobile":
+                    isVideo = true;
                     break;
                 case "":
                 case null:
                     size = "full";
+                    isVideo = false;
                     break;
                 default:
                     return this.ErrorResponse(4003);
@@ -95,19 +103,22 @@ namespace ImgAzyobuziNet.Controllers
                 case "thumb":
                     location = img.Thumb;
                     break;
-                case "video":
-                    location = img.Video;
-                    if (string.IsNullOrEmpty(location))
-                        return this.ErrorResponse(4045, result.PatternProvider.ServiceId);
-                    goto RETURN;
+                case "video_full":
+                    location = img.VideoFull;
+                    break;
+                case "video_large":
+                    location = img.VideoLarge;
+                    break;
+                case "video_mobile":
+                    location = img.VideoMobile;
+                    break;
                 default:
                     throw new Exception("unreachable");
             }
 
             if (string.IsNullOrEmpty(location))
-                return this.ErrorResponse(4044, result.PatternProvider.ServiceId);
+                return this.ErrorResponse(isVideo ? 4045 : 4044, result.PatternProvider.ServiceId);
 
-            RETURN:
             return base.Redirect(location);
         }
 
@@ -128,7 +139,15 @@ namespace ImgAzyobuziNet.Controllers
             {
                 service_id = result.PatternProvider.ServiceId,
                 service_name = result.PatternProvider.ServiceName,
-                images = result.Images.ConvertAll(x => new { full = x.Full, large = x.Large, thumb = x.Thumb, video = x.Video })
+                images = result.Images.ConvertAll(x => new
+                {
+                    full = x.Full,
+                    large = x.Large,
+                    thumb = x.Thumb,
+                    video_full = x.VideoFull,
+                    video_large = x.VideoLarge,
+                    video_mobile = x.VideoMobile
+                })
             });
         }
     }

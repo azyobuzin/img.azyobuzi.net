@@ -85,7 +85,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
                     case "photo":
                         return new[] { new ImageInfo(originalFile, result.OgImage, result.OgImage) };
                     case "video":
-                        return new[] { new ImageInfo(result.OgImage, result.OgImage, result.OgImage, originalFile) };
+                        return new[] { new ImageInfo(result.OgImage, result.OgImage, result.OgImage, originalFile, originalFile, originalFile) };
                     default:
                         throw new NotPictureException();
                 }
@@ -101,13 +101,15 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 return result.ConvertAll(x =>
                 {
                     var originalFile = "https://dl.dropbox.com" + new Uri(x.Permalink).AbsolutePath;
-                    return new ImageInfo
-                    {
-                        Full = x.IsVideo ? x.OgImage : originalFile,
-                        Large = x.OgImage,
-                        Thumb = x.OgImage,
-                        Video = x.IsVideo ? originalFile : null
-                    };
+                    var video = x.IsVideo ? originalFile : null;
+                    return new ImageInfo(
+                        x.IsVideo ? x.OgImage : originalFile,
+                        x.OgImage,
+                        x.OgImage,
+                        video,
+                        video,
+                        video
+                    );
                 });
             }
         }

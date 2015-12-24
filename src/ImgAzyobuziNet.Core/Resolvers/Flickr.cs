@@ -226,7 +226,9 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 sizes.GetOrDefault("Original") ?? sizes.GetOrDefault("Large") ?? sizes["Medium"],
                 sizes.GetOrDefault("Large") ?? sizes["Medium"],
                 sizes["Small"],
-                sizes.GetOrDefault("HD MP4") ?? sizes.GetOrDefault("Site MP4")
+                sizes.GetOrDefault("HD MP4") ?? sizes.GetOrDefault("Site MP4"),
+                sizes["Site MP4"],
+                sizes["Mobile MP4"]
             );
         }
 
@@ -237,11 +239,19 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 "extras=url_o,url_l,url_m,url_s,media&photoset_id=" + id
             ).ConfigureAwait(false)).photoset;
 
-            return res.photo.ConvertAll(x => new ImageInfo(
-                x.url_o ?? x.url_l ?? x.url_m,
-                x.url_l ?? x.url_m,
-                x.url_s,
-                x.media == "video" ? CreateVideoUri(x.id, res.owner, x.secret) : null));
+            return res.photo.ConvertAll(x =>
+            {
+                var isVideo = x.media == "video";
+                var site = isVideo ? CreateVideoUri("site", x.id, res.owner, x.secret) : null;
+                return new ImageInfo(
+                    x.url_o ?? x.url_l ?? x.url_m,
+                    x.url_l ?? x.url_m,
+                    x.url_s,
+                    site,
+                    site,
+                    isVideo ? CreateVideoUri("mobile", x.id, res.owner, x.secret) : null
+                );
+            });
         }
 
         private async Task<ImageInfo[]> FetchGallery(string id)
@@ -251,16 +261,24 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 "extras=url_o,url_l,url_m,url_s,media&gallery_id=" + id
             ).ConfigureAwait(false);
 
-            return res.photos.photo.ConvertAll(x => new ImageInfo(
-                x.url_o ?? x.url_l ?? x.url_m,
-                x.url_l ?? x.url_m,
-                x.url_s,
-                x.media == "video" ? CreateVideoUri(x.id, x.owner, x.secret) : null));
+            return res.photos.photo.ConvertAll(x =>
+            {
+                var isVideo = x.media == "video";
+                var site = isVideo ? CreateVideoUri("site", x.id, x.owner, x.secret) : null;
+                return new ImageInfo(
+                    x.url_o ?? x.url_l ?? x.url_m,
+                    x.url_l ?? x.url_m,
+                    x.url_s,
+                    site,
+                    site,
+                    isVideo ? CreateVideoUri("mobile", x.id, x.owner, x.secret) : null
+                );
+            });
         }
 
-        private static string CreateVideoUri(string id, string owner, string secret)
+        private static string CreateVideoUri(string size, string id, string owner, string secret)
         {
-            return "https://www.flickr.com/photos/" + owner + "/" + id + "/play/site/" + secret + "/";
+            return "https://www.flickr.com/photos/" + owner + "/" + id + "/play/" + size + "/" + secret + "/";
         }
 
         #region Tests
@@ -279,7 +297,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             result.Full.Is("https://farm6.staticflickr.com/5725/23816761306_d95dabb2be_o.jpg");
             result.Large.Is("https://farm6.staticflickr.com/5725/23816761306_123ded3e11_b.jpg");
             result.Thumb.Is("https://farm6.staticflickr.com/5725/23816761306_123ded3e11_m.jpg");
-            result.Video.Is("https://www.flickr.com/photos/85669226@N02/23816761306/play/hd/123ded3e11/");
+            result.VideoFull.Is("https://www.flickr.com/photos/85669226@N02/23816761306/play/hd/123ded3e11/");
         }
 
         [TestMethod(TestType.Network)]
@@ -290,7 +308,9 @@ namespace ImgAzyobuziNet.Core.Resolvers
             result.Length.Is(2);
             foreach (var x in result)
                 Assert.True(() => !string.IsNullOrEmpty(x.Full) && !string.IsNullOrEmpty(x.Large) && !string.IsNullOrEmpty(x.Thumb));
-            Assert.True(() => !string.IsNullOrEmpty(result[0].Video));
+            Assert.True(() => !string.IsNullOrEmpty(result[0].VideoFull) && !string.IsNullOrEmpty(result[0].VideoLarge) && !string.IsNullOrEmpty(result[0].VideoMobile));
+            result[0].VideoFull.Is(result[0].VideoLarge);
+            Assert.True(() => result[0].VideoLarge != result[0].VideoMobile);
         }
 
         [TestMethod(TestType.Network)]

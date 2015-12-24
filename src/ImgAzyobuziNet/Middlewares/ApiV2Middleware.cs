@@ -194,7 +194,7 @@ namespace ImgAzyobuziNet.Middlewares
                         location = img.Thumb;
                         break;
                     case "video":
-                        location = img.Video;
+                        location = img.VideoFull;
                         if (string.IsNullOrEmpty(location))
                         {
                             this.ErrorResponse(4045);
@@ -256,8 +256,8 @@ namespace ImgAzyobuziNet.Middlewares
                     large_https = img.Large,
                     thumb = img.Thumb,
                     thumb_https = img.Thumb,
-                    video = img.Video,
-                    video_https = img.Video
+                    video = img.VideoFull,
+                    video_https = img.VideoFull
                 });
             }
         }

@@ -62,7 +62,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
             if (info.Extension == "flv")
             {
-                result.Video = baseUri + ".flv";
+                result.VideoFull = result.VideoLarge = result.VideoMobile = baseUri + ".flv";
                 result.Full = result.Large = baseUri + ".jpg";
             }
             else

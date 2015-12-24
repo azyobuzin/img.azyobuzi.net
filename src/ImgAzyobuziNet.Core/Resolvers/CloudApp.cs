@@ -80,7 +80,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
                     break;
                 case "video":
                     // ThumbnailUrl is probably null.
-                    i = new ImageInfo(result.thumbnail_url, result.thumbnail_url, result.thumbnail_url, result.content_url);
+                    i = new ImageInfo(result.thumbnail_url, result.thumbnail_url, result.thumbnail_url, result.content_url, result.content_url, result.content_url);
                     break;
                 default:
                     throw new NotPictureException();

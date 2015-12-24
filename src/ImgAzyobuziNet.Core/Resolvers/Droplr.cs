@@ -55,7 +55,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             {
                 // サムネイルなんてものはなかった
                 // （OEmbed 対応しろよ）
-                result.Video = "http://d.pr/v/" + id + "+";
+                result.VideoFull = result.VideoLarge = result.VideoMobile = "http://d.pr/v/" + id + "+";
             }
             return Task.FromResult(new[] { result });
         }
