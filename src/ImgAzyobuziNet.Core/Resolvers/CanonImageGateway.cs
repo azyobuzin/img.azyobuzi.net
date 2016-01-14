@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AngleSharp.Dom.Html;
 using AngleSharp.Parser.Html;
 using ImgAzyobuziNet.Core.Test;
 using Microsoft.Extensions.Caching.Memory;
@@ -107,7 +108,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private async Task<string> GetImage(string t, string id)
         {
             // フルサイズ画像は毎回 URI が変わるのでキャッシュしたら死ぬ可能性
-            // よって og:image のみ対応
+            // よってアルバムのサムネイル一覧から取得
 
             string content;
             using (var hc = new HttpClient())
@@ -119,7 +120,16 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 CheckResponseError(res, content);
             }
 
-            return ResolverUtils.GetOgImage(new HtmlParser().Parse(content));
+            var style = new HtmlParser().Parse(content)
+                .GetElementById("itemList")
+                .ChildNodes.OfType<IHtmlListItemElement>()
+                .First(x => x.ClassList.Contains("itemOver"))
+                .ChildNodes.OfType<IHtmlSpanElement>().First()
+                .ChildNodes.OfType<IHtmlSpanElement>().First()
+                .GetAttribute("style");
+
+            // background-image:url(here);
+            return style.Substring(21, style.Length - 23);
         }
 
         private async Task<string[]> GetAlbumThumbnails(string t, string id)
@@ -135,9 +145,16 @@ namespace ImgAzyobuziNet.Core.Resolvers
             }
 
             return new HtmlParser().Parse(content)
-                .GetElementById("jsAlbumItemList")
-                .GetElementsByTagName("img")
-                .Select(x => x.GetAttribute("src"))
+                .GetElementById("albumAdd1")
+                .ChildNodes.OfType<IHtmlListItemElement>()
+                .Select(li =>
+                {
+                    var style = li.ChildNodes.OfType<IHtmlAnchorElement>().First()
+                        .ChildNodes.OfType<IHtmlDivElement>().First()
+                        .GetAttribute("style");
+                    // background-image: url(here);
+                    return style.Substring(22, style.Length - 24);
+                })
                 .ToArray();
         }
 
@@ -156,9 +173,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         {
             // http://opa.cig2.imagegateway.net/s/m/album/DTe7EWihYUt
             var thumbs = await this.GetAlbumThumbnails("m/", "DTe7EWihYUt").ConfigureAwait(false);
-            // 本来 52 枚だが、 HTML には 49 枚までしか含まれず、
-            // 残りは POST http://opa.cig2.imagegateway.net/album/shareItemListParts しなければいけない
-            thumbs.Length.Is(49);
+            thumbs.Length.Is(52);
             foreach (var x in thumbs) Assert.True(() => !string.IsNullOrEmpty(x));
         }
 
