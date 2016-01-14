@@ -204,3 +204,6 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
+
+# Private setting file
+/src/ImgAzyobuziNet/appsettings.json

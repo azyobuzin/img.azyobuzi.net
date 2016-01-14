@@ -1,7 +1,9 @@
-﻿using ImgAzyobuziNet.Middlewares;
+﻿using ImgAzyobuziNet.Core;
+using ImgAzyobuziNet.Middlewares;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.HttpOverrides;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -9,12 +11,24 @@ namespace ImgAzyobuziNet
 {
     public class Startup
     {
+        public IConfigurationRoot Configuration { get; }
+
+        public Startup(IHostingEnvironment env)
+        {
+            var builder = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .AddEnvironmentVariables();
+
+            this.Configuration = builder.Build().ReloadOnChanged("appsettings.json");
+        }
+
         // This method gets called by a runtime.
         // Use this method to add services to the container
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCaching();
-            services.AddMvc();
+            services.Configure<ImgAzyobuziNetOptions>(this.Configuration.GetSection("ImgAzyobuziNet"))
+                .AddCaching()
+                .AddMvc();
         }
 
         // Configure is called after ConfigureServices is called.
@@ -24,8 +38,6 @@ namespace ImgAzyobuziNet
             loggerFactory.AddConsole(LogLevel.Debug);
             loggerFactory.AddDebug(LogLevel.Debug);
 
-            // Add the platform handler to the request pipeline.
-            // app.UseIISPlatformHandler();
             app.UseOverrideHeaders(new OverrideHeaderMiddlewareOptions { ForwardedOptions = ForwardedHeaders.All });
 
             app.UseDeveloperExceptionPage();

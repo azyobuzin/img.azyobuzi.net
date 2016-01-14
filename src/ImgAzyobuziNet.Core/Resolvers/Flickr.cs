@@ -8,6 +8,7 @@ using ImgAzyobuziNet.Core.Test;
 using Jil;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.OptionsModel;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -56,11 +57,13 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class FlickrResolver : IResolver
     {
+        private readonly ImgAzyobuziNetOptions _options;
         private readonly IMemoryCache _memoryCache;
         private readonly ILogger _logger;
 
-        public FlickrResolver(IMemoryCache memoryCache, ILogger<FlickrResolver> logger)
+        public FlickrResolver(IOptions<ImgAzyobuziNetOptions> options, IMemoryCache memoryCache, ILogger<FlickrResolver> logger)
         {
+            this._options = options.Value;
             this._memoryCache = memoryCache;
             this._logger = logger;
         }
@@ -201,7 +204,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             using (var hc = new HttpClient())
             {
                 var requestUri = "https://api.flickr.com/services/rest/?format=json&nojsoncallback=1&"
-                    + "&api_key=" + Constants.FlickrApiKey
+                    + "&api_key=" + this._options.FlickrApiKey
                     + "&method=" + method
                     + "&" + query;
                 ResolverUtils.RequestingMessage(this._logger, requestUri, null);

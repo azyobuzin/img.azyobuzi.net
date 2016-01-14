@@ -7,6 +7,7 @@ using ImgAzyobuziNet.Core.Test;
 using Jil;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.OptionsModel;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -46,11 +47,13 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class _500pxResolver : IResolver
     {
+        private readonly ImgAzyobuziNetOptions _options;
         private readonly IMemoryCache _memoryCache;
         private readonly ILogger _logger;
 
-        public _500pxResolver(IMemoryCache memoryCache, ILogger<_500pxResolver> logger)
+        public _500pxResolver(IOptions<ImgAzyobuziNetOptions> options, IMemoryCache memoryCache, ILogger<_500pxResolver> logger)
         {
+            this._options = options.Value;
             this._memoryCache = memoryCache;
             this._logger = logger;
         }
@@ -87,7 +90,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
             string s;
             using (var hc = new HttpClient())
             {
-                var requestUri = "https://api.500px.com/v1/photos/" + id + "?image_size=5&consumer_key=" + Constants._500pxConsumerKey;
+                var requestUri = "https://api.500px.com/v1/photos/" + id
+                    + "?image_size=5&consumer_key=" + this._options._500pxConsumerKey;
                 ResolverUtils.RequestingMessage(this._logger, requestUri, null);
 
                 using (var res = await hc.GetAsync(requestUri).ConfigureAwait(false))
