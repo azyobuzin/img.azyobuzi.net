@@ -114,13 +114,13 @@ namespace ImgAzyobuziNet.Core.Resolvers
             }
         }
 
-        public class CacheItem
+        private class CacheItem
         {
             public string Type;
             public string OgImage;
         }
 
-        public struct AlbumItem
+        private struct AlbumItem
         {
             public string OgImage;
             public string Permalink;

@@ -55,7 +55,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             this._logger = logger;
         }
 
-        public class CacheItem
+        private class CacheItem
         {
             public string item_type;
             public string content_url;

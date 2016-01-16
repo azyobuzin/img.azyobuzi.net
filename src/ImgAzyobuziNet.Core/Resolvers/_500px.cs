@@ -61,8 +61,6 @@ namespace ImgAzyobuziNet.Core.Resolvers
         public async Task<ImageInfo[]> GetImages(Match match)
         {
             var id = match.Groups[1].Value;
-            var key = "500px-" + id;
-
             var result = await this._memoryCache.GetOrSet(
                 "500px-" + id,
                 () => this.Fetch(id)

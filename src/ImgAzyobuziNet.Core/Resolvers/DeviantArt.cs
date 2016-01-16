@@ -55,7 +55,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             return new[] { new ImageInfo(result.url, result.url, result.thumbnail_url) };
         }
 
-        public class CacheItem
+        private class CacheItem
         {
             public string url;
             public string thumbnail_url;

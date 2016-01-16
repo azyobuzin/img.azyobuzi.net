@@ -65,6 +65,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 "instagram-" + id,
                 () => this.Fetch(id)
             ).ConfigureAwait(false);
+
             return new[]
             {
                 result != null

@@ -57,7 +57,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             return new[] { new ImageInfo(result.TwitterImage, result.TwitterImage, result.OgImage) };
         }
 
-        public class CacheItem
+        private class CacheItem
         {
             public string OgImage;
             public string TwitterImage;

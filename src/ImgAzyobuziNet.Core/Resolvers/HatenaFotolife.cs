@@ -78,7 +78,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             return new[] { result };
         }
 
-        public class CacheItem
+        private class CacheItem
         {
             public string Extension;
             public bool IsOriginalAvailable;

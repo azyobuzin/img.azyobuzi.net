@@ -49,7 +49,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             this._logger = logger;
         }
 
-        public class CacheItem
+        private class CacheItem
         {
             public string thumbnail_url;
             public string thumbnail_480_url;
