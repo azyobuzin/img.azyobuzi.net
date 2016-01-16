@@ -124,8 +124,6 @@ namespace ImgAzyobuziNet.Core.Resolvers
         }
 
         #region Objects
-        // CS0649 Field is never assigned to, and will always have its default value null
-#pragma warning disable 649
 
         public class FlickrException : Exception
         {
@@ -194,7 +192,6 @@ namespace ImgAzyobuziNet.Core.Resolvers
             public IReadOnlyList<Photo> photo;
         }
 
-#pragma warning restore 649
         #endregion
 
         private async Task<T> CallApi<T>(string method, string query)
@@ -230,8 +227,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 sizes.GetOrDefault("Large") ?? sizes["Medium"],
                 sizes["Small"],
                 sizes.GetOrDefault("HD MP4") ?? sizes.GetOrDefault("Site MP4"),
-                sizes["Site MP4"],
-                sizes["Mobile MP4"]
+                sizes.GetOrDefault("Site MP4"),
+                sizes.GetOrDefault("Mobile MP4")
             );
         }
 

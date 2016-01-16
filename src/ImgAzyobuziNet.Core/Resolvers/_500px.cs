@@ -71,8 +71,6 @@ namespace ImgAzyobuziNet.Core.Resolvers
             return new[] { new ImageInfo(result, result, result) };
         }
 
-#pragma warning disable 649
-
         private struct ApiResponse
         {
             public Photo photo;
@@ -82,8 +80,6 @@ namespace ImgAzyobuziNet.Core.Resolvers
         {
             public string image_url;
         }
-
-#pragma warning restore 649
 
         private async Task<string> Fetch(string id)
         {

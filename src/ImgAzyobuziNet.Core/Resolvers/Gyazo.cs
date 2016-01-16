@@ -71,9 +71,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         private struct ApiResponse
         {
-#pragma warning disable 649
             public string url;
-#pragma warning restore 649
         }
 
         private async Task<string> Fetch(string id)

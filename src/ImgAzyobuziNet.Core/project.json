@@ -9,17 +9,23 @@
   "dependencies": {
     "AngleSharp": "0.9.4-dnx",
     "Jil": "2.13.0-beta1",
+    "Microsoft.Dnx.Compilation.CSharp.Abstractions": {
+      "version": "1.0.0-rc1-final",
+      "type": "build"
+    },
     "Microsoft.Extensions.Caching.Memory": "1.0.0-rc1-final",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0-rc1-final",
     "Microsoft.Extensions.OptionsModel": "1.0.0-rc1-final"
   },
   "frameworks": {
-    "net451": {
+    "dnx451": {
       "frameworkAssemblies": {
-        "System.Net.Http": ""
+        "System.Collections": "",
+        "System.Net.Http": "",
+        "System.Runtime": ""
       }
     },
-    "dotnet5.4": {
+    "dnxcore50": {
       "dependencies": {
         "Microsoft.CSharp": "4.0.1-beta-23516",
         "System.Collections.Concurrent": "4.0.11-beta-23516",
