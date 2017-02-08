@@ -12,7 +12,7 @@ namespace ImgAzyobuziNet.Core.Test
 {
     public class Program
     {
-        public void Main(string[] args)
+        public static void Main(string[] args)
         {
             TestType type;
             var methods = new List<string>();
@@ -48,7 +48,6 @@ namespace ImgAzyobuziNet.Core.Test
 
             var serviceProvider = BuildServiceProvider();
             var lf = serviceProvider.GetRequiredService<ILoggerFactory>();
-            lf.MinimumLevel = LogLevel.Debug;
             lf.AddConsole(LogLevel.Debug);
 
             var instanceCache = new Dictionary<Type, object>();
@@ -99,8 +98,7 @@ namespace ImgAzyobuziNet.Core.Test
 
                     if (ex is TargetInvocationException)
                         ex = ex.InnerException;
-                    var aex = ex as AggregateException;
-                    if (aex != null && aex.InnerExceptions.Count == 1)
+                    if (ex is AggregateException aex && aex.InnerExceptions.Count == 1)
                         ex = aex.InnerException;
                     Console.WriteLine(ex);
                 }
@@ -115,17 +113,17 @@ namespace ImgAzyobuziNet.Core.Test
             }
         }
 
-        private IServiceProvider BuildServiceProvider()
+        private static IServiceProvider BuildServiceProvider()
         {
             var configuration = new ConfigurationBuilder()
-                .AddJsonFile("../../src/ImgAzyobuziNet/appsettings.json")
+                .AddJsonFile(System.IO.Path.GetFullPath("../../src/ImgAzyobuziNet/appsettings.json"))
                 .Build();
             var services = new ServiceCollection()
                 .Configure<ImgAzyobuziNetOptions>(configuration.GetSection("ImgAzyobuziNet"))
                 .AddLogging()
-                .AddCaching();
+                .AddMemoryCache();
             return services
-                .AddInstance(typeof(ITestActivator), new TestActivator(services.BuildServiceProvider()))
+                .AddSingleton(typeof(ITestActivator), new TestActivator(services.BuildServiceProvider()))
                 .BuildServiceProvider();
         }
     }

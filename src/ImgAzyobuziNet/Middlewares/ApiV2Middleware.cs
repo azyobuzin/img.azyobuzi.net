@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace ImgAzyobuziNet.Middlewares
 {
@@ -19,8 +18,8 @@ namespace ImgAzyobuziNet.Middlewares
 
         public async Task Invoke(HttpContext context)
         {
-            PathString path;
-            if (!context.Request.Path.StartsWithSegments("/api", out path) || path.StartsWithSegments("/v3"))
+            if (!context.Request.Path.StartsWithSegments("/api", out PathString path)
+                || path.StartsWithSegments("/v3"))
             {
                 await this.next(context).ConfigureAwait(false);
                 return;

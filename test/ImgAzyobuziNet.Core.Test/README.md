@@ -1,7 +1,7 @@
 # ImgAzyobuziNet.Core テストツール
 ## 実行方法
 ```
-dnx test [テストの種類 / 型.メソッド]
+dotnet run [テストの種類 / 型.メソッド]
 ```
 
 テストの種類

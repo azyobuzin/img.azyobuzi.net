@@ -8,7 +8,7 @@ using ImgAzyobuziNet.Core.Test;
 using Jil;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -210,7 +210,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             }
 
             ResolverUtils.HttpResponseMessage(this._logger, json, null);
-            var result = JSON.Deserialize<T>(json, Options.IncludeInherited);
+            var result = JSON.Deserialize<T>(json, Jil.Options.IncludeInherited);
 
             if (result.stat != "ok")
                 throw new FlickrException(result.code, result.message);

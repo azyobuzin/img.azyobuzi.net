@@ -1,7 +1,0 @@
-﻿{
-  "webroot": "wwwroot",
-  "Hosting": {
-    "Server": "Microsoft.AspNet.Server.Kestrel",
-    "DetailedErrors": true
-  }
-}

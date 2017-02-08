@@ -7,7 +7,7 @@ using ImgAzyobuziNet.Core.Test;
 using Jil;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
