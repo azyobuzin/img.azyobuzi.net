@@ -1,20 +1,16 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.Test;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    public class ImgurProvider : IPatternProvider
+    public class ImgurProvider : PatternProviderBase<ImgurResolver>
     {
-        public string ServiceId => "Imgur";
+        public override string ServiceId => "Imgur";
 
-        public string ServiceName => "Imgur";
+        public override string ServiceName => "Imgur";
 
-        public string Pattern => @"^https?://(?:www\.)?imgur\.com/(?:gallery/|t/memes/)?(\w+)/?(?:[\?#].*)?$";
-
-        private static readonly ResolverFactory f = PPUtils.CreateFactory<ImgurResolver>();
-        public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
+        public override string Pattern => @"^https?://(?:www\.)?imgur\.com/(?:gallery/|t/memes/)?(\w+)/?(?:[\?#].*)?$";
 
         #region Tests
 

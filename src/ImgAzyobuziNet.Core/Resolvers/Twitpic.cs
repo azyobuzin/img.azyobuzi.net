@@ -1,20 +1,16 @@
-using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.Test;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    public class TwitpicProvider : IPatternProvider
+    public class TwitpicProvider : PatternProviderBase<TwitpicResolver>
     {
-        public string ServiceId => "Twitpic";
+        public override string ServiceId => "Twitpic";
 
-        public string ServiceName => "Twitpic";
+        public override string ServiceName => "Twitpic";
 
-        public string Pattern => @"^https?://(?:www\.)?twitpic\.com/(?:show/\w+/)?(\w+)/?(?:[\?#].*)?$";
-
-        private static readonly ResolverFactory f = PPUtils.CreateFactory<TwitpicResolver>();
-        public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
+        public override string Pattern => @"^https?://(?:www\.)?twitpic\.com/(?:show/\w+/)?(\w+)/?(?:[\?#].*)?$";
 
         #region Tests
 

@@ -1,20 +1,16 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.Test;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    public class ImglyProvider : IPatternProvider
+    public class ImglyProvider : PatternProviderBase<ImglyResolver>
     {
-        public string ServiceId => "imgly";
+        public override string ServiceId => "imgly";
 
-        public string ServiceName => "img.ly";
+        public override string ServiceName => "img.ly";
 
-        public string Pattern => @"^https?://(?:www\.)?img\.ly/(?:show/\w+/)?(\w+)/?(?:[\?#].*)?$";
-
-        private static readonly ResolverFactory f = PPUtils.CreateFactory<ImglyResolver>();
-        public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
+        public override string Pattern => @"^https?://(?:www\.)?img\.ly/(?:show/\w+/)?(\w+)/?(?:[\?#].*)?$";
 
         #region Tests
 

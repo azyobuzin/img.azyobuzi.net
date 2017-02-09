@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -12,16 +11,13 @@ using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    public class MeshimazuProvider : IPatternProvider
+    public class MeshimazuProvider : PatternProviderBase<MeshimazuResolver>
     {
-        public string ServiceId => "Meshimazu";
+        public override string ServiceId => "Meshimazu";
 
-        public string ServiceName => "メシマズ.net";
+        public override string ServiceName => "メシマズ.net";
 
-        public string Pattern => @"^http://(?:www\.)?meshimazu\.net/posts/(\d+)/?(?:[\?#].*)?$";
-
-        private static readonly ResolverFactory f = PPUtils.CreateFactory<MeshimazuResolver>();
-        public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
+        public override string Pattern => @"^http://(?:www\.)?meshimazu\.net/posts/(\d+)/?(?:[\?#].*)?$";
 
         #region Tests
 

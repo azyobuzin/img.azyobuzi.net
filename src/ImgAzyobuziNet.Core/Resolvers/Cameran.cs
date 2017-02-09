@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -9,18 +8,15 @@ using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    public class CameranProvider : IPatternProvider
+    public class CameranProvider : PatternProviderBase<CameranResolver>
     {
         // http://cameran.in/posts/get/v1/{hex} は現存するものが見つからないのでサポートやめます
 
-        public string ServiceId => "cameran";
+        public override string ServiceId => "cameran";
 
-        public string ServiceName => "cameran";
+        public override string ServiceName => "cameran";
 
-        public string Pattern => @"^http://cameran\.in/p/v1/(\w+)/?(?:[\?#].*)?$";
-
-        private static readonly ResolverFactory f = PPUtils.CreateFactory<CameranResolver>();
-        public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
+        public override string Pattern => @"^http://cameran\.in/p/v1/(\w+)/?(?:[\?#].*)?$";
 
         #region Tests
 

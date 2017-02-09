@@ -12,16 +12,13 @@ using Microsoft.Extensions.Options;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    public class FlickrProvider : IPatternProvider
+    public class FlickrProvider : PatternProviderBase<FlickrResolver>
     {
-        public string ServiceId => "Flickr";
+        public override string ServiceId => "Flickr";
 
-        public string ServiceName => "Flickr";
+        public override string ServiceName => "Flickr";
 
-        public string Pattern => @"^https?://(?:www\.)?(?:flickr\.com/photos/(?:[\w\-_@]+)/(?:(albums|galleries)/)?(\d+)(?:/(?:in|with|sizes)(?:/.*)?)?|flic\.kr/p/([1-9a-zA-Z]+))/?(?:[\?#].*)?$";
-
-        private static readonly ResolverFactory f = PPUtils.CreateFactory<FlickrResolver>();
-        public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
+        public override string Pattern => @"^https?://(?:www\.)?(?:flickr\.com/photos/(?:[\w\-_@]+)/(?:(albums|galleries)/)?(\d+)(?:/(?:in|with|sizes)(?:/.*)?)?|flic\.kr/p/([1-9a-zA-Z]+))/?(?:[\?#].*)?$";
 
         #region Tests
         [TestMethod(TestType.Static)]

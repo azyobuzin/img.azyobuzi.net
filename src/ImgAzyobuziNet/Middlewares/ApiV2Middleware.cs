@@ -11,17 +11,17 @@ namespace ImgAzyobuziNet.Middlewares
     {
         public ApiV2Middleware(RequestDelegate next)
         {
-            this.next = next;
+            this._next = next;
         }
 
-        private readonly RequestDelegate next;
+        private readonly RequestDelegate _next;
 
         public async Task Invoke(HttpContext context)
         {
             if (!context.Request.Path.StartsWithSegments("/api", out PathString path)
                 || path.StartsWithSegments("/v3"))
             {
-                await this.next(context).ConfigureAwait(false);
+                await this._next(context).ConfigureAwait(false);
                 return;
             }
 
@@ -65,14 +65,14 @@ namespace ImgAzyobuziNet.Middlewares
         {
             public Impl(HttpContext context)
             {
-                this.HttpContext = context;
+                this._httpContext = context;
             }
 
-            private readonly HttpContext HttpContext;
-            private HttpRequest Request => this.HttpContext.Request;
-            private HttpResponse Response => this.HttpContext.Response;
+            private readonly HttpContext _httpContext;
+            private HttpRequest Request => this._httpContext.Request;
+            private HttpResponse Response => this._httpContext.Response;
 
-            private static readonly IReadOnlyDictionary<int, ErrorDefinition> errors = new Dictionary<int, ErrorDefinition>
+            private static readonly IReadOnlyDictionary<int, ErrorDefinition> s_errors = new Dictionary<int, ErrorDefinition>
             {
                 [4000] = new ErrorDefinition(400, "Bad request."),
                 [4001] = new ErrorDefinition(400, "\"uri\" parameter is required."),
@@ -99,7 +99,7 @@ namespace ImgAzyobuziNet.Middlewares
 
             public void ErrorResponse(int error, Exception ex = null)
             {
-                var s = errors[error];
+                var s = s_errors[error];
                 this.Response.StatusCode = s.StatusCode;
                 this.Json(new
                 {
@@ -158,7 +158,7 @@ namespace ImgAzyobuziNet.Middlewares
                         return;
                 }
 
-                var result = await ImgAzyobuziNetService.Resolve(this.HttpContext.RequestServices, uri).ConfigureAwait(false);
+                var result = await ImgAzyobuziNetService.Resolve(this._httpContext.RequestServices, uri).ConfigureAwait(false);
 
                 if (result == null)
                 {
@@ -224,7 +224,7 @@ namespace ImgAzyobuziNet.Middlewares
                     return;
                 }
 
-                var result = await ImgAzyobuziNetService.Resolve(this.HttpContext.RequestServices, uri).ConfigureAwait(false);
+                var result = await ImgAzyobuziNetService.Resolve(this._httpContext.RequestServices, uri).ConfigureAwait(false);
 
                 if (result == null)
                 {

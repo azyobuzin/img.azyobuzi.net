@@ -1,20 +1,16 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.Test;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    public class DroplrProvider : IPatternProvider
+    public class DroplrProvider : PatternProviderBase<DroplrResolver>
     {
-        public string ServiceId => "Droplr";
+        public override string ServiceId => "Droplr";
 
-        public string ServiceName => "Droplr";
+        public override string ServiceName => "Droplr";
 
-        public string Pattern => @"^https?://d\.pr/(?:([iv])/)?(\w+)\+?(?:/\w+/?)?(?:[\?#].*)?$";
-
-        private static readonly ResolverFactory f = PPUtils.CreateFactory<DroplrResolver>();
-        public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
+        public override string Pattern => @"^https?://d\.pr/(?:([iv])/)?(\w+)\+?(?:/\w+/?)?(?:[\?#].*)?$";
 
         #region Tests
 

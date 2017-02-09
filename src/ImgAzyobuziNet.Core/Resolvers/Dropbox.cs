@@ -12,19 +12,16 @@ using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    public class DropboxProvider : IPatternProvider
+    public class DropboxProvider : PatternProviderBase<DropboxResolver>
     {
-        public string ServiceId => "Dropbox";
+        public override string ServiceId => "Dropbox";
 
-        public string ServiceName => "Dropbox";
+        public override string ServiceName => "Dropbox";
 
-        public string Pattern => @"^https?://(?:www\.|dl\.)?dropbox\.com/(?:"
+        public override string Pattern => @"^https?://(?:www\.|dl\.)?dropbox\.com/(?:"
             + @"(s/\w+/[^/\?]+|sc/\w+/[\w\-]+/\d+)" // file or one of the album
             + @"|(sc/\w+/[\w\-]+)" // album
             + @")/?(?:[\?#].*)?$";
-
-        private static readonly ResolverFactory f = PPUtils.CreateFactory<DropboxResolver>();
-        public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
 
         #region Tests
 

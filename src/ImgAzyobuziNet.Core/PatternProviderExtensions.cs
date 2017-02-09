@@ -5,11 +5,11 @@ namespace ImgAzyobuziNet.Core
 {
     public static class PatternProviderExtensions
     {
-        private static readonly ConcurrentDictionary<string, Regex> regexCache = new ConcurrentDictionary<string, Regex>();
+        private static readonly ConcurrentDictionary<string, Regex> s_regexCache = new ConcurrentDictionary<string, Regex>();
 
         public static Regex GetRegex(this IPatternProvider provider)
         {
-            return regexCache.GetOrAdd(provider.Pattern, x => new Regex(x, RegexOptions.IgnoreCase));
+            return s_regexCache.GetOrAdd(provider.Pattern, x => new Regex(x, RegexOptions.IgnoreCase));
         }
     }
 }

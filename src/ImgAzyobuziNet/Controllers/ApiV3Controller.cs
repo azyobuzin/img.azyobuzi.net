@@ -9,7 +9,7 @@ namespace ImgAzyobuziNet.Controllers
     [Route("api/v3/[action]")]
     public class ApiV3Controller : Controller
     {
-        private static readonly IReadOnlyDictionary<int, ErrorDefinition> errors = new Dictionary<int, ErrorDefinition>
+        private static readonly IReadOnlyDictionary<int, ErrorDefinition> s_errors = new Dictionary<int, ErrorDefinition>
         {
             [4001] = new ErrorDefinition(400, "\"uri\" parameter is required."),
             [4002] = new ErrorDefinition(400, "Unsupported URI."),
@@ -20,10 +20,9 @@ namespace ImgAzyobuziNet.Controllers
             [5000] = new ErrorDefinition(500, "Raised unknown exception on server.")
         };
 
-        [NonAction]
         private IActionResult ErrorResponse(int error, string serviceId = null, Exception ex = null)
         {
-            var s = errors[error];
+            var s = s_errors[error];
             return JilJsonResult.CreateWithStatusCode(new
             {
                 error = new
@@ -35,7 +34,6 @@ namespace ImgAzyobuziNet.Controllers
             }, s.StatusCode);
         }
 
-        [NonAction]
         private IActionResult HandleException(string serviceId, Exception ex)
         {
             return this.ErrorResponse(
@@ -50,7 +48,7 @@ namespace ImgAzyobuziNet.Controllers
                 .ConvertAll(x => new { id = x.ServiceId, name = x.ServiceName, pattern = x.Pattern }));
         }
 
-        public async Task<IActionResult> Redirect([FromQuery] string uri, [FromQuery] string size = "full")
+        public async Task<IActionResult> Redirect(string uri, string size = "full")
         {
             if (string.IsNullOrEmpty(uri))
                 return this.ErrorResponse(4001);
@@ -122,7 +120,7 @@ namespace ImgAzyobuziNet.Controllers
             return base.Redirect(location);
         }
 
-        public async Task<IActionResult> Resolve([FromQuery] string uri)
+        public async Task<IActionResult> Resolve(string uri)
         {
             if (string.IsNullOrEmpty(uri))
                 return this.ErrorResponse(4001);

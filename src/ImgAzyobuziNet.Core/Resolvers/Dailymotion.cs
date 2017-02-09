@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
@@ -12,16 +11,13 @@ using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    public class DailymotionProvider : IPatternProvider
+    public class DailymotionProvider : PatternProviderBase<DailymotionResolver>
     {
-        public string ServiceId => "Dailymotion";
+        public override string ServiceId => "Dailymotion";
 
-        public string ServiceName => "Dailymotion";
+        public override string ServiceName => "Dailymotion";
 
-        public string Pattern => @"^https?://(?:www\.)?dailymotion\.com/video/([^/\?]+)/?(?:[\?#].*)?$";
-
-        private static readonly ResolverFactory f = PPUtils.CreateFactory<DailymotionResolver>();
-        public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
+        public override string Pattern => @"^https?://(?:www\.)?dailymotion\.com/video/([^/\?]+)/?(?:[\?#].*)?$";
 
         #region Tests
 

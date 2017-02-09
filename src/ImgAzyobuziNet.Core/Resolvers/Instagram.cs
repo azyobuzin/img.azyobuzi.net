@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -11,16 +10,13 @@ using Microsoft.Extensions.Options;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    public class InstagramProvider : IPatternProvider
+    public class InstagramProvider : PatternProviderBase<InstagramResolver>
     {
-        public string ServiceId => "Instagram";
+        public override string ServiceId => "Instagram";
 
-        public string ServiceName => "Instagram";
+        public override string ServiceName => "Instagram";
 
-        public string Pattern => @"^https?://(?:www\.)?instagr(?:\.am|am\.com)/p/([\w\-]+)(?:/(?:media/?)?)?(?:[\?#].*)?$";
-
-        private static readonly ResolverFactory f = PPUtils.CreateFactory<InstagramResolver>();
-        public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
+        public override string Pattern => @"^https?://(?:www\.)?instagr(?:\.am|am\.com)/p/([\w\-]+)(?:/(?:media/?)?)?(?:[\?#].*)?$";
 
         #region Tests
 

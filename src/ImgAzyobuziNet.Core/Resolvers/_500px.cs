@@ -11,17 +11,14 @@ using Microsoft.Extensions.Options;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    public class _500pxProvider : IPatternProvider
+    public class _500pxProvider : PatternProviderBase<_500pxResolver>
     {
-        public string ServiceId => "500px";
+        public override string ServiceId => "500px";
 
-        public string ServiceName => "500px";
+        public override string ServiceName => "500px";
 
         // https://500px.com/photo/{id}/{title}
-        public string Pattern => @"^https?://(?:www\.)?500px\.com/photo/(\d+)(?:[/\?#].*)?$";
-
-        private static readonly ResolverFactory f = PPUtils.CreateFactory<_500pxResolver>();
-        public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
+        public override string Pattern => @"^https?://(?:www\.)?500px\.com/photo/(\d+)(?:[/\?#].*)?$";
 
         #region Tests
 

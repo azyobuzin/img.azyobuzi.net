@@ -11,16 +11,13 @@ using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    public class ImepicProvider : IPatternProvider
+    public class ImepicProvider : PatternProviderBase<ImepicResolver>
     {
-        public string ServiceId => "imepic";
+        public override string ServiceId => "imepic";
 
-        public string ServiceName => "イメピク";
+        public override string ServiceName => "イメピク";
 
-        public string Pattern => @"^http://(?:www\.)?imepic.jp/(\d{8}/\d+)(?:[\?#].*)?$";
-
-        private static readonly ResolverFactory f = PPUtils.CreateFactory<ImepicResolver>();
-        public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
+        public override string Pattern => @"^http://(?:www\.)?imepic.jp/(\d{8}/\d+)(?:[\?#].*)?$";
 
         #region Tests
 

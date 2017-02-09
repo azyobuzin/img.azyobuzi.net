@@ -1,8 +1,6 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.Test;
@@ -12,16 +10,13 @@ using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    public class CloudAppProvider : IPatternProvider
+    public class CloudAppProvider : PatternProviderBase<CloudAppResolver>
     {
-        public string ServiceId => "CloudApp";
+        public override string ServiceId => "CloudApp";
 
-        public string ServiceName => "CloudApp";
+        public override string ServiceName => "CloudApp";
 
-        public string Pattern => @"^https?://(?:www\.)?cl\.ly/(?:image/)?(\w+)/?(?:[\?#].*)?$";
-
-        private static readonly ResolverFactory f = PPUtils.CreateFactory<CloudAppResolver>();
-        public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
+        public override string Pattern => @"^https?://(?:www\.)?cl\.ly/(?:image/)?(\w+)/?(?:[\?#].*)?$";
 
         #region Tests
 

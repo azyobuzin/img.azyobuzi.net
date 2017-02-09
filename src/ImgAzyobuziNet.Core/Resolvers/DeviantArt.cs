@@ -10,16 +10,13 @@ using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    public class DeviantArtProvider : IPatternProvider
+    public class DeviantArtProvider : PatternProviderBase<DeviantArtResolver>
     {
-        public string ServiceId => "DeviantArt";
+        public override string ServiceId => "DeviantArt";
 
-        public string ServiceName => "DeviantArt";
+        public override string ServiceName => "DeviantArt";
 
-        public string Pattern => @"^https?://(?:[\w\-]+)\.deviantart\.com/art/([\w\-]+)/?(?:[\?#].*)?$";
-
-        private static readonly ResolverFactory f = PPUtils.CreateFactory<DeviantArtResolver>();
-        public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
+        public override string Pattern => @"^https?://(?:[\w\-]+)\.deviantart\.com/art/([\w\-]+)/?(?:[\?#].*)?$";
 
         #region Tests
 

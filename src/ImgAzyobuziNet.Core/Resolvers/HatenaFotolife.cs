@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -12,16 +11,13 @@ using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    public class HatenaFotolifeProvider : IPatternProvider
+    public class HatenaFotolifeProvider : PatternProviderBase<HatenaFotolifeResolver>
     {
-        public string ServiceId => "HatenaFotolife";
+        public override string ServiceId => "HatenaFotolife";
 
-        public string ServiceName => "はてなフォトライフ";
+        public override string ServiceName => "はてなフォトライフ";
 
-        public string Pattern => @"^http://f\.hatena\.ne\.jp/(\w+)/(\d{14})(?:[\?#].*)?$";
-
-        private static readonly ResolverFactory f = PPUtils.CreateFactory<HatenaFotolifeResolver>();
-        public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
+        public override string Pattern => @"^http://f\.hatena\.ne\.jp/(\w+)/(\d{14})(?:[\?#].*)?$";
 
         #region Tests
 

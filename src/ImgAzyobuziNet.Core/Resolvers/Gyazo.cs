@@ -10,16 +10,13 @@ using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    public class GyazoProvider : IPatternProvider
+    public class GyazoProvider : PatternProviderBase<GyazoResolver>
     {
-        public string ServiceId => "Gyazo";
+        public override string ServiceId => "Gyazo";
 
-        public string ServiceName => "Gyazo";
+        public override string ServiceName => "Gyazo";
 
-        public string Pattern => @"^https?://(?:(?:www|i|bot)\.)?gyazo\.com/(\w+)(\.\w+)?(?:[\?#].*)?$";
-
-        private static readonly ResolverFactory f = PPUtils.CreateFactory<GyazoResolver>();
-        public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
+        public override string Pattern => @"^https?://(?:(?:www|i|bot)\.)?gyazo\.com/(\w+)(\.\w+)?(?:[\?#].*)?$";
 
         #region Tests
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -12,16 +11,13 @@ using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    public class CanonImageGatewayProvider : IPatternProvider
+    public class CanonImageGatewayProvider : PatternProviderBase<CanonImageGatewayResolver>
     {
-        public string ServiceId => "CanonImageGateway";
+        public override string ServiceId => "CanonImageGateway";
 
-        public string ServiceName => "CANON iMAGE GATEWAY";
+        public override string ServiceName => "CANON iMAGE GATEWAY";
 
-        public string Pattern => @"^https?://opa\.cig2\.imagegateway\.net/s/([tm]/)?(?:album/)?(\w+(?:/\w+)?)/?(?:[\?#].*)?$";
-
-        private static readonly ResolverFactory f = PPUtils.CreateFactory<CanonImageGatewayResolver>();
-        public IResolver GetResolver(IServiceProvider serviceProvider) => f(serviceProvider);
+        public override string Pattern => @"^https?://opa\.cig2\.imagegateway\.net/s/([tm]/)?(?:album/)?(\w+(?:/\w+)?)/?(?:[\?#].*)?$";
 
         #region Tests
 
