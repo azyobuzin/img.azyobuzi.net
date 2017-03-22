@@ -1,4 +1,6 @@
-﻿using System;
+﻿// TODO: HTML がまったくの別物になってる
+/*
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -215,3 +217,4 @@ namespace ImgAzyobuziNet.Core.Resolvers
         #endregion
     }
 }
+*/

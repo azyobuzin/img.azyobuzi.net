@@ -16,7 +16,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public override string ServiceName => "Gyazo";
 
-        public override string Pattern => @"^https?://(?:(?:www|i|bot)\.)?gyazo\.com/(\w+)(\.\w+)?(?:[\?#].*)?$";
+        public override string Pattern => @"^https?://(?:(?:www|i|bot)\.)?gyazo\.com/(\w+)(\.\w+)?(?:[\?#]|$)";
 
         #region Tests
 
@@ -76,7 +76,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             string s;
             using (var hc = new HttpClient())
             {
-                var requestUri = "https://api.gyazo.com/api/oembed/?url="
+                var requestUri = "https://api.gyazo.com/api/oembed?url="
                     + Uri.EscapeDataString("http://gyazo.com/" + id);
                 ResolverUtils.RequestingMessage(this._logger, requestUri, null);
 

@@ -10,7 +10,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public override string ServiceName => "Twitpic";
 
-        public override string Pattern => @"^https?://(?:www\.)?twitpic\.com/(?:show/\w+/)?(\w+)/?(?:[\?#].*)?$";
+        public override string Pattern => @"^https?://(?:www\.)?twitpic\.com/(?:show/\w+/)?(\w+)/?(?:[\?#]|$)";
 
         #region Tests
 

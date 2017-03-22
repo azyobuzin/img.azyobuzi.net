@@ -18,7 +18,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         public override string ServiceName => "500px";
 
         // https://500px.com/photo/{id}/{title}
-        public override string Pattern => @"^https?://(?:www\.)?500px\.com/photo/(\d+)(?:[/\?#].*)?$";
+        public override string Pattern => @"^https?://(?:www\.)?500px\.com/photo/(\d+)(?:[/\?#]|$)";
 
         #region Tests
 

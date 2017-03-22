@@ -16,7 +16,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public override string ServiceName => "Instagram";
 
-        public override string Pattern => @"^https?://(?:www\.)?instagr(?:\.am|am\.com)/p/([\w\-]+)(?:/(?:media/?)?)?(?:[\?#].*)?$";
+        public override string Pattern => @"^https?://(?:www\.)?instagr(?:\.am|am\.com)/p/([\w\-]+)(?:/(?:media/?)?)?(?:[\?#]|$)";
 
         #region Tests
 

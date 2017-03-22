@@ -17,7 +17,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public override string ServiceName => "Dailymotion";
 
-        public override string Pattern => @"^https?://(?:www\.)?dailymotion\.com/video/([^/\?]+)/?(?:[\?#].*)?$";
+        public override string Pattern => @"^https?://(?:www\.)?dailymotion\.com/video/([^/\?]+)/?(?:[\?#]|$)";
 
         #region Tests
 

@@ -10,7 +10,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public override string ServiceName => "img.ly";
 
-        public override string Pattern => @"^https?://(?:www\.)?img\.ly/(?:show/\w+/)?(\w+)/?(?:[\?#].*)?$";
+        public override string Pattern => @"^https?://(?:www\.)?img\.ly/(?:show/\w+/)?(\w+)/?(?:[\?#]|$)";
 
         #region Tests
 

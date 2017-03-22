@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿// TODO: URL がそもそも変わってる
+/*
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -176,3 +178,4 @@ namespace ImgAzyobuziNet.Core.Resolvers
         #endregion
     }
 }
+*/

@@ -17,7 +17,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public override string ServiceName => "メシマズ.net";
 
-        public override string Pattern => @"^http://(?:www\.)?meshimazu\.net/posts/(\d+)/?(?:[\?#].*)?$";
+        public override string Pattern => @"^http://(?:www\.)?meshimazu\.net/posts/(\d+)/?(?:[\?#]|$)";
 
         #region Tests
 

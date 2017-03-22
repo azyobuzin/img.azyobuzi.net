@@ -18,7 +18,7 @@ namespace ImgAzyobuziNet.Core.Test
             new ServiceCollection()
                 .Configure<ImgAzyobuziNetOptions>(
                     new ConfigurationBuilder()
-                        .SetBasePath(Directory.GetCurrentDirectory())
+                        .SetBasePath(Path.GetDirectoryName(typeof(TestTargetProvider).GetTypeInfo().Assembly.Location))
                         .AddJsonFile("appsettings.json")
                         .Build()
                         .GetSection("ImgAzyobuziNet")

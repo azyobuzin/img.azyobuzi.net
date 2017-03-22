@@ -17,7 +17,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public override string ServiceName => "イメピク";
 
-        public override string Pattern => @"^http://(?:www\.)?imepic.jp/(\d{8}/\d+)(?:[\?#].*)?$";
+        public override string Pattern => @"^http://(?:www\.)?imepic.jp/(\d{8}/\d+)(?:[\?#]|$)";
 
         #region Tests
 
@@ -113,8 +113,9 @@ namespace ImgAzyobuziNet.Core.Resolvers
         [TestMethod(TestCategory.Network)]
         private async Task FetchTest()
         {
-            // http://imepic.jp/20151221/799860
-            var result = await this.Fetch("20151221/799860").ConfigureAwait(false);
+            // http://imepic.jp/20170322/630700
+            // 保存期間 30 日なので気づいたらテスト通らなくなってるやつ
+            var result = await this.Fetch("20170322/630700").ConfigureAwait(false);
             Assert.True(() => !string.IsNullOrEmpty(result.OgImage));
             Assert.True(() => !string.IsNullOrEmpty(result.TwitterImage));
         }

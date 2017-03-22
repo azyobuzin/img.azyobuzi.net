@@ -16,7 +16,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public override string ServiceName => "DeviantArt";
 
-        public override string Pattern => @"^https?://(?:[\w\-]+)\.deviantart\.com/art/([\w\-]+)/?(?:[\?#].*)?$";
+        public override string Pattern => @"^https?://(?:[\w\-]+)\.deviantart\.com/art/([\w\-]+)/?(?:[\?#]|$)";
 
         #region Tests
 

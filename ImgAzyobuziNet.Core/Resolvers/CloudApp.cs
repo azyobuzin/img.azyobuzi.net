@@ -16,7 +16,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public override string ServiceName => "CloudApp";
 
-        public override string Pattern => @"^https?://(?:www\.)?cl\.ly/(?:image/)?(\w+)/?(?:[\?#].*)?$";
+        public override string Pattern => @"^https?://(?:www\.)?cl\.ly/(?:image/)?(\w+)/?(?:[\?#]|$)";
 
         #region Tests
 

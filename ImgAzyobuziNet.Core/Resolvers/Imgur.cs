@@ -10,7 +10,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public override string ServiceName => "Imgur";
 
-        public override string Pattern => @"^https?://(?:www\.)?imgur\.com/(?:gallery/|t/memes/)?(\w+)/?(?:[\?#].*)?$";
+        public override string Pattern => @"^https?://(?:www\.)?imgur\.com/(?:gallery/|t/memes/)?(\w+)/?(?:[\?#]|$)";
 
         #region Tests
 

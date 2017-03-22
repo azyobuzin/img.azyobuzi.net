@@ -16,7 +16,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public override string ServiceName => "cameran";
 
-        public override string Pattern => @"^http://cameran\.in/p/v1/(\w+)/?(?:[\?#].*)?$";
+        public override string Pattern => @"^http://cameran\.in/p/v1/(\w+)/?(?:[\?#]|$)";
 
         #region Tests
 

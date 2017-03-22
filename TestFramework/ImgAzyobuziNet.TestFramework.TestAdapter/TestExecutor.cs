@@ -37,7 +37,7 @@ namespace ImgAzyobuziNet.TestFramework.TestAdapter
 
                 void SetException(Exception ex)
                 {
-                    result.ErrorMessage = ex.GetType().FullName + ": " + ex.Message;
+                    result.ErrorMessage = ex.ToString();
                     result.ErrorStackTrace = ex.StackTrace;
                 }
 
@@ -60,7 +60,8 @@ namespace ImgAzyobuziNet.TestFramework.TestAdapter
                         .GetType(testMethodDeclaringType, true);
 
                     testMethod = testMethodType.GetTypeInfo().DeclaredMethods
-                        .First(x => x.IsDefined(typeof(TestMethodAttribute))
+                        .First(x => x.Name == testMethodName
+                            && x.IsDefined(typeof(TestMethodAttribute))
                             && x.GetParameters().Length == 0
                             && (x.ReturnType == typeof(void) || x.ReturnType == typeof(Task))
                         );
@@ -121,6 +122,8 @@ namespace ImgAzyobuziNet.TestFramework.TestAdapter
                 }
                 catch (Exception ex)
                 {
+                    if (ex is TargetInvocationException)
+                        ex = ex.InnerException;
                     SetException(ex);
                     result.Outcome = TestOutcome.Failed;
                 }

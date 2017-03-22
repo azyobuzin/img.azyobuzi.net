@@ -18,7 +18,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public override string ServiceName => "Flickr";
 
-        public override string Pattern => @"^https?://(?:www\.)?(?:flickr\.com/photos/(?:[\w\-_@]+)/(?:(albums|galleries)/)?(\d+)(?:/(?:in|with|sizes)(?:/.*)?)?|flic\.kr/p/([1-9a-zA-Z]+))/?(?:[\?#].*)?$";
+        public override string Pattern => @"^https?://(?:www\.)?(?:flickr\.com/photos/(?:[\w\-_@]+)/(?:(albums|galleries)/)?(\d+)(?:/(?:in|with|sizes)(?:/.*)?)?|flic\.kr/p/([1-9a-zA-Z]+))/?(?:[\?#]|$)";
 
         #region Tests
         [TestMethod(TestCategory.Static)]

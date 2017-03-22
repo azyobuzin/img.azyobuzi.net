@@ -10,7 +10,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public override string ServiceName => "Droplr";
 
-        public override string Pattern => @"^https?://d\.pr/(?:([iv])/)?(\w+)\+?(?:/\w+/?)?(?:[\?#].*)?$";
+        public override string Pattern => @"^https?://d\.pr/(?:([iv])/)?(\w+)\+?(?:/\w+/?)?(?:[\?#]|$)";
 
         #region Tests
 

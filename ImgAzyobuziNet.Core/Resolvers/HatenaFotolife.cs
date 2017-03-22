@@ -17,7 +17,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public override string ServiceName => "はてなフォトライフ";
 
-        public override string Pattern => @"^http://f\.hatena\.ne\.jp/(\w+)/(\d{14})(?:[\?#].*)?$";
+        public override string Pattern => @"^http://f\.hatena\.ne\.jp/(\w+)/(\d{14})(?:[\?#]|$)";
 
         #region Tests
 
