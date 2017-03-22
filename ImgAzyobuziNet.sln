@@ -1,17 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26206.0
+VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F4D6235D-41A2-49AE-84C0-C95D4B1E8EAF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestFramework", "TestFramework", "{B0C6B63E-B92C-4F09-9214-D7DC5F3D66F3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B0C6B63E-B92C-4F09-9214-D7DC5F3D66F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImgAzyobuziNet", "ImgAzyobuziNet\ImgAzyobuziNet.csproj", "{6742F54D-36DB-4F01-9591-6AB3456A4DF1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImgAzyobuziNet", "src\ImgAzyobuziNet\ImgAzyobuziNet.csproj", "{6742F54D-36DB-4F01-9591-6AB3456A4DF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImgAzyobuziNet.Core", "ImgAzyobuziNet.Core\ImgAzyobuziNet.Core.csproj", "{3F0870D7-772D-41EA-8C75-20A1204A4177}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImgAzyobuziNet.Core", "src\ImgAzyobuziNet.Core\ImgAzyobuziNet.Core.csproj", "{3F0870D7-772D-41EA-8C75-20A1204A4177}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImgAzyobuziNet.TestFramework", "TestFramework\ImgAzyobuziNet.TestFramework\ImgAzyobuziNet.TestFramework.csproj", "{EB447FEC-AA8D-4FDE-AC71-156661DCFEC1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImgAzyobuziNet.Core.Test", "test\ImgAzyobuziNet.Core.Test\ImgAzyobuziNet.Core.Test.csproj", "{EB447FEC-AA8D-4FDE-AC71-156661DCFEC1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImgAzyobuziNet.TestFramework.TestAdapter", "TestFramework\ImgAzyobuziNet.TestFramework.TestAdapter\ImgAzyobuziNet.TestFramework.TestAdapter.csproj", "{7C64B589-01E9-4981-9C55-D95C6CABAE87}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestProjects", "TestProjects", "{561868FF-BDB8-4449-A9C3-8B1FA80DEE5F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImgAzyobuziNet.Core.Test", "TestProjects\ImgAzyobuziNet.Core.Test\ImgAzyobuziNet.Core.Test.csproj", "{68520BEA-5FDD-43A2-AE28-1B171EF66F75}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,13 +35,21 @@ Global
 		{EB447FEC-AA8D-4FDE-AC71-156661DCFEC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB447FEC-AA8D-4FDE-AC71-156661DCFEC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB447FEC-AA8D-4FDE-AC71-156661DCFEC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C64B589-01E9-4981-9C55-D95C6CABAE87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C64B589-01E9-4981-9C55-D95C6CABAE87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C64B589-01E9-4981-9C55-D95C6CABAE87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C64B589-01E9-4981-9C55-D95C6CABAE87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68520BEA-5FDD-43A2-AE28-1B171EF66F75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68520BEA-5FDD-43A2-AE28-1B171EF66F75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68520BEA-5FDD-43A2-AE28-1B171EF66F75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68520BEA-5FDD-43A2-AE28-1B171EF66F75}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{6742F54D-36DB-4F01-9591-6AB3456A4DF1} = {F4D6235D-41A2-49AE-84C0-C95D4B1E8EAF}
-		{3F0870D7-772D-41EA-8C75-20A1204A4177} = {F4D6235D-41A2-49AE-84C0-C95D4B1E8EAF}
 		{EB447FEC-AA8D-4FDE-AC71-156661DCFEC1} = {B0C6B63E-B92C-4F09-9214-D7DC5F3D66F3}
+		{7C64B589-01E9-4981-9C55-D95C6CABAE87} = {B0C6B63E-B92C-4F09-9214-D7DC5F3D66F3}
+		{68520BEA-5FDD-43A2-AE28-1B171EF66F75} = {561868FF-BDB8-4449-A9C3-8B1FA80DEE5F}
 	EndGlobalSection
 EndGlobal

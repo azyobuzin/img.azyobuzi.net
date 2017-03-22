@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <VersionPrefix>3.0.0</VersionPrefix>
+    <Authors>azyobuzin</Authors>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <AssemblyName>ImgAzyobuziNet.Core</AssemblyName>
+    <PackageId>ImgAzyobuziNet.Core</PackageId>
+    <PackageProjectUrl>http://img.azyobuzi.net/</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/azyobuzin/img.azyobuzi.net/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <NoWarn>$(NoWarn);0649</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="0.9.9" />
+    <PackageReference Include="Jil" Version="2.15.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TestFramework\ImgAzyobuziNet.TestFramework\ImgAzyobuziNet.TestFramework.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+
+</Project>

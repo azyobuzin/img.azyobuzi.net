@@ -206,4 +206,4 @@ FakesAssemblies/
 *.opt
 
 # Private setting file
-/src/ImgAzyobuziNet/appsettings.json
+/ImgAzyobuziNet/appsettings.json
