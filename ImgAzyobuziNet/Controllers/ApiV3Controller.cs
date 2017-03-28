@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,13 @@ namespace ImgAzyobuziNet.Controllers
             [4045] = new ErrorDefinition(404, "Not a video."),
             [5000] = new ErrorDefinition(500, "Raised unknown exception on server.")
         };
+
+        private readonly ImgAzyobuziNetService _imgAzyobuziNetService;
+
+        public ApiV3Controller(ImgAzyobuziNetService imgAzyobuziNetService)
+        {
+            this._imgAzyobuziNetService = imgAzyobuziNetService;
+        }
 
         private IActionResult ErrorResponse(int error, string serviceId = null, Exception ex = null)
         {
@@ -44,8 +52,8 @@ namespace ImgAzyobuziNet.Controllers
 
         public IActionResult Services()
         {
-            return JilJsonResult.Create(ImgAzyobuziNetService.GetResolvers()
-                .ConvertAll(x => new { id = x.ServiceId, name = x.ServiceName, pattern = x.Pattern }));
+            return JilJsonResult.Create(this._imgAzyobuziNetService.GetPatternProviders()
+                .Select(x => new { id = x.ServiceId, name = x.ServiceName, pattern = x.Pattern }));
         }
 
         public async Task<IActionResult> Redirect(string uri, string size = "full")
@@ -76,7 +84,7 @@ namespace ImgAzyobuziNet.Controllers
                     return this.ErrorResponse(4003);
             }
 
-            var result = await ImgAzyobuziNetService.Resolve(this.HttpContext.RequestServices, uri).ConfigureAwait(false);
+            var result = await this._imgAzyobuziNetService.Resolve(uri).ConfigureAwait(false);
 
             if (result == null)
                 return this.ErrorResponse(4002);
@@ -125,7 +133,7 @@ namespace ImgAzyobuziNet.Controllers
             if (string.IsNullOrEmpty(uri))
                 return this.ErrorResponse(4001);
 
-            var result = await ImgAzyobuziNetService.Resolve(this.HttpContext.RequestServices, uri).ConfigureAwait(false);
+            var result = await this._imgAzyobuziNetService.Resolve(uri).ConfigureAwait(false);
 
             if (result == null)
                 return this.ErrorResponse(4002);

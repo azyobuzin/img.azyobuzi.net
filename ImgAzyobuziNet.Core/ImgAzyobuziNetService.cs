@@ -1,34 +1,36 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ImgAzyobuziNet.Core
 {
-    public static class ImgAzyobuziNetService
+    public class ImgAzyobuziNetService
     {
-        private static readonly Lazy<IPatternProvider[]> providers = new Lazy<IPatternProvider[]>(
-            () => typeof(ImgAzyobuziNetService).GetTypeInfo().Assembly.GetTypes()
-                .Where(x => x.GetTypeInfo().IsClass && typeof(IPatternProvider).IsAssignableFrom(x))
-                .Select(x => Activator.CreateInstance(x) as IPatternProvider)
-                .ToArray());
+        private readonly IEnumerable<IPatternProvider> _patternProviders;
+        private readonly IServiceProvider _serviceProvider;
 
-        public static IReadOnlyList<IPatternProvider> GetResolvers()
+        public ImgAzyobuziNetService(IEnumerable<IPatternProvider> patternProviders, IServiceProvider serviceProvider)
         {
-            return providers.Value;
+            this._patternProviders = patternProviders;
+            this._serviceProvider = serviceProvider;
         }
 
-        public static async Task<ResolveResult> Resolve(IServiceProvider serviceProvider, string uri)
+        public IEnumerable<IPatternProvider> GetPatternProviders()
         {
-            foreach (var p in providers.Value)
+            return this._patternProviders;
+        }
+
+        public async Task<ResolveResult> Resolve(string uri)
+        {
+            foreach (var p in this._patternProviders)
             {
                 var m = p.GetRegex().Match(uri);
                 if (m.Success)
                 {
                     try
                     {
-                        return new ResolveResult(p, await p.GetResolver(serviceProvider).GetImages(m).ConfigureAwait(false));
+                        var resolver = p.GetResolver(this._serviceProvider);
+                        return new ResolveResult(p, await resolver.GetImages(m).ConfigureAwait(false));
                     }
                     catch (Exception ex)
                     {
@@ -38,6 +40,11 @@ namespace ImgAzyobuziNet.Core
             }
 
             return null;
+        }
+
+        public object Select(Func<object, object> p)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -27,6 +27,9 @@ namespace ImgAzyobuziNet
         {
             services.Configure<ImgAzyobuziNetOptions>(this.Configuration.GetSection("ImgAzyobuziNet"))
                 .AddMemoryCache()
+                .AddHttpClient()
+                .AddImgAzyobuziNetService()
+                .AddDefaultPatternProviders()
                 .AddMvc();
         }
 

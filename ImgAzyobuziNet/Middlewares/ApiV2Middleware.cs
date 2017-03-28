@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ImgAzyobuziNet.Middlewares
 {
@@ -65,12 +66,14 @@ namespace ImgAzyobuziNet.Middlewares
         {
             public Impl(HttpContext context)
             {
-                this._httpContext = context;
+                this.Request = context.Request;
+                this.Response = context.Response;
+                this._imgAzyobuziNetService = context.RequestServices.GetService<ImgAzyobuziNetService>();
             }
 
-            private readonly HttpContext _httpContext;
-            private HttpRequest Request => this._httpContext.Request;
-            private HttpResponse Response => this._httpContext.Response;
+            private readonly HttpRequest Request;
+            private readonly HttpResponse Response;
+            private readonly ImgAzyobuziNetService _imgAzyobuziNetService;
 
             private static readonly IReadOnlyDictionary<int, ErrorDefinition> s_errors = new Dictionary<int, ErrorDefinition>
             {
@@ -127,9 +130,8 @@ namespace ImgAzyobuziNet.Middlewares
 
             public void Regex()
             {
-                this.Json(
-                    ImgAzyobuziNetService.GetResolvers()
-                    .ConvertAll(x => new { name = x.ServiceName, regex = x.Pattern }));
+                this.Json(this._imgAzyobuziNetService.GetPatternProviders()
+                    .Select(x => new { name = x.ServiceName, regex = x.Pattern }));
             }
 
             public async Task Redirect()
@@ -158,7 +160,7 @@ namespace ImgAzyobuziNet.Middlewares
                         return;
                 }
 
-                var result = await ImgAzyobuziNetService.Resolve(this._httpContext.RequestServices, uri).ConfigureAwait(false);
+                var result = await this._imgAzyobuziNetService.Resolve(uri).ConfigureAwait(false);
 
                 if (result == null)
                 {
@@ -210,7 +212,7 @@ namespace ImgAzyobuziNet.Middlewares
                     return;
                 }
 
-            RETURN:
+                RETURN:
                 this.Response.StatusCode = 302;
                 this.Response.GetTypedHeaders().Location = new Uri(location);
             }
@@ -224,7 +226,7 @@ namespace ImgAzyobuziNet.Middlewares
                     return;
                 }
 
-                var result = await ImgAzyobuziNetService.Resolve(this._httpContext.RequestServices, uri).ConfigureAwait(false);
+                var result = await this._imgAzyobuziNetService.Resolve(uri).ConfigureAwait(false);
 
                 if (result == null)
                 {
