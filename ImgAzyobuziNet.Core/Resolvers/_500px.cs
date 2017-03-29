@@ -1,12 +1,10 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.TestFramework;
 using Jil;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace ImgAzyobuziNet.Core.Resolvers
@@ -45,14 +43,14 @@ namespace ImgAzyobuziNet.Core.Resolvers
     public class _500pxResolver : IResolver
     {
         private readonly ImgAzyobuziNetOptions _options;
+        private readonly IHttpClient _httpClient;
         private readonly IMemoryCache _memoryCache;
-        private readonly ILogger _logger;
 
-        public _500pxResolver(IOptions<ImgAzyobuziNetOptions> options, IMemoryCache memoryCache, ILogger<_500pxResolver> logger)
+        public _500pxResolver(IOptions<ImgAzyobuziNetOptions> options, IHttpClient httpClient, IMemoryCache memoryCache)
         {
             this._options = options.Value;
+            this._httpClient = httpClient;
             this._memoryCache = memoryCache;
-            this._logger = logger;
         }
 
         public async Task<ImageInfo[]> GetImages(Match match)
@@ -79,24 +77,22 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private async Task<string> Fetch(string id)
         {
             string s;
-            using (var hc = new HttpClient())
+            var req = new HttpRequestMessage(
+                HttpMethod.Get,
+                "https://api.500px.com/v1/photos/" + id
+                    + "?image_size=5&consumer_key=" + this._options._500pxConsumerKey
+            );
+
+            using (var res = await this._httpClient.SendAsync(req).ConfigureAwait(false))
             {
-                var requestUri = "https://api.500px.com/v1/photos/" + id
-                    + "?image_size=5&consumer_key=" + this._options._500pxConsumerKey;
-                ResolverUtils.RequestingMessage(this._logger, requestUri, null);
+                if (res.StatusCode == HttpStatusCode.NotFound)
+                    throw new ImageNotFoundException();
 
-                using (var res = await hc.GetAsync(requestUri).ConfigureAwait(false))
-                {
-                    if (res.StatusCode == HttpStatusCode.NotFound)
-                        throw new ImageNotFoundException();
+                res.EnsureSuccessStatusCode();
 
-                    res.EnsureSuccessStatusCode();
-
-                    s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
-                }
+                s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
 
-            ResolverUtils.HttpResponseMessage(this._logger, s, null);
             return JSON.Deserialize<ApiResponse>(s).photo.image_url;
         }
 

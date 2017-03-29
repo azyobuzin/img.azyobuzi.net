@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.TestFramework;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -33,13 +32,13 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class CameranResolver : IResolver
     {
+        private readonly IHttpClient _httpClient;
         private readonly IMemoryCache _memoryCache;
-        private readonly ILogger _logger;
 
-        public CameranResolver(IMemoryCache memoryCache, ILogger<CameranResolver> logger)
+        public CameranResolver(IHttpClient httpClient, IMemoryCache memoryCache)
         {
+            this._httpClient = httpClient;
             this._memoryCache = memoryCache;
-            this._logger = logger;
         }
 
         public async Task<ImageInfo[]> GetImages(Match match)
@@ -55,26 +54,22 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         private async Task<string> Fetch(string id)
         {
-            using (var hc = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false }))
+            var req = new HttpRequestMessage(HttpMethod.Get, "http://cameran.in/p/v1/" + id);
+
+            using (var res = await this._httpClient.SendAsync(req, false).ConfigureAwait(false))
             {
-                var requestUri = "http://cameran.in/p/v1/" + id;
-                ResolverUtils.RequestingMessage(this._logger, requestUri, null);
-
-                using (var res = await hc.GetAsync(requestUri).ConfigureAwait(false))
+                switch (res.StatusCode)
                 {
-                    switch (res.StatusCode)
-                    {
-                        case HttpStatusCode.NotFound:
-                        case HttpStatusCode.Found:
-                        case HttpStatusCode.SeeOther:
-                            throw new ImageNotFoundException();
-                    }
-
-                    res.EnsureSuccessStatusCode();
-
-                    return ResolverUtils.GetOgImage(
-                        await res.Content.ReadAsHtmlDocument().ConfigureAwait(false));
+                    case HttpStatusCode.NotFound:
+                    case HttpStatusCode.Found:
+                    case HttpStatusCode.SeeOther:
+                        throw new ImageNotFoundException();
                 }
+
+                res.EnsureSuccessStatusCode();
+
+                return ResolverUtils.GetOgImage(
+                    await res.Content.ReadAsHtmlDocument().ConfigureAwait(false));
             }
         }
 
