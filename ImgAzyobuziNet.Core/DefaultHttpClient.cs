@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet.Core
 {
+    [SuppressMessage("Usage", "IAN0001:DoNotCreateHttpClient")]
     public class DefaultHttpClient : IHttpClient
     {
         private static readonly Func<ILogger, string, IDisposable> s_beginScope =

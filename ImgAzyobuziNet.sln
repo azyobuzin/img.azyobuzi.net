@@ -8,6 +8,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImgAzyobuziNet", "ImgAzyobuziNet\ImgAzyobuziNet.csproj", "{6742F54D-36DB-4F01-9591-6AB3456A4DF1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImgAzyobuziNet.Core", "ImgAzyobuziNet.Core\ImgAzyobuziNet.Core.csproj", "{3F0870D7-772D-41EA-8C75-20A1204A4177}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8E574EFE-237D-42EF-A481-CA42733AB8E2} = {8E574EFE-237D-42EF-A481-CA42733AB8E2}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImgAzyobuziNet.TestFramework", "TestFramework\ImgAzyobuziNet.TestFramework\ImgAzyobuziNet.TestFramework.csproj", "{EB447FEC-AA8D-4FDE-AC71-156661DCFEC1}"
 EndProject
@@ -21,6 +24,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analyzers", "Analyzers", "{D5268636-7464-4394-86FE-06F74BB62D81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImgAzyobuziNet.Analyzers.Core", "Analyzers\ImgAzyobuziNet.Analyzers.Core\ImgAzyobuziNet.Analyzers.Core.csproj", "{8E574EFE-237D-42EF-A481-CA42733AB8E2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +55,10 @@ Global
 		{68520BEA-5FDD-43A2-AE28-1B171EF66F75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68520BEA-5FDD-43A2-AE28-1B171EF66F75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68520BEA-5FDD-43A2-AE28-1B171EF66F75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E574EFE-237D-42EF-A481-CA42733AB8E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E574EFE-237D-42EF-A481-CA42733AB8E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E574EFE-237D-42EF-A481-CA42733AB8E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E574EFE-237D-42EF-A481-CA42733AB8E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -56,5 +67,6 @@ Global
 		{EB447FEC-AA8D-4FDE-AC71-156661DCFEC1} = {B0C6B63E-B92C-4F09-9214-D7DC5F3D66F3}
 		{7C64B589-01E9-4981-9C55-D95C6CABAE87} = {B0C6B63E-B92C-4F09-9214-D7DC5F3D66F3}
 		{68520BEA-5FDD-43A2-AE28-1B171EF66F75} = {561868FF-BDB8-4449-A9C3-8B1FA80DEE5F}
+		{8E574EFE-237D-42EF-A481-CA42733AB8E2} = {D5268636-7464-4394-86FE-06F74BB62D81}
 	EndGlobalSection
 EndGlobal

@@ -145,15 +145,17 @@ namespace ImgAzyobuziNet.Controllers
             {
                 service_id = result.PatternProvider.ServiceId,
                 service_name = result.PatternProvider.ServiceName,
-                images = result.Images.ConvertAll(x => new
-                {
-                    full = x.Full,
-                    large = x.Large,
-                    thumb = x.Thumb,
-                    video_full = x.VideoFull,
-                    video_large = x.VideoLarge,
-                    video_mobile = x.VideoMobile
-                })
+                images = result.Images
+                    .Select(x => new
+                    {
+                        full = x.Full,
+                        large = x.Large,
+                        thumb = x.Thumb,
+                        video_full = x.VideoFull,
+                        video_large = x.VideoLarge,
+                        video_mobile = x.VideoMobile
+                    })
+                    .ToArray()
             });
         }
     }

@@ -236,19 +236,21 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 "extras=url_o,url_l,url_m,url_s,media&photoset_id=" + id
             ).ConfigureAwait(false)).photoset;
 
-            return res.photo.ConvertAll(x =>
-            {
-                var isVideo = x.media == "video";
-                var site = isVideo ? CreateVideoUri("site", x.id, res.owner, x.secret) : null;
-                return new ImageInfo(
-                    x.url_o ?? x.url_l ?? x.url_m,
-                    x.url_l ?? x.url_m,
-                    x.url_s,
-                    site,
-                    site,
-                    isVideo ? CreateVideoUri("mobile", x.id, res.owner, x.secret) : null
-                );
-            });
+            return res.photo
+                .Select(x =>
+                {
+                    var isVideo = x.media == "video";
+                    var site = isVideo ? CreateVideoUri("site", x.id, res.owner, x.secret) : null;
+                    return new ImageInfo(
+                        x.url_o ?? x.url_l ?? x.url_m,
+                        x.url_l ?? x.url_m,
+                        x.url_s,
+                        site,
+                        site,
+                        isVideo ? CreateVideoUri("mobile", x.id, res.owner, x.secret) : null
+                    );
+                })
+                .ToArray();
         }
 
         private async Task<ImageInfo[]> FetchGallery(string id)
@@ -258,19 +260,21 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 "extras=url_o,url_l,url_m,url_s,media&gallery_id=" + id
             ).ConfigureAwait(false);
 
-            return res.photos.photo.ConvertAll(x =>
-            {
-                var isVideo = x.media == "video";
-                var site = isVideo ? CreateVideoUri("site", x.id, x.owner, x.secret) : null;
-                return new ImageInfo(
-                    x.url_o ?? x.url_l ?? x.url_m,
-                    x.url_l ?? x.url_m,
-                    x.url_s,
-                    site,
-                    site,
-                    isVideo ? CreateVideoUri("mobile", x.id, x.owner, x.secret) : null
-                );
-            });
+            return res.photos.photo
+                .Select(x =>
+                {
+                    var isVideo = x.media == "video";
+                    var site = isVideo ? CreateVideoUri("site", x.id, x.owner, x.secret) : null;
+                    return new ImageInfo(
+                        x.url_o ?? x.url_l ?? x.url_m,
+                        x.url_l ?? x.url_m,
+                        x.url_s,
+                        site,
+                        site,
+                        isVideo ? CreateVideoUri("mobile", x.id, x.owner, x.secret) : null
+                    );
+                })
+                .ToArray();
         }
 
         private static string CreateVideoUri(string size, string id, string owner, string secret)

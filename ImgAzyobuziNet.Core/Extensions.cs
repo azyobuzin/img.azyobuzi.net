@@ -19,11 +19,13 @@ namespace ImgAzyobuziNet.Core
             SlidingExpiration = new TimeSpan(TimeSpan.TicksPerDay)
         };
 
+        [Obsolete("あとでサービス作る")]
         internal static object SetWithDefaultExpiration(this IMemoryCache m, object key, object value)
         {
             return m.Set(key, value, defaultOptions);
         }
 
+        [Obsolete("あとでサービス作る")]
         internal static async Task<T> GetOrSet<T>(this IMemoryCache m, object key, Func<Task<T>> valueFactory)
         {
             T result;
@@ -35,41 +37,9 @@ namespace ImgAzyobuziNet.Core
             return result;
         }
 
-        public static TResult[] ConvertAll<TSource, TResult>(this TSource[] source, Func<TSource, TResult> selector)
-        {
-            var len = source.Length;
-            var result = new TResult[len];
-            for (var i = 0; i < len; i++)
-            {
-                result[i] = selector(source[i]);
-            }
-            return result;
-        }
-
-        public static TResult[] ConvertAll<TSource, TResult>(this IReadOnlyCollection<TSource> source, Func<TSource, TResult> selector)
-        {
-            var array = source as TSource[];
-            if (array != null) return ConvertAll(array, selector);
-
-            var count = source.Count;
-            var result = new TResult[count];
-            if (count == 0) return result;
-            using (var enumerator = source.GetEnumerator())
-            {
-                for (var i = 0; i < count; i++)
-                {
-                    if (!enumerator.MoveNext())
-                        throw new InvalidOperationException();
-                    result[i] = selector(enumerator.Current);
-                }
-            }
-            return result;
-        }
-
         public static TValue GetOrDefault<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> source, TKey key)
         {
-            TValue value;
-            return source.TryGetValue(key, out value) ? value : default(TValue);
+            return source.TryGetValue(key, out TValue value) ? value : default(TValue);
         }
 
         public static T GetElementById<T>(this INode node, string id) where T : IElement
