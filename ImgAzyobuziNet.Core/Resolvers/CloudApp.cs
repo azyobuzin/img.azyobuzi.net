@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using ImgAzyobuziNet.TestFramework;
 using Jil;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -41,13 +40,13 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class CloudAppResolver : IResolver
     {
+        private readonly IHttpClient _httpClient;
         private readonly IMemoryCache _memoryCache;
-        private readonly ILogger _logger;
 
-        public CloudAppResolver(IMemoryCache memoryCache, ILogger<CloudAppResolver> logger)
+        public CloudAppResolver(IHttpClient httpClient, IMemoryCache memoryCache)
         {
+            this._httpClient = httpClient;
             this._memoryCache = memoryCache;
-            this._logger = logger;
         }
 
         private class CacheItem
@@ -87,23 +86,18 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private async Task<CacheItem> Fetch(string uri)
         {
             string s;
-            using (var hc = new HttpClient())
+            var req = new HttpRequestMessage(HttpMethod.Get, uri);
+            req.Headers.Accept.Set(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            using (var res = await this._httpClient.SendAsync(req).ConfigureAwait(false))
             {
-                hc.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                if (res.StatusCode == HttpStatusCode.NotFound)
+                    throw new ImageNotFoundException();
 
-                ResolverUtils.RequestingMessage(this._logger, uri, null);
-
-                using (var res = await hc.GetAsync(uri).ConfigureAwait(false))
-                {
-                    if (res.StatusCode == HttpStatusCode.NotFound)
-                        throw new ImageNotFoundException();
-
-                    res.EnsureSuccessStatusCode();
-                    s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
-                }
+                res.EnsureSuccessStatusCode();
+                s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
 
-            ResolverUtils.HttpResponseMessage(this._logger, s, null);
             return JSON.Deserialize<CacheItem>(s);
         }
 

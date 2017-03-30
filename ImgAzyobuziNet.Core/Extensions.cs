@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using AngleSharp.Dom;
 using AngleSharp.Dom.Html;
@@ -81,6 +82,13 @@ namespace ImgAzyobuziNet.Core
             // ReadAsStreamAsync returns a MemoryStream.
             using (var stream = await httpContent.ReadAsStreamAsync().ConfigureAwait(false))
                 return new HtmlParser().Parse(stream);
+        }
+
+        public static void Set<T>(this HttpHeaderValueCollection<T> headers, T value)
+            where T : class
+        {
+            headers.Clear();
+            headers.Add(value);
         }
     }
 }

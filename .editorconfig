@@ -1,0 +1,27 @@
+root = true
+
+[*.{cs,csx}]
+charset = utf-8-bom
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+dotnet_sort_system_directives_first = true
+dotnet_style_predefined_type_for_locals_parameters_members = true:warning
+dotnet_style_predefined_type_for_member_access = true:warning
+dotnet_style_qualification_for_event = true:warning
+dotnet_style_qualification_for_field = true:warning
+dotnet_style_qualification_for_method = true:warning
+dotnet_style_qualification_for_property = true:warning
+
+[*.{*proj,targets,props}]
+charset = utf-8-bom
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+
+[*.json]
+charset = utf-8
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
