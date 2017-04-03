@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using ImgAzyobuziNet.TestFramework;
 using Jil;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -33,13 +32,13 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class DeviantArtResolver : IResolver
     {
+        private readonly IHttpClient _httpClient;
         private readonly IMemoryCache _memoryCache;
-        private readonly ILogger _logger;
 
-        public DeviantArtResolver(IMemoryCache memoryCache, ILogger<DeviantArtResolver> logger)
+        public DeviantArtResolver(IHttpClient httpClient, IMemoryCache memoryCache)
         {
+            this._httpClient = httpClient;
             this._memoryCache = memoryCache;
-            this._logger = logger;
         }
 
         public async Task<ImageInfo[]> GetImages(Match match)
@@ -61,22 +60,20 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private async Task<CacheItem> Fetch(string uri)
         {
             string json;
-            using (var hc = new HttpClient())
+            var req = new HttpRequestMessage(
+                HttpMethod.Get,
+                "http://backend.deviantart.com/oembed?url=" + Uri.EscapeDataString(uri)
+            );
+
+            using (var res = await this._httpClient.SendAsync(req).ConfigureAwait(false))
             {
-                var requestUri = "http://backend.deviantart.com/oembed?url=" + Uri.EscapeDataString(uri);
-                ResolverUtils.RequestingMessage(this._logger, requestUri, null);
+                if (res.StatusCode == HttpStatusCode.NotFound)
+                    throw new ImageNotFoundException();
 
-                using (var res = await hc.GetAsync(requestUri).ConfigureAwait(false))
-                {
-                    if (res.StatusCode == HttpStatusCode.NotFound)
-                        throw new ImageNotFoundException();
-
-                    res.EnsureSuccessStatusCode();
-                    json = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
-                }
+                res.EnsureSuccessStatusCode();
+                json = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
 
-            ResolverUtils.HttpResponseMessage(this._logger, json, null);
             return JSON.Deserialize<CacheItem>(json);
         }
 

@@ -1,7 +1,8 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Semantics;
 
 namespace ImgAzyobuziNet.Analyzers.Core
 {
@@ -23,19 +24,19 @@ namespace ImgAzyobuziNet.Analyzers.Core
 
                 if (httpClientType == null) return;
 
-                compilationContext.RegisterOperationAction(
-                    operationContext =>
+                compilationContext.RegisterSyntaxNodeAction(
+                    nodeContext =>
                     {
-                        var operation = (IObjectCreationExpression)operationContext.Operation;
-                        if (operation.Constructor.ContainingType == httpClientType)
+                        var node = (ObjectCreationExpressionSyntax)nodeContext.Node;
+                        if (nodeContext.SemanticModel.GetSymbolInfo(node.Type).Symbol == httpClientType)
                         {
-                            operationContext.ReportDiagnostic(Diagnostic.Create(
+                            nodeContext.ReportDiagnostic(Diagnostic.Create(
                                 Rule,
-                                operation.Syntax.GetLocation()
+                                node.GetLocation()
                             ));
                         }
                     },
-                    OperationKind.ObjectCreationExpression
+                    SyntaxKind.ObjectCreationExpression
                 );
             });
         }

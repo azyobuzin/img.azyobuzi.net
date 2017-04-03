@@ -9,7 +9,6 @@
     <PackageProjectUrl>http://img.azyobuzi.net/</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/azyobuzin/img.azyobuzi.net/blob/master/LICENSE.txt</PackageLicenseUrl>
     <NoWarn>$(NoWarn);0649</NoWarn>
-    <Features>$(Features);IOperation</Features>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +25,10 @@
 
   <ItemGroup>
     <Analyzer Include="..\Analyzers\ImgAzyobuziNet.Analyzers.Core\bin\ImgAzyobuziNet.Analyzers.Core.dll" Condition="Exists('..\Analyzers\ImgAzyobuziNet.Analyzers.Core\bin\ImgAzyobuziNet.Analyzers.Core.dll')" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 
 </Project>

@@ -64,7 +64,7 @@ namespace ImgAzyobuziNet.Core
 
                     try
                     {
-                        s_httpClientResponseContentMessage(this._logger, await request.Content.ReadAsStringAsync().ConfigureAwait(false), null);
+                        s_httpClientResponseContentMessage(this._logger, await response.Content.ReadAsStringAsync().ConfigureAwait(false), null);
                     }
                     catch (Exception ex)
                     {

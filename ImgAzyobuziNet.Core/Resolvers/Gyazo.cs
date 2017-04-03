@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using ImgAzyobuziNet.TestFramework;
 using Jil;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -43,13 +42,13 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class GyazoResolver : IResolver
     {
+        private readonly IHttpClient _httpClient;
         private readonly IMemoryCache _memoryCache;
-        private readonly ILogger _logger;
 
-        public GyazoResolver(IMemoryCache memoryCache, ILogger<GyazoResolver> logger)
+        public GyazoResolver(IHttpClient httpClient, IMemoryCache memoryCache)
         {
+            this._httpClient = httpClient;
             this._memoryCache = memoryCache;
-            this._logger = logger;
         }
 
         public async Task<ImageInfo[]> GetImages(Match match)
@@ -74,23 +73,21 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private async Task<string> Fetch(string id)
         {
             string s;
-            using (var hc = new HttpClient())
+            var req = new HttpRequestMessage(
+                HttpMethod.Get,
+                "https://api.gyazo.com/api/oembed?url="
+                    + Uri.EscapeDataString("http://gyazo.com/" + id)
+            );
+
+            using (var res = await this._httpClient.SendAsync(req).ConfigureAwait(false))
             {
-                var requestUri = "https://api.gyazo.com/api/oembed?url="
-                    + Uri.EscapeDataString("http://gyazo.com/" + id);
-                ResolverUtils.RequestingMessage(this._logger, requestUri, null);
+                if (res.StatusCode == HttpStatusCode.NotFound)
+                    throw new ImageNotFoundException();
 
-                using (var res = await hc.GetAsync(requestUri).ConfigureAwait(false))
-                {
-                    if (res.StatusCode == HttpStatusCode.NotFound)
-                        throw new ImageNotFoundException();
-
-                    res.EnsureSuccessStatusCode();
-                    s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
-                }
+                res.EnsureSuccessStatusCode();
+                s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
 
-            ResolverUtils.HttpResponseMessage(this._logger, s, null);
             return JSON.Deserialize<ApiResponse>(s).url;
         }
 

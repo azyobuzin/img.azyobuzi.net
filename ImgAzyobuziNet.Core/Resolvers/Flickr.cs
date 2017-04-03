@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using ImgAzyobuziNet.TestFramework;
 using Jil;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace ImgAzyobuziNet.Core.Resolvers
@@ -55,14 +54,14 @@ namespace ImgAzyobuziNet.Core.Resolvers
     public class FlickrResolver : IResolver
     {
         private readonly ImgAzyobuziNetOptions _options;
+        private readonly IHttpClient _httpClient;
         private readonly IMemoryCache _memoryCache;
-        private readonly ILogger _logger;
 
-        public FlickrResolver(IOptions<ImgAzyobuziNetOptions> options, IMemoryCache memoryCache, ILogger<FlickrResolver> logger)
+        public FlickrResolver(IOptions<ImgAzyobuziNetOptions> options, IHttpClient httpClient, IMemoryCache memoryCache)
         {
             this._options = options.Value;
+            this._httpClient = httpClient;
             this._memoryCache = memoryCache;
-            this._logger = logger;
         }
 
         public async Task<ImageInfo[]> GetImages(Match match)
@@ -195,18 +194,14 @@ namespace ImgAzyobuziNet.Core.Resolvers
             where T : FlickrResponseBase
         {
             string json;
-            using (var hc = new HttpClient())
-            {
-                var requestUri = "https://api.flickr.com/services/rest/?format=json&nojsoncallback=1&"
-                    + "&api_key=" + this._options.FlickrApiKey
-                    + "&method=" + method
-                    + "&" + query;
-                ResolverUtils.RequestingMessage(this._logger, requestUri, null);
+            var requestUri = "https://api.flickr.com/services/rest/?format=json&nojsoncallback=1&"
+                + "&api_key=" + this._options.FlickrApiKey
+                + "&method=" + method
+                + "&" + query;
 
-                json = await hc.GetStringAsync(requestUri).ConfigureAwait(false);
-            }
+            using (var res = await this._httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, requestUri)).ConfigureAwait(false))
+                json = await res.EnsureSuccessStatusCode().Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            ResolverUtils.HttpResponseMessage(this._logger, json, null);
             var result = JSON.Deserialize<T>(json, Jil.Options.IncludeInherited);
 
             if (result.stat != "ok")

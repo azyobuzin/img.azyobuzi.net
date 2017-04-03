@@ -25,6 +25,7 @@ namespace ImgAzyobuziNet.Core.Test
                 )
                 .AddLogging()
                 .AddMemoryCache()
+                .AddHttpClient()
                 .BuildServiceProvider()
         );
 

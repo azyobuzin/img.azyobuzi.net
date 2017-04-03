@@ -7,7 +7,6 @@ using AngleSharp.Dom.Html;
 using AngleSharp.Extensions;
 using ImgAzyobuziNet.TestFramework;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -34,13 +33,13 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class ImepicResolver : IResolver
     {
+        private readonly IHttpClient _httpClient;
         private readonly IMemoryCache _memoryCache;
-        private readonly ILogger _logger;
 
-        public ImepicResolver(IMemoryCache memoryCache, ILogger<ImepicResolver> logger)
+        public ImepicResolver(IHttpClient httpClient, IMemoryCache memoryCache)
         {
+            this._httpClient = httpClient;
             this._memoryCache = memoryCache;
-            this._logger = logger;
         }
 
         public async Task<ImageInfo[]> GetImages(Match match)
@@ -63,19 +62,15 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private async Task<CacheItem> Fetch(string id)
         {
             IHtmlDocument document;
-            using (var hc = new HttpClient())
+            var req = new HttpRequestMessage(HttpMethod.Get, "http://imepic.jp/" + id);
+
+            using (var res = await this._httpClient.SendAsync(req).ConfigureAwait(false))
             {
-                var requestUri = "http://imepic.jp/" + id;
-                ResolverUtils.RequestingMessage(this._logger, requestUri, null);
+                if (res.StatusCode == HttpStatusCode.NotFound)
+                    throw new ImageNotFoundException();
 
-                using (var res = await hc.GetAsync(requestUri).ConfigureAwait(false))
-                {
-                    if (res.StatusCode == HttpStatusCode.NotFound)
-                        throw new ImageNotFoundException();
-
-                    res.EnsureSuccessStatusCode();
-                    document = await res.Content.ReadAsHtmlDocument().ConfigureAwait(false);
-                }
+                res.EnsureSuccessStatusCode();
+                document = await res.Content.ReadAsHtmlDocument().ConfigureAwait(false);
             }
 
             string ogImage = null;

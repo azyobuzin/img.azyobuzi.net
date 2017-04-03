@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using ImgAzyobuziNet.TestFramework;
 using Jil;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -36,13 +35,13 @@ namespace ImgAzyobuziNet.Core.Resolvers
     {
         // 動画の取得には投稿者のアクセストークンが必要
 
+        private readonly IHttpClient _httpClient;
         private readonly IMemoryCache _memoryCache;
-        private readonly ILogger _logger;
 
-        public DailymotionResolver(IMemoryCache memoryCache, ILogger<DailymotionResolver> logger)
+        public DailymotionResolver(IHttpClient httpClient, IMemoryCache memoryCache)
         {
+            this._httpClient = httpClient;
             this._memoryCache = memoryCache;
-            this._logger = logger;
         }
 
         private class CacheItem
@@ -68,26 +67,24 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private async Task<CacheItem> Fetch(string id)
         {
             string json;
-            using (var hc = new HttpClient())
+            var req = new HttpRequestMessage(
+                HttpMethod.Get,
+                "https://api.dailymotion.com/video/" + id + "?fields=" + fields
+            );
+
+            using (var res = await this._httpClient.SendAsync(req).ConfigureAwait(false))
             {
-                var requestUri = "https://api.dailymotion.com/video/" + id + "?fields=" + fields;
-                ResolverUtils.RequestingMessage(this._logger, requestUri, null);
-
-                using (var res = await hc.GetAsync(requestUri).ConfigureAwait(false))
+                switch (res.StatusCode)
                 {
-                    switch (res.StatusCode)
-                    {
-                        case HttpStatusCode.BadRequest:
-                        case HttpStatusCode.NotFound:
-                            throw new ImageNotFoundException();
-                    }
-
-                    res.EnsureSuccessStatusCode();
-                    json = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    case HttpStatusCode.BadRequest:
+                    case HttpStatusCode.NotFound:
+                        throw new ImageNotFoundException();
                 }
+
+                res.EnsureSuccessStatusCode();
+                json = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
 
-            ResolverUtils.HttpResponseMessage(this._logger, json, null);
             return JSON.Deserialize<CacheItem>(json);
         }
 

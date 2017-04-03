@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using ImgAzyobuziNet.TestFramework;
 using Jil;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace ImgAzyobuziNet.Core.Resolvers
@@ -44,14 +43,14 @@ namespace ImgAzyobuziNet.Core.Resolvers
     public class InstagramResolver : IResolver
     {
         private readonly ImgAzyobuziNetOptions _options;
+        private readonly IHttpClient _httpClient;
         private readonly IMemoryCache _memoryCache;
-        private readonly ILogger _logger;
 
-        public InstagramResolver(IOptions<ImgAzyobuziNetOptions> options, IMemoryCache memoryCache, ILogger<InstagramResolver> logger)
+        public InstagramResolver(IOptions<ImgAzyobuziNetOptions> options, IHttpClient httpClient, IMemoryCache memoryCache)
         {
             this._options = options.Value;
+            this._httpClient = httpClient;
             this._memoryCache = memoryCache;
-            this._logger = logger;
         }
 
         public async Task<ImageInfo[]> GetImages(Match match)
@@ -112,28 +111,26 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private async Task<CacheItem> Fetch(string id)
         {
             string json;
-            using (var hc = new HttpClient())
+            var req = new HttpRequestMessage(
+                HttpMethod.Get,
+                "https://api.instagram.com/v1/media/shortcode/" + id
+                    + "?access_token=" + this._options.InstagramAccessToken
+            );
+
+            using (var res = await this._httpClient.SendAsync(req).ConfigureAwait(false))
             {
-                var requestUri = "https://api.instagram.com/v1/media/shortcode/" + id
-                    + "?access_token=" + this._options.InstagramAccessToken;
-                ResolverUtils.RequestingMessage(this._logger, requestUri, null);
-
-                using (var res = await hc.GetAsync(requestUri).ConfigureAwait(false))
+                switch (res.StatusCode)
                 {
-                    switch (res.StatusCode)
-                    {
-                        case HttpStatusCode.BadRequest:
-                            throw new ImageNotFoundException();
-                        case HttpStatusCode.NotFound:
-                            return null; // アクセス不可能
-                    }
-
-                    res.EnsureSuccessStatusCode();
-                    json = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    case HttpStatusCode.BadRequest:
+                        throw new ImageNotFoundException();
+                    case HttpStatusCode.NotFound:
+                        return null; // アクセス不可能
                 }
+
+                res.EnsureSuccessStatusCode();
+                json = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
 
-            ResolverUtils.HttpResponseMessage(this._logger, json, null);
             return JSON.Deserialize<Response>(json).data;
         }
 
