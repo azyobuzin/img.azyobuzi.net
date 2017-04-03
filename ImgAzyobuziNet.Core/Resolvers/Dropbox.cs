@@ -68,7 +68,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             this._logger = logger;
         }
 
-        public async Task<ImageInfo[]> GetImages(Match match)
+        public async ValueTask<ImageInfo[]> GetImages(Match match)
         {
             if (match.Groups[1].Success)
             { // File

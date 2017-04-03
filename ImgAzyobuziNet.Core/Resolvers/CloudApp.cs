@@ -56,7 +56,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             public string thumbnail_url;
         }
 
-        public async Task<ImageInfo[]> GetImages(Match match)
+        public async ValueTask<ImageInfo[]> GetImages(Match match)
         {
             var id = match.Groups[1].Value;
             var key = "cloudapp-" + id;

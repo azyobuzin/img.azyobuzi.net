@@ -77,7 +77,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             this._logger = logger;
         }
 
-        public async Task<ImageInfo[]> GetImages(Match match)
+        public async ValueTask<ImageInfo[]> GetImages(Match match)
         {
             var t = match.Groups[1].Value;
             var id = match.Groups[2].Value;

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -20,7 +20,7 @@ namespace ImgAzyobuziNet.Core
             return this._patternProviders;
         }
 
-        public async Task<ResolveResult> Resolve(string uri)
+        public async ValueTask<ResolveResult> Resolve(string uri)
         {
             foreach (var p in this._patternProviders)
             {

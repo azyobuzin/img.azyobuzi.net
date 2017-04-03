@@ -35,13 +35,13 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class ImgurResolver : IResolver
     {
-        public Task<ImageInfo[]> GetImages(Match match)
+        public ValueTask<ImageInfo[]> GetImages(Match match)
         {
             // 拡張子は何にしても画像本体は返ってくる
             // アニメーション GIF は mp4 で取得可能だけど、チェックしにいく価値がない気がする
 
             var id = match.Groups[1].Value;
-            return Task.FromResult(new[] {
+            return new ValueTask<ImageInfo[]>(new[] {
                 new ImageInfo(
                     "https://i.imgur.com/" + id + ".jpg",
                     "https://i.imgur.com/" + id + "l.jpg",

@@ -37,7 +37,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class DroplrResolver : IResolver
     {
-        public Task<ImageInfo[]> GetImages(Match match)
+        public ValueTask<ImageInfo[]> GetImages(Match match)
         {
             var typeGroup = match.Groups[1];
             var id = match.Groups[2].Value;
@@ -53,7 +53,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 // （OEmbed 対応しろよ）
                 result.VideoFull = result.VideoLarge = result.VideoMobile = "http://d.pr/v/" + id + "+";
             }
-            return Task.FromResult(new[] { result });
+            return new ValueTask<ImageInfo[]>(new[] { result });
         }
 
         // 無料プランだと一週間で消されるのでテストが書けない

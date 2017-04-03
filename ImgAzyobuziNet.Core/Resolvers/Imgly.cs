@@ -35,10 +35,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class ImglyResolver : IResolver
     {
-        public Task<ImageInfo[]> GetImages(Match match)
+        public ValueTask<ImageInfo[]> GetImages(Match match)
         {
             var id = match.Groups[1].Value;
-            return Task.FromResult(new[] {
+            return new ValueTask<ImageInfo[]>(new[] {
                 new ImageInfo(
                     "http://img.ly/show/full/" + id,
                     "http://img.ly/show/large/" + id,

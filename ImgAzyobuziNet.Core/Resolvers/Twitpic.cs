@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.TestFramework;
 
@@ -35,10 +35,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class TwitpicResolver : IResolver
     {
-        public Task<ImageInfo[]> GetImages(Match match)
+        public ValueTask<ImageInfo[]> GetImages(Match match)
         {
             var id = match.Groups[1].Value;
-            return Task.FromResult(new[] {
+            return new ValueTask<ImageInfo[]>(new[] {
                 new ImageInfo(
                     "https://twitpic.com/show/large/" + id,
                     "https://twitpic.com/show/large/" + id,

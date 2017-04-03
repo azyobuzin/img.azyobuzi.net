@@ -53,7 +53,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             this._memoryCache = memoryCache;
         }
 
-        public async Task<ImageInfo[]> GetImages(Match match)
+        public async ValueTask<ImageInfo[]> GetImages(Match match)
         {
             var id = match.Groups[1].Value;
             var result = await this._memoryCache.GetOrSet(

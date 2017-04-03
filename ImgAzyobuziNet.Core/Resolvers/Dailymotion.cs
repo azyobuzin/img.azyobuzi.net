@@ -54,7 +54,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private static readonly string fields =
             string.Join(",", typeof(CacheItem).GetTypeInfo().DeclaredFields.Select(x => x.Name));
 
-        public async Task<ImageInfo[]> GetImages(Match match)
+        public async ValueTask<ImageInfo[]> GetImages(Match match)
         {
             var id = match.Groups[1].Value;
             var result = await this._memoryCache.GetOrSet(
