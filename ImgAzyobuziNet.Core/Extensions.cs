@@ -8,33 +8,21 @@ using AngleSharp.Dom;
 using AngleSharp.Dom.Html;
 using AngleSharp.Extensions;
 using AngleSharp.Parser.Html;
-using Microsoft.Extensions.Caching.Memory;
+using ImgAzyobuziNet.Core.SupportServices;
 
 namespace ImgAzyobuziNet.Core
 {
     public static class Extensions
     {
-        private static readonly MemoryCacheEntryOptions defaultOptions = new MemoryCacheEntryOptions
+        public static async ValueTask<T> GetOrSet<T>(this IResolverCache resolverCache, string key, Func<Task<T>> valueFactory)
         {
-            SlidingExpiration = new TimeSpan(TimeSpan.TicksPerDay)
-        };
-
-        [Obsolete("あとでサービス作る")]
-        internal static object SetWithDefaultExpiration(this IMemoryCache m, object key, object value)
-        {
-            return m.Set(key, value, defaultOptions);
-        }
-
-        [Obsolete("あとでサービス作る")]
-        internal static async Task<T> GetOrSet<T>(this IMemoryCache m, object key, Func<Task<T>> valueFactory)
-        {
-            T result;
-            if (!m.TryGetValue(key, out result))
+            var (exists, value) = await resolverCache.TryGetValue<T>(key).ConfigureAwait(false);
+            if (!exists)
             {
-                result = await valueFactory().ConfigureAwait(false);
-                m.SetWithDefaultExpiration(key, result);
+                value = await valueFactory().ConfigureAwait(false);
+                await resolverCache.Set(key, value).ConfigureAwait(false);
             }
-            return result;
+            return value;
         }
 
         public static TValue GetOrDefault<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> source, TKey key)

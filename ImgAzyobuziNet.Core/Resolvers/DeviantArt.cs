@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
 using Jil;
 using Microsoft.Extensions.Caching.Memory;
@@ -33,9 +34,9 @@ namespace ImgAzyobuziNet.Core.Resolvers
     public class DeviantArtResolver : IResolver
     {
         private readonly IHttpClient _httpClient;
-        private readonly IMemoryCache _memoryCache;
+        private readonly IResolverCache _memoryCache;
 
-        public DeviantArtResolver(IHttpClient httpClient, IMemoryCache memoryCache)
+        public DeviantArtResolver(IHttpClient httpClient, IResolverCache memoryCache)
         {
             this._httpClient = httpClient;
             this._memoryCache = memoryCache;

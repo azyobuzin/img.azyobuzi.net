@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AngleSharp.Dom.Html;
 using AngleSharp.Extensions;
+using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -35,9 +36,9 @@ namespace ImgAzyobuziNet.Core.Resolvers
     public class HatenaFotolifeResolver : IResolver
     {
         private readonly IHttpClient _httpClient;
-        private readonly IMemoryCache _memoryCache;
+        private readonly IResolverCache _memoryCache;
 
-        public HatenaFotolifeResolver(IHttpClient httpClient, IMemoryCache memoryCache)
+        public HatenaFotolifeResolver(IHttpClient httpClient, IResolverCache memoryCache)
         {
             this._httpClient = httpClient;
             this._memoryCache = memoryCache;

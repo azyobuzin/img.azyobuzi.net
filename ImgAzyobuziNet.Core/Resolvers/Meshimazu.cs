@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AngleSharp.Dom.Html;
 using AngleSharp.Extensions;
+using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -34,9 +35,9 @@ namespace ImgAzyobuziNet.Core.Resolvers
     public class MeshimazuResolver : IResolver
     {
         private readonly IHttpClient _httpClient;
-        private readonly IMemoryCache _memoryCache;
+        private readonly IResolverCache _memoryCache;
 
-        public MeshimazuResolver(IHttpClient httpClient, IMemoryCache memoryCache)
+        public MeshimazuResolver(IHttpClient httpClient, IResolverCache memoryCache)
         {
             this._httpClient = httpClient;
             this._memoryCache = memoryCache;

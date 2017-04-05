@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
-    <AssemblyName>ImgAzyobuziNet.TestFramework</AssemblyName>
-    <PackageId>ImgAzyobuziNet.TestFramework</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

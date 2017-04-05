@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace ImgAzyobuziNet.Core
+namespace ImgAzyobuziNet.Core.SupportServices
 {
     [SuppressMessage("Usage", "IAN0001:DoNotCreateHttpClient")]
     public class DefaultHttpClient : IHttpClient

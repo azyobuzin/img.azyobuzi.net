@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
 using Jil;
 using Microsoft.Extensions.Caching.Memory;
@@ -41,9 +42,9 @@ namespace ImgAzyobuziNet.Core.Resolvers
     public class CloudAppResolver : IResolver
     {
         private readonly IHttpClient _httpClient;
-        private readonly IMemoryCache _memoryCache;
+        private readonly IResolverCache _memoryCache;
 
-        public CloudAppResolver(IHttpClient httpClient, IMemoryCache memoryCache)
+        public CloudAppResolver(IHttpClient httpClient, IResolverCache memoryCache)
         {
             this._httpClient = httpClient;
             this._memoryCache = memoryCache;

@@ -1,7 +1,7 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace ImgAzyobuziNet.Core
+namespace ImgAzyobuziNet.Core.SupportServices
 {
     public interface IHttpClient
     {

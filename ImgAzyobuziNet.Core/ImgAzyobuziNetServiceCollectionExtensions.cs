@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Reflection;
 using ImgAzyobuziNet.Core;
+using ImgAzyobuziNet.Core.SupportServices;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
