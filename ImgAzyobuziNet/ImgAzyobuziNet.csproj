@@ -29,4 +29,12 @@
     </Content>
   </ItemGroup>
 
+  <Target Name="DockerBuild" DependsOnTargets="Publish">
+    <PropertyGroup>
+      <DockerBuildRepository Condition="'$(DockerBuildRepository)' == ''">azyobuzin/img.azyobuzi.net</DockerBuildRepository>
+      <DockerBuildTag Condition="'$(DockerBuildTag)' == '' and '$(Configuration)' == 'Release'">latest</DockerBuildTag>
+      <DockerBuildTag Condition="'$(DockerBuildTag)' == ''">$(Configuration.ToLowerInvariant())</DockerBuildTag>
+    </PropertyGroup>
+    <Exec Command="docker build -t &quot;$(DockerBuildRepository):$(DockerBuildTag)&quot; --build-arg &quot;configuration=$(Configuration)&quot; ." />
+  </Target>
 </Project>
