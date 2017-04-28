@@ -59,12 +59,12 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class DropboxResolver : IResolver
     {
-        private readonly IMemoryCache _memoryCache;
+        private readonly IMemoryCache _resolverCache;
         private readonly ILogger _logger;
 
-        public DropboxResolver(IMemoryCache memoryCache, ILogger<DropboxResolver> logger)
+        public DropboxResolver(IMemoryCache resolverCache, ILogger<DropboxResolver> logger)
         {
-            this._memoryCache = memoryCache;
+            this._resolverCache = resolverCache;
             this._logger = logger;
         }
 
@@ -73,7 +73,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             if (match.Groups[1].Success)
             { // File
                 var id = match.Groups[1].Value;
-                var result = await this._memoryCache.GetOrSet(
+                var result = await this._resolverCache.GetOrSet(
                     "dropbox-" + id,
                     () => this.FetchFile(id)
                 ).ConfigureAwait(false);
@@ -92,7 +92,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             else
             { // Album
                 var id = match.Groups[2].Value;
-                var result = await this._memoryCache.GetOrSet(
+                var result = await this._resolverCache.GetOrSet(
                     "dropbox-" + id,
                     () => this.FetchAlbum(id)
                 ).ConfigureAwait(false);

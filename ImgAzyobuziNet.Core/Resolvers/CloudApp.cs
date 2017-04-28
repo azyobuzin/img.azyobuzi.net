@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
 using Jil;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -42,12 +41,12 @@ namespace ImgAzyobuziNet.Core.Resolvers
     public class CloudAppResolver : IResolver
     {
         private readonly IHttpClient _httpClient;
-        private readonly IResolverCache _memoryCache;
+        private readonly IResolverCache _resolverCache;
 
-        public CloudAppResolver(IHttpClient httpClient, IResolverCache memoryCache)
+        public CloudAppResolver(IHttpClient httpClient, IResolverCache resolverCache)
         {
             this._httpClient = httpClient;
-            this._memoryCache = memoryCache;
+            this._resolverCache = resolverCache;
         }
 
         private class CacheItem
@@ -62,7 +61,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             var id = match.Groups[1].Value;
             var key = "cloudapp-" + id;
 
-            var result = await this._memoryCache.GetOrSet(
+            var result = await this._resolverCache.GetOrSet(
                 "cloudapp-" + id,
                 () => this.Fetch(match.Value)
             ).ConfigureAwait(false);

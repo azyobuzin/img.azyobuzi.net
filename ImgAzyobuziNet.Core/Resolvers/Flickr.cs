@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
 using Jil;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
 namespace ImgAzyobuziNet.Core.Resolvers
@@ -56,13 +55,13 @@ namespace ImgAzyobuziNet.Core.Resolvers
     {
         private readonly ImgAzyobuziNetOptions _options;
         private readonly IHttpClient _httpClient;
-        private readonly IResolverCache _memoryCache;
+        private readonly IResolverCache _resolverCache;
 
-        public FlickrResolver(IOptions<ImgAzyobuziNetOptions> options, IHttpClient httpClient, IResolverCache memoryCache)
+        public FlickrResolver(IOptions<ImgAzyobuziNetOptions> options, IHttpClient httpClient, IResolverCache resolverCache)
         {
             this._options = options.Value;
             this._httpClient = httpClient;
-            this._memoryCache = memoryCache;
+            this._resolverCache = resolverCache;
         }
 
         public async ValueTask<ImageInfo[]> GetImages(Match match)
@@ -75,7 +74,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
                         ? DecodeBase58(match.Groups[3].Value).ToString("D")
                         : match.Groups[2].Value;
 
-                    var result = await this._memoryCache.GetOrSet(
+                    var result = await this._resolverCache.GetOrSet(
                        "flickrphoto-" + id,
                        () => this.FetchPhoto(id)
                     ).ConfigureAwait(false);
@@ -86,8 +85,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 {
                     var id = match.Groups[2].Value;
                     var task = match.Groups[1].Value == "albums"
-                        ? this._memoryCache.GetOrSet("flickralbum-" + id, () => this.FetchAlbum(id))
-                        : this._memoryCache.GetOrSet("flickrgallery-" + id, () => this.FetchGallery(id));
+                        ? this._resolverCache.GetOrSet("flickralbum-" + id, () => this.FetchAlbum(id))
+                        : this._resolverCache.GetOrSet("flickrgallery-" + id, () => this.FetchGallery(id));
                     return await task.ConfigureAwait(false);
                 }
             }
@@ -124,13 +123,13 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public class FlickrException : Exception
         {
+            public int Code { get; }
+
             public FlickrException(int code, string message)
                 : base(message)
             {
                 this.Code = code;
             }
-
-            public int Code { get; }
         }
 
         private abstract class FlickrResponseBase

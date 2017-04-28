@@ -68,12 +68,12 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class CanonImageGatewayResolver : IResolver
     {
-        private readonly IMemoryCache _memoryCache;
+        private readonly IMemoryCache _resolverCache;
         private readonly ILogger _logger;
 
-        public CanonImageGatewayResolver(IMemoryCache memoryCache, ILogger<CanonImageGatewayResolver> logger)
+        public CanonImageGatewayResolver(IMemoryCache resolverCache, ILogger<CanonImageGatewayResolver> logger)
         {
-            this._memoryCache = memoryCache;
+            this._resolverCache = resolverCache;
             this._logger = logger;
         }
 
@@ -87,12 +87,12 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
             if (id.Contains("/"))
             {
-                var result = await this._memoryCache.GetOrSet(key,
+                var result = await this._resolverCache.GetOrSet(key,
                     () => this.GetImage(t, id)).ConfigureAwait(false);
                 return new[] { new ImageInfo(result, result, result) };
             }
 
-            var thumbs = await this._memoryCache.GetOrSet(key,
+            var thumbs = await this._resolverCache.GetOrSet(key,
                 () => this.GetAlbumThumbnails(t, id)).ConfigureAwait(false);
             return thumbs.ConvertAll(x => new ImageInfo(x, x, x));
         }

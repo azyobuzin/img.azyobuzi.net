@@ -2,6 +2,7 @@
   "ImgAzyobuziNet": {
     "_500pxConsumerKey": "",
     "FlickrApiKey": "",
-    "InstagramAccessToken": ""
+    "InstagramAccessToken": "",
+    "MobypictureDeveloperKey": ""
   }
 }

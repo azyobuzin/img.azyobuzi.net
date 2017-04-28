@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
 using Jil;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -44,12 +43,12 @@ namespace ImgAzyobuziNet.Core.Resolvers
     public class GyazoResolver : IResolver
     {
         private readonly IHttpClient _httpClient;
-        private readonly IResolverCache _memoryCache;
+        private readonly IResolverCache _resolverCache;
 
-        public GyazoResolver(IHttpClient httpClient, IResolverCache memoryCache)
+        public GyazoResolver(IHttpClient httpClient, IResolverCache resolverCache)
         {
             this._httpClient = httpClient;
-            this._memoryCache = memoryCache;
+            this._resolverCache = resolverCache;
         }
 
         public async ValueTask<ImageInfo[]> GetImages(Match match)
@@ -58,7 +57,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             var uri = new Uri(
                 match.Groups[2].Success
                 ? match.Value
-                : await this._memoryCache.GetOrSet("gyazo-" + id, () => this.Fetch(id)).ConfigureAwait(false)
+                : await this._resolverCache.GetOrSet("gyazo-" + id, () => this.Fetch(id)).ConfigureAwait(false)
             );
             var full = uri.GetComponents(UriComponents.SchemeAndServer | UriComponents.Path, UriFormat.UriEscaped);
             var thumb = uri.GetComponents(UriComponents.SchemeAndServer, UriFormat.UriEscaped)

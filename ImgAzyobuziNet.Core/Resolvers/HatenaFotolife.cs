@@ -7,7 +7,6 @@ using AngleSharp.Dom.Html;
 using AngleSharp.Extensions;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -36,19 +35,19 @@ namespace ImgAzyobuziNet.Core.Resolvers
     public class HatenaFotolifeResolver : IResolver
     {
         private readonly IHttpClient _httpClient;
-        private readonly IResolverCache _memoryCache;
+        private readonly IResolverCache _resolverCache;
 
-        public HatenaFotolifeResolver(IHttpClient httpClient, IResolverCache memoryCache)
+        public HatenaFotolifeResolver(IHttpClient httpClient, IResolverCache resolverCache)
         {
             this._httpClient = httpClient;
-            this._memoryCache = memoryCache;
+            this._resolverCache = resolverCache;
         }
 
         public async ValueTask<ImageInfo[]> GetImages(Match match)
         {
             var username = match.Groups[1].Value;
             var id = match.Groups[2].Value;
-            var info = await this._memoryCache.GetOrSet(
+            var info = await this._resolverCache.GetOrSet(
                 "hatenafotolife-" + username + "/" + id,
                 () => this.Fetch(username, id)
             ).ConfigureAwait(false);

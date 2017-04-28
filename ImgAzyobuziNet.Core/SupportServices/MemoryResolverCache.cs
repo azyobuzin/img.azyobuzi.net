@@ -10,9 +10,9 @@ namespace ImgAzyobuziNet.Core.SupportServices
 
         private readonly IMemoryCache _memoryCache;
 
-        public MemoryResolverCache(IMemoryCache memoryCache)
+        public MemoryResolverCache(IMemoryCache resolverCache)
         {
-            this._memoryCache = memoryCache;
+            this._memoryCache = resolverCache;
         }
 
         public ValueTask<(bool Exists, T Value)> TryGetValue<T>(string key)

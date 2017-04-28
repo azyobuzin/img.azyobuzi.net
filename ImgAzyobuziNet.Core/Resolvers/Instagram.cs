@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
 using Jil;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
 namespace ImgAzyobuziNet.Core.Resolvers
@@ -45,19 +44,19 @@ namespace ImgAzyobuziNet.Core.Resolvers
     {
         private readonly ImgAzyobuziNetOptions _options;
         private readonly IHttpClient _httpClient;
-        private readonly IResolverCache _memoryCache;
+        private readonly IResolverCache _resolverCache;
 
-        public InstagramResolver(IOptions<ImgAzyobuziNetOptions> options, IHttpClient httpClient, IResolverCache memoryCache)
+        public InstagramResolver(IOptions<ImgAzyobuziNetOptions> options, IHttpClient httpClient, IResolverCache resolverCache)
         {
             this._options = options.Value;
             this._httpClient = httpClient;
-            this._memoryCache = memoryCache;
+            this._resolverCache = resolverCache;
         }
 
         public async ValueTask<ImageInfo[]> GetImages(Match match)
         {
             var id = match.Groups[1].Value;
-            var result = await this._memoryCache.GetOrSet(
+            var result = await this._resolverCache.GetOrSet(
                 "instagram-" + id,
                 () => this.Fetch(id)
             ).ConfigureAwait(false);
