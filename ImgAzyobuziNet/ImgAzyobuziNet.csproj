@@ -37,4 +37,9 @@
     </PropertyGroup>
     <Exec Command="docker build -t &quot;$(DockerBuildRepository):$(DockerBuildTag)&quot; --build-arg &quot;configuration=$(Configuration)&quot; ." />
   </Target>
+
+  <Target Name="DockerSave" DependsOnTargets="DockerBuild">
+    <Exec Command="docker save -o &quot;$(OutputPath)docker.tar&quot; &quot;$(DockerBuildRepository):$(DockerBuildTag)&quot;" />
+  </Target>
+
 </Project>

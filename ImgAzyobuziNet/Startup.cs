@@ -17,7 +17,7 @@ namespace ImgAzyobuziNet
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.json", optional: true)
                 .AddEnvironmentVariables();
 
             this.Configuration = builder.Build();
@@ -37,7 +37,7 @@ namespace ImgAzyobuziNet
         // Configure is called after ConfigureServices is called.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(LogLevel.Debug);
+            loggerFactory.AddConsole(env.IsDevelopment() ? LogLevel.Debug : LogLevel.Warning);
 
             app.UseForwardedHeaders();
 
