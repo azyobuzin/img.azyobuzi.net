@@ -1,0 +1,43 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f8f8f8;
+    font-size: 17px;
+    line-height: normal;
+    font-family: Arial, 'Meiryo UI', sans-serif;
+}
+header {
+    background-color: #009933;
+    color: #fff;
+}
+#title {
+    font-size: 48px;
+    padding: 15px;
+}
+.navbar {
+    margin: 0;
+}
+.navbar-inner {
+    border-radius: 0;
+    border-style: none none solid;
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+}
+#container {
+    position: relative;
+}
+h1 {
+    border-left: 10px solid #009933;
+    padding-left: 13px;
+    color: #444;
+    text-shadow: 3px 3px 3px #ccc;
+}
+dd {
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+footer {
+    border-top: 1px dotted #333;
+    padding: 20px;
+    margin-top: 20px;
+}

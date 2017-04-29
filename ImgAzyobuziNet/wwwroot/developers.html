@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+    <head>
+        <meta charset="utf-8" />
+        <title>API ドキュメント - img.azyobuzi.net</title>
+        <!--[if lt IE 9]>
+            <script src="Scripts/html5shiv.js"></script>
+        <![endif]-->
+        <link rel="stylesheet" href="Content/bootstrap.min.css" />
+        <link rel="stylesheet" href="Content/style.css" />
+        <link rel="stylesheet" href="Content/doc.css" />
+        <meta property="og:title" content="API ドキュメント - img.azyobuzi.net" />
+        <meta property="og:url" content="https://img.azyobuzi.net/developers.html" />
+        <meta property="og:image" content="https://img.azyobuzi.net/icon.png" />
+        <meta property="og:type" content="article" />
+        <meta property="og:site_name" content="img.azyobuzi.net" />
+        <meta property="og:description" content="API ドキュメント" />
+        <meta property="article:author" content="http://www.azyobuzi.net/" />
+        <link href="https://plus.google.com/106845759184886636443" rel="publisher" />
+        <link rel="alternate" hreflang="ja" href="https://img.azyobuzi.net/developers.html" />
+        <link rel="alternate" hreflang="en" href="https://img.azyobuzi.net/developers_en.html" />
+        <script type="text/javascript">
+
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-29400475-5']);
+            _gaq.push(['_trackPageview']);
+
+            (function () {
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            })();
+
+        </script>
+    </head>
+    <body>
+        <header>
+            <div id="title">API ドキュメント</div>
+        </header>
+        <nav class="navbar">
+            <div class="navbar-inner">
+                <ul class="nav">
+                    <li><a href="./">Home</a></li>
+                    <li class="active"><a href="developers.html">API Document</a></li>
+                    <li><a href="http://azyobuzi.net/donation.html">Donation</a></li>
+                </ul>
+                <ul class="nav pull-right">
+                    <li><a href="developers_en.html" lang="en" hreflang="en">English</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div id="container" class="container-fluid">
+            <div id="content">
+                <section>
+                    <h1>エンドポイント</h1>
+                    <p>すべての API は <code>http://img.azyobuzi.net/api/</code> の下で公開されています。</p>
+                </section>
+
+                <section>
+                    <h1>redirect, redirect.json</h1>
+                    <p>画像へ直接リダイレクトします。</p>
+                    <section>
+                        <h2>パラメータ</h2>
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th>uri</th>
+                                    <td>必須：展開する URI</td>
+                                </tr>
+                                <tr>
+                                    <th>size</th>
+                                    <td>リダイレクト先の画像サイズ（デフォルト：<code>full</code>）<br />
+                                        <code>full</code>, <code>large</code>, <code>thumb</code>, <code>video</code> のいずれかを指定してください。
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>use_https</th>
+                                    <td>https:// から始まる URI にリダイレクトするかどうか<br />
+                                        （<code>true</code> または <code>false</code> で指定。デフォルト：<code>false</code>）
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+                    <section>
+                        <h2>例</h2>
+                        <h3>リクエスト</h3>
+                        <code class="codeblock">GET http://img.azyobuzi.net/api/redirect?uri=http://f.hatena.ne.jp/azyobuzin/20120823110153&amp;size=thumb</code>
+                        <h3>レスポンス</h3>
+                        <code class="codeblock">
+                            HTTP/1.1 303 See Other<br />
+                            Location: http://cdn-ak.f.st-hatena.com/images/fotolife/a/azyobuzin/20120823/20120823110153_120.jpg
+                        </code>
+                    </section>
+                </section>
+
+                <section>
+                    <h1>all_sizes.json</h1>
+                    <p>img.azyobuzi.net で取得できるすべてのサイズの URI を JSON 形式で返します。</p>
+                    <section>
+                        <h2>パラメータ</h2>
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th>uri</th>
+                                    <td>必須：展開する URI</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+                    <section>
+                        <h2>例</h2>
+                        <h3>リクエスト</h3>
+                        <code class="codeblock">GET http://img.azyobuzi.net/api/all_sizes.json?uri=http://twitpic.com/af9ddv</code>
+                        <h3>レスポンス</h3>
+                        <code class="codeblock">
+                            {<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;"large": "http://twitpic.com/show/large/af9ddv",<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;"large_https": "https://twitpic.com/show/large/af9ddv",<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;"full": "http://twitpic.com/show/full/af9ddv",<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;"full_https": "https://twitpic.com/show/full/af9ddv",<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;"thumb": "http://twitpic.com/show/thumb/af9ddv",<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;"thumb_https": "https://twitpic.com/show/thumb/af9ddv",<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;"video": null,<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;"video_https": null,<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;"service": "Twitpic"<br />
+                            }
+                        </code>
+                    </section>
+                </section>
+
+                <section>
+                    <h1>regex.json</h1>
+                    <p>img.azyobuzi.net が対応しているすべての画像投稿サービス名と、その URI の正規表現（IgnoreCase 前提）を JSON 形式で返します。</p>
+                </section>
+
+                <section>
+                    <h1>エラー時のレスポンス</h1>
+                    <p>エラーが発生した場合は、以下のような JSON を返します。</p>
+                    <code class="codeblock">
+                        {<br />
+                        &nbsp;&nbsp;"error": {<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;"message": "\"uri\" parameter you requested is not supported.",<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;"code": 4002,<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;"exception": null<br />
+                        &nbsp;&nbsp;}<br />
+                        }
+                    </code>
+                    <p>また、ステータスコードとエラーコードには以下の様な意味があります。</p>
+	                <table class="table">
+		                <tr>
+			                <th>エラーコード</th>
+			                <th>ステータスコード</th>
+			                <th>原因</th>
+		                </tr>
+		                <tr>
+			                <td>4001</td>
+			                <td>400</td>
+			                <td>uri パラメータが指定されていません。</td>
+		                </tr>
+		                <tr>
+			                <td>4002</td>
+			                <td>400</td>
+			                <td>指定された uri パラメータに対応していません。</td>
+		                </tr>
+		                <tr>
+			                <td>4003</td>
+			                <td>400</td>
+			                <td>size パラメータに不正な値が指定されました。</td>
+		                </tr>
+		                <tr>
+			                <td>4041</td>
+			                <td>404</td>
+			                <td>API が指定されていません。このエラーは API のルートディレクトリに直接アクセスした場合に発生します。</td>
+		                </tr>
+		                <tr>
+			                <td>4042</td>
+			                <td>404</td>
+			                <td>指定された API が存在していません。</td>
+		                </tr>
+		                <tr>
+			                <td>4043</td>
+			                <td>404</td>
+			                <td>指定された uri パラメータに対して展開を試みたところ、画像または動画が存在していませんでした。</td>
+		                </tr>
+		                <tr>
+			                <td>4044</td>
+			                <td>404</td>
+			                <td>指定された uri パラメータに対して展開を試みたところ、画像または動画ではありませんでした。</td>
+		                </tr>
+		                <tr>
+			                <td>4045</td>
+			                <td>404</td>
+			                <td>redirect において size=video を指定されましたが、対応している動画ではありませんでした。</td>
+		                </tr>
+		                <tr>
+			                <td>4051</td>
+			                <td>405</td>
+			                <td>GET, HEAD 以外のリクエストを受信しました。</td>
+		                </tr>
+		                <tr>
+			                <td>5000</td>
+			                <td>500</td>
+			                <td>原因不明のエラーが発生しました。このエラーが発生した場合、 img.azyobuzi.net のバグである可能性が高いです。サーバー管理者（主に azyobuzin）にご連絡ください。</td>
+		                </tr>
+	                </table>
+                </section>
+
+                <section>
+                    <h1>免責事項と注意事項</h1>
+                    <p>
+                        本サービスでは、返還する値が正確であることを<strong>保証しません</strong>。
+                        また、本サービスを利用することによって発生した損害に、<strong>作者は一切責任を負いません</strong>。
+                    </p>
+                    <p>
+                        作者は本サービスを予告なしに仕様変更、サービスの一時停止・終了を行うことができます。
+                        また、故意・過失問わず、ホストされているサーバーに膨大な負担をかけることを禁じます。
+                    </p>
+                    <p><strong>あとは臨機応変にゆるーくいきましょう！</strong></p>
+                </section>
+            </div>
+        </div>
+
+        <footer>©2012-2017 azyobuzin</footer>
+
+        <script src="Scripts/jquery-2.0.0.min.js"></script>
+        <script src="Scripts/bootstrap.min.js"></script>
+    </body>
+</html>

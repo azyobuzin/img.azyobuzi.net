@@ -1,0 +1,16 @@
+#content {
+    margin-top: 20px;
+    padding-right: 20px;
+    margin-right: 180px;
+    border-right: 1px dotted #333;
+}
+#sidebar {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    width: 160px;
+}
+.codeblock {
+    display: block;
+    margin-bottom: 10px;
+}

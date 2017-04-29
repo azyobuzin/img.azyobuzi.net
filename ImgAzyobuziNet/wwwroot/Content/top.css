@@ -1,0 +1,38 @@
+header {
+    background-color: #009933;
+    background-image: url(../Content/images/header.png);
+    background-position-x: right;
+    background-repeat: no-repeat;
+    padding-bottom: 15px;
+}
+#phrase {
+    font-size: 36px;
+    padding-left: 20px;
+}
+#desc-line {
+    width: 50px;
+    height: 16px;
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 20px;
+}
+#desc {
+    display: inline-block;
+    font-size: 22px;
+}
+dd {
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+#content {
+    margin-top: 20px;
+    padding-right: 20px;
+    margin-right: 320px;
+    border-right: 1px dotted #333;
+}
+#sidebar {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    width: 300px;
+}
