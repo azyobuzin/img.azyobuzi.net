@@ -26,6 +26,7 @@ namespace ImgAzyobuziNet
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<ImgAzyobuziNetOptions>(this.Configuration.GetSection("ImgAzyobuziNet"))
+                .Configure<InteroperationOptions>(this.Configuration)
                 .AddMemoryCache()
                 .AddMemoryResolverCache()
                 .AddHttpClient()

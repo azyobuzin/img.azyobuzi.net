@@ -4,5 +4,6 @@
     "FlickrApiKey": "",
     "InstagramAccessToken": "",
     "MobypictureDeveloperKey": ""
-  }
+  },
+  "OldApiUri": null
 }
