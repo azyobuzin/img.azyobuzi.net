@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.SupportServices;
+using Jil;
 
 namespace ImgAzyobuziNet
 {
     internal class ApiV2Interoperation
     {
-        private readonly InteroperationOptions _options;
-        private readonly IHttpClient _httpClient;
-
-        private readonly string[] s_serviceNameWhitelist =
+        private static readonly string[] s_serviceNameWhitelist =
         {
             "携帯百景",
             "飯テロ.in",
@@ -49,10 +47,37 @@ namespace ImgAzyobuziNet
             "YouTube"
         };
 
+        private readonly Uri _oldApiUri;
+        private readonly IHttpClient _httpClient;
+
         public ApiV2Interoperation(InteroperationOptions options, IHttpClient httpClient)
         {
-            this._options = options;
+            this._oldApiUri = new Uri(options.OldApiUri);
             this._httpClient = httpClient;
+        }
+
+        private Uri CreateRequestUri(string apiName)
+        {
+            return new Uri(this._oldApiUri, apiName);
+        }
+
+        private Task<HttpResponseMessage> SendRequest(HttpRequestMessage request)
+        {
+            // AutoRedirect は常にオフ
+            return this._httpClient.SendAsync(request, false);
+        }
+
+        public async Task<IReadOnlyList<ApiV2NameRegexPair>> GetRegex()
+        {
+            string json;
+            var req = new HttpRequestMessage(HttpMethod.Get, this.CreateRequestUri("regex.json"));
+            using (var res = await this.SendRequest(req).ConfigureAwait(false))
+            {
+                res.EnsureSuccessStatusCode();
+                json = await res.EnsureSuccessStatusCode().Content.ReadAsStringAsync().ConfigureAwait(false);
+            }
+
+            return JSON.Deserialize<ApiV2NameRegexPair[]>(json);
         }
     }
 }
