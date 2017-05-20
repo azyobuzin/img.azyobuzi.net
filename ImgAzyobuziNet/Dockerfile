@@ -1,4 +1,4 @@
-﻿FROM microsoft/dotnet:1.1-runtime
+﻿FROM microsoft/dotnet:1.1.2-runtime
 ENV ASPNETCORE_URLS http://+:80
 WORKDIR /app
 EXPOSE 80
