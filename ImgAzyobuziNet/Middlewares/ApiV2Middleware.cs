@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core;
+using ImgAzyobuziNet.Core.SupportServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using NX;
 
 namespace ImgAzyobuziNet.Middlewares
 {
@@ -42,7 +45,7 @@ namespace ImgAzyobuziNet.Middlewares
                         impl.Index();
                         break;
                     case "/regex.json":
-                        impl.Regex();
+                        await impl.Regex().ConfigureAwait(false);
                         break;
                     case "/redirect":
                     case "/redirect.json":
@@ -69,11 +72,18 @@ namespace ImgAzyobuziNet.Middlewares
                 this.Request = context.Request;
                 this.Response = context.Response;
                 this._imgAzyobuziNetService = context.RequestServices.GetService<ImgAzyobuziNetService>();
+
+                var interoperationOptions = context.RequestServices.GetService<IOptions<InteroperationOptions>>()?.Value;
+                if (!string.IsNullOrEmpty(interoperationOptions?.OldApiUri))
+                {
+                    this._interoperation = new ApiV2Interoperation(interoperationOptions, context.RequestServices.GetService<IHttpClient>());
+                }
             }
 
             private readonly HttpRequest Request;
             private readonly HttpResponse Response;
             private readonly ImgAzyobuziNetService _imgAzyobuziNetService;
+            private readonly ApiV2Interoperation _interoperation;
 
             private static readonly IReadOnlyDictionary<int, ErrorDefinition> s_errors = new Dictionary<int, ErrorDefinition>
             {
@@ -92,12 +102,22 @@ namespace ImgAzyobuziNet.Middlewares
                 [5000] = new ErrorDefinition(500, "Raised unknown exception on server.")
             };
 
+            private const string JsonContentType = "application/json; charset=utf-8";
+
             private void Json<T>(T obj)
             {
-                this.Response.ContentType = "application/json; charset=utf-8";
+                this.Response.ContentType = JsonContentType;
                 var body = JsonUtils.Serialize(obj);
                 this.Response.ContentLength = body.Length;
                 this.Response.Body.Write(body, 0, body.Length);
+            }
+
+            private void RawJson(int statusCode, byte[] content)
+            {
+                this.Response.StatusCode = statusCode;
+                this.Response.ContentType = JsonContentType;
+                this.Response.ContentLength = content.Length;
+                this.Response.Body.Write(content, 0, content.Length);
             }
 
             public void ErrorResponse(int error, Exception ex = null)
@@ -128,10 +148,17 @@ namespace ImgAzyobuziNet.Middlewares
                 this.ErrorResponse(4041);
             }
 
-            public void Regex()
+            public async Task Regex()
             {
-                this.Json(this._imgAzyobuziNetService.GetPatternProviders()
-                    .Select(x => new { name = x.ServiceName, regex = x.Pattern }));
+                var result = this._imgAzyobuziNetService.GetPatternProviders()
+                    .Select(x => new ApiV2NameRegexPair(x.ServiceName, x.Pattern));
+
+                if (this._interoperation != null)
+                {
+                    result = result.Concat(await this._interoperation.GetRegex().ConfigureAwait(false));
+                }
+
+                this.Json(result);
             }
 
             public async Task Redirect()
@@ -164,7 +191,15 @@ namespace ImgAzyobuziNet.Middlewares
 
                 if (result == null)
                 {
-                    this.ErrorResponse(4002);
+                    if (this._interoperation != null)
+                    {
+                        await this.RedirectInterop().ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        this.ErrorResponse(4002);
+                    }
+
                     return;
                 }
 
@@ -201,7 +236,7 @@ namespace ImgAzyobuziNet.Middlewares
                             this.ErrorResponse(4045);
                             return;
                         }
-                        goto RETURN;
+                        break;
                     default:
                         throw new Exception("unreachable");
                 }
@@ -212,9 +247,21 @@ namespace ImgAzyobuziNet.Middlewares
                     return;
                 }
 
-                RETURN:
                 this.Response.StatusCode = 302;
                 this.Response.GetTypedHeaders().Location = new Uri(location);
+            }
+
+            private async Task RedirectInterop()
+            {
+                (await this._interoperation.Redirect(this.Request.QueryString.ToUriComponent()).ConfigureAwait(false))
+                    .Match(
+                        location =>
+                        {
+                            this.Response.StatusCode = 302;
+                            this.Response.GetTypedHeaders().Location = location;
+                        },
+                        t => this.RawJson(t.StatusCode, t.Content)
+                    );
             }
 
             public async Task AllSizes()
@@ -230,7 +277,15 @@ namespace ImgAzyobuziNet.Middlewares
 
                 if (result == null)
                 {
-                    this.ErrorResponse(4002);
+                    if (this._interoperation != null)
+                    {
+                        await this.AllSizesInterop().ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        this.ErrorResponse(4002);
+                    }
+
                     return;
                 }
 
@@ -260,6 +315,12 @@ namespace ImgAzyobuziNet.Middlewares
                     video = img.VideoFull,
                     video_https = img.VideoFull
                 });
+            }
+
+            private async Task AllSizesInterop()
+            {
+                var t = await this._interoperation.AllSizes(this.Request.QueryString.ToUriComponent()).ConfigureAwait(false);
+                this.RawJson(t.StatusCode, t.Content);
             }
         }
     }
