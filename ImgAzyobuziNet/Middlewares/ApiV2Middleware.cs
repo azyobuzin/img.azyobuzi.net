@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core;
 using ImgAzyobuziNet.Core.SupportServices;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -28,6 +29,8 @@ namespace ImgAzyobuziNet.Middlewares
                 await this._next(context).ConfigureAwait(false);
                 return;
             }
+
+            await ApplyCorsPolicy(context).ConfigureAwait(false);
 
             var impl = new Impl(context);
 
@@ -63,6 +66,21 @@ namespace ImgAzyobuziNet.Middlewares
             {
                 impl.HandleException(ex);
             }
+        }
+
+        private static async Task ApplyCorsPolicy(HttpContext context)
+        {
+            var corsPolicyProvider = context.RequestServices.GetService<ICorsPolicyProvider>();
+            var corsService = context.RequestServices.GetService<ICorsService>();
+            if (corsPolicyProvider == null || corsService == null) return;
+
+            var policy = await corsPolicyProvider.GetPolicyAsync(context, Startup.ApiCorsPolicyName);
+            if (policy == null) return;
+
+            corsService.ApplyResult(
+                corsService.EvaluatePolicy(context, policy),
+                context.Response
+            );
         }
 
         private class Impl

@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ImgAzyobuziNet.Controllers
 {
-    [Route("api/v3/[action]")]
+    [Route("api/v3/[action]"), EnableCors(Startup.ApiCorsPolicyName)]
     public class ApiV3Controller : Controller
     {
         private static readonly IReadOnlyDictionary<int, ErrorDefinition> s_errors = new Dictionary<int, ErrorDefinition>

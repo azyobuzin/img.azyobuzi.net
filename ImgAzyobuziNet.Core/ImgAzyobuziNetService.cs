@@ -41,10 +41,5 @@ namespace ImgAzyobuziNet.Core
 
             return null;
         }
-
-        public object Select(Func<object, object> p)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

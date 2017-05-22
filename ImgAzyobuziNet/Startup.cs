@@ -11,6 +11,8 @@ namespace ImgAzyobuziNet
 {
     public class Startup
     {
+        internal const string ApiCorsPolicyName = "Api";
+
         public IConfigurationRoot Configuration { get; }
 
         public Startup(IHostingEnvironment env)
@@ -32,6 +34,10 @@ namespace ImgAzyobuziNet
                 .AddHttpClient()
                 .AddImgAzyobuziNetService()
                 .AddDefaultPatternProviders()
+                .AddCors(options => options.AddPolicy(
+                    ApiCorsPolicyName,
+                    builder => builder.AllowAnyOrigin().AllowAnyMethod()
+                ))
                 .AddMvc();
         }
 
