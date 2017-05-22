@@ -74,7 +74,7 @@ namespace ImgAzyobuziNet.Middlewares
             var corsService = context.RequestServices.GetService<ICorsService>();
             if (corsPolicyProvider == null || corsService == null) return;
 
-            var policy = await corsPolicyProvider.GetPolicyAsync(context, Startup.ApiCorsPolicyName);
+            var policy = await corsPolicyProvider.GetPolicyAsync(context, Startup.ApiCorsPolicyName).ConfigureAwait(false);
             if (policy == null) return;
 
             corsService.ApplyResult(
