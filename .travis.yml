@@ -1,0 +1,25 @@
+language: csharp
+mono: none
+dotnet: 1.0.4
+dist: trusty
+
+sudo: required
+services:
+  - docker
+
+install:
+  - dotnet restore ImgAzyobuziNet.sln
+
+before_script:
+  - cp ImgAzyobuziNet/appsettings.json.example ImgAzyobuziNet/appsettings.json
+
+script:
+  - dotnet build Analyzers/ImgAzyobuziNet.Analyzers.Core/ImgAzyobuziNet.Analyzers.Core.csproj
+  - dotnet test TestProjects/ImgAzyobuziNet.Core.Test/ImgAzyobuziNet.Core.Test.csproj --filter TestCategory=Static
+  - dotnet msbuild ImgAzyobuziNet/ImgAzyobuziNet.csproj /t:DockerBuild /p:Configuration=Release
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    docker push azyobuzin/img.azyobuzi.net;
+    fi
