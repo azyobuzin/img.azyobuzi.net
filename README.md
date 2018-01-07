@@ -11,12 +11,9 @@ dotnet build
 ```
 
 ## Docker
-```
-cd ImgAzyobuziNet
-dotnet msbuild /t:DockerBuild /p:Configuration=Release
-```
+Docker Hub にあります。
 
-tar にするなら `/t:DockerSave` で。
+https://hub.docker.com/r/azyobuzin/img.azyobuzi.net/
 
 # Pull Request 募集中
 v2 からの移行に手が回らない状況です。

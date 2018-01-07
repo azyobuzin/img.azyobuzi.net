@@ -3,16 +3,16 @@
   <PropertyGroup>
     <VersionPrefix>3.0.0</VersionPrefix>
     <Authors>azyobuzin</Authors>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
     <PackageProjectUrl>http://img.azyobuzi.net/</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/azyobuzin/img.azyobuzi.net/blob/master/LICENSE.txt</PackageLicenseUrl>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />
-    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,24 +22,5 @@
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <Target Name="DockerBuild" DependsOnTargets="Publish">
-    <PropertyGroup>
-      <DockerBuildRepository Condition="'$(DockerBuildRepository)' == ''">azyobuzin/img.azyobuzi.net</DockerBuildRepository>
-      <DockerBuildTag Condition="'$(DockerBuildTag)' == '' and '$(Configuration)' == 'Release'">latest</DockerBuildTag>
-      <DockerBuildTag Condition="'$(DockerBuildTag)' == ''">$(Configuration.ToLowerInvariant())</DockerBuildTag>
-    </PropertyGroup>
-    <Exec Command="docker build -t &quot;$(DockerBuildRepository):$(DockerBuildTag)&quot; --build-arg &quot;configuration=$(Configuration)&quot; ." />
-  </Target>
-
-  <Target Name="DockerSave" DependsOnTargets="DockerBuild">
-    <Exec Command="docker save -o &quot;$(OutputPath)docker.tar&quot; &quot;$(DockerBuildRepository):$(DockerBuildTag)&quot;" />
-  </Target>
 
 </Project>

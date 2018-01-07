@@ -1,6 +1,6 @@
-﻿using System.IO;
-using ImgAzyobuziNet.Core;
+﻿using ImgAzyobuziNet.Core;
 using ImgAzyobuziNet.Middlewares;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -13,16 +13,11 @@ namespace ImgAzyobuziNet
     {
         internal const string ApiCorsPolicyName = "Api";
 
-        public IConfigurationRoot Configuration { get; }
+        public IConfiguration Configuration { get; }
 
-        public Startup(IHostingEnvironment env)
+        public Startup(IConfiguration configuration)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true)
-                .AddEnvironmentVariables();
-
-            this.Configuration = builder.Build();
+            this.Configuration = configuration;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -59,9 +54,7 @@ namespace ImgAzyobuziNet
         }
 
         public static void Main(string[] args) =>
-            new WebHostBuilder()
-                .UseKestrel()
-                .UseContentRoot(Directory.GetCurrentDirectory())
+            WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .Build()
                 .Run();

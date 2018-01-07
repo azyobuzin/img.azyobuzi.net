@@ -314,7 +314,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         {
             // https://www.flickr.com/photos/flickr/galleries/72157662518421935/
             var result = await this.FetchGallery("72157662518421935").ConfigureAwait(false);
-            result.Length.Is(25);
+            result.Length.Is(24);
             foreach (var x in result)
                 Assert.True(() => !string.IsNullOrEmpty(x.Full) && !string.IsNullOrEmpty(x.Large) && !string.IsNullOrEmpty(x.Thumb));
         }
