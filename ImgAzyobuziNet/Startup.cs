@@ -22,8 +22,7 @@ namespace ImgAzyobuziNet
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<ImgAzyobuziNetOptions>(this.Configuration.GetSection("ImgAzyobuziNet"))
-                .Configure<InteroperationOptions>(this.Configuration)
+            services.Configure<ImgAzyobuziNetOptions>(options => options.BindConfiguration(this.Configuration))
                 .AddMemoryCache()
                 .AddMemoryResolverCache()
                 .AddHttpClient()
@@ -39,8 +38,6 @@ namespace ImgAzyobuziNet
         // Configure is called after ConfigureServices is called.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(env.IsDevelopment() ? LogLevel.Debug : LogLevel.Warning);
-
             app.UseForwardedHeaders();
 
             app.UseDeveloperExceptionPage();

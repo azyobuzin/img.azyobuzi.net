@@ -53,19 +53,22 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class FlickrResolver : IResolver
     {
-        private readonly ImgAzyobuziNetOptions _options;
+        private readonly string _apiKey;
         private readonly IHttpClient _httpClient;
         private readonly IResolverCache _resolverCache;
 
         public FlickrResolver(IOptions<ImgAzyobuziNetOptions> options, IHttpClient httpClient, IResolverCache resolverCache)
         {
-            this._options = options.Value;
+            this._apiKey = options?.Value?.ApiKeys?.FlickrApiKey;
             this._httpClient = httpClient;
             this._resolverCache = resolverCache;
         }
 
         public async ValueTask<ImageInfo[]> GetImages(Match match)
         {
+            if (string.IsNullOrEmpty(this._apiKey))
+                throw new NotConfiguredException();
+
             try
             {
                 if (!match.Groups[1].Success)
@@ -195,7 +198,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         {
             string json;
             var requestUri = "https://api.flickr.com/services/rest/?format=json&nojsoncallback=1&"
-                + "&api_key=" + this._options.FlickrApiKey
+                + "&api_key=" + this._apiKey
                 + "&method=" + method
                 + "&" + query;
 

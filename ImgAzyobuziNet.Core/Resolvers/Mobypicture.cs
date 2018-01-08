@@ -51,19 +51,22 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class MobypictureResolver : IResolver
     {
-        private readonly ImgAzyobuziNetOptions _options;
+        private readonly string _developerKey;
         private readonly IHttpClient _httpClient;
         private readonly IResolverCache _resolverCache;
 
         public MobypictureResolver(IOptions<ImgAzyobuziNetOptions> options, IHttpClient httpClient, IResolverCache resolverCache)
         {
-            this._options = options.Value;
+            this._developerKey = options?.Value?.ApiKeys?.MobypictureDeveloperKey;
             this._httpClient = httpClient;
             this._resolverCache = resolverCache;
         }
 
         public async ValueTask<ImageInfo[]> GetImages(Match match)
         {
+            if (string.IsNullOrEmpty(this._developerKey))
+                throw new NotConfiguredException();
+
             // 誰か短縮の法則を見つけてくれ～
             CacheItem result;
             bool exists;
@@ -157,7 +160,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             var req = new HttpRequestMessage(
                 HttpMethod.Get,
                 "https://api.mobypicture.com/?action=getMediaInfo&format=json&key="
-                    + this._options.MobypictureDeveloperKey
+                    + this._developerKey
                     + (isTiny ? "&tinyurl_code=" : "&post_id=")
                     + Uri.EscapeDataString(id)
             );

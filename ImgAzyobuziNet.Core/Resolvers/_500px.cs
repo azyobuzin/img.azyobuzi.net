@@ -42,19 +42,22 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class _500pxResolver : IResolver
     {
-        private readonly ImgAzyobuziNetOptions _options;
+        private readonly string _consumerKey;
         private readonly IHttpClient _httpClient;
         private readonly IResolverCache _resolverCache;
 
         public _500pxResolver(IOptions<ImgAzyobuziNetOptions> options, IHttpClient httpClient, IResolverCache resolverCache)
         {
-            this._options = options.Value;
+            this._consumerKey = options?.Value?.ApiKeys?._500pxConsumerKey;
             this._httpClient = httpClient;
             this._resolverCache = resolverCache;
         }
 
         public async ValueTask<ImageInfo[]> GetImages(Match match)
         {
+            if (string.IsNullOrEmpty(this._consumerKey))
+                throw new NotConfiguredException();
+
             var id = match.Groups[1].Value;
             var result = await this._resolverCache.GetOrSet(
                 "500px-" + id,
@@ -80,7 +83,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             var req = new HttpRequestMessage(
                 HttpMethod.Get,
                 "https://api.500px.com/v1/photos/" + id
-                    + "?image_size=5&consumer_key=" + this._options._500pxConsumerKey
+                    + "?image_size=5&consumer_key=" + this._consumerKey
             );
 
             using (var res = await this._httpClient.SendAsync(req).ConfigureAwait(false))

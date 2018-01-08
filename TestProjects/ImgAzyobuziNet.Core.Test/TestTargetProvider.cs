@@ -16,13 +16,17 @@ namespace ImgAzyobuziNet.Core.Test
 
         private static TestActivator s_activator = new TestActivator(
             new ServiceCollection()
-                .Configure<ImgAzyobuziNetOptions>(
-                    new ConfigurationBuilder()
+                .Configure<ImgAzyobuziNetOptions>(options =>
+                {
+                    var config = new ConfigurationBuilder()
                         .SetBasePath(Path.GetDirectoryName(typeof(TestTargetProvider).GetTypeInfo().Assembly.Location))
-                        .AddJsonFile("appsettings.json")
-                        .Build()
-                        .GetSection("ImgAzyobuziNet")
-                )
+                        .AddJsonFile("appsettings.json", true)
+                        .AddJsonFile("appsettings.Development.json", true)
+                        .AddUserSecrets("ImgAzyobuziNet")
+                        .AddEnvironmentVariables()
+                        .Build();
+                    options.BindConfiguration(config);
+                })
                 .AddLogging()
                 .AddMemoryCache()
                 .AddMemoryResolverCache()

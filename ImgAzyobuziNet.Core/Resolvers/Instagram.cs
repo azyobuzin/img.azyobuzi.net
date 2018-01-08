@@ -42,19 +42,22 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class InstagramResolver : IResolver
     {
-        private readonly ImgAzyobuziNetOptions _options;
+        private readonly string _accessToken;
         private readonly IHttpClient _httpClient;
         private readonly IResolverCache _resolverCache;
 
         public InstagramResolver(IOptions<ImgAzyobuziNetOptions> options, IHttpClient httpClient, IResolverCache resolverCache)
         {
-            this._options = options.Value;
+            this._accessToken = options?.Value?.ApiKeys?.InstagramAccessToken;
             this._httpClient = httpClient;
             this._resolverCache = resolverCache;
         }
 
         public async ValueTask<ImageInfo[]> GetImages(Match match)
         {
+            if (string.IsNullOrEmpty(this._accessToken))
+                throw new NotConfiguredException();
+
             var id = match.Groups[1].Value;
             var result = await this._resolverCache.GetOrSet(
                 "instagram-" + id,
@@ -114,7 +117,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
             var req = new HttpRequestMessage(
                 HttpMethod.Get,
                 "https://api.instagram.com/v1/media/shortcode/" + id
-                    + "?access_token=" + this._options.InstagramAccessToken
+                    + "?access_token=" + this._accessToken
             );
 
             using (var res = await this._httpClient.SendAsync(req).ConfigureAwait(false))

@@ -6,6 +6,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <PackageProjectUrl>http://img.azyobuzi.net/</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/azyobuzin/img.azyobuzi.net/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <UserSecretsId>ImgAzyobuziNet</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +18,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ImgAzyobuziNet.Core\ImgAzyobuziNet.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>

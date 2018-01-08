@@ -207,6 +207,3 @@ FakesAssemblies/
 
 # Visual Studio Code
 .vscode/
-
-# Private setting file
-/ImgAzyobuziNet/appsettings.json
