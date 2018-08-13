@@ -52,10 +52,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
     public class MobypictureResolver : IResolver
     {
         private readonly string _developerKey;
-        private readonly IHttpClient _httpClient;
+        private readonly IImgAzyobuziNetHttpClient _httpClient;
         private readonly IResolverCache _resolverCache;
 
-        public MobypictureResolver(IOptions<ImgAzyobuziNetOptions> options, IHttpClient httpClient, IResolverCache resolverCache)
+        public MobypictureResolver(IOptions<ImgAzyobuziNetOptions> options, IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
         {
             this._developerKey = options?.Value?.ApiKeys?.MobypictureDeveloperKey;
             this._httpClient = httpClient;

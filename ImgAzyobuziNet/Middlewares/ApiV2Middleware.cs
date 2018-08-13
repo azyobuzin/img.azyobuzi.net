@@ -94,7 +94,7 @@ namespace ImgAzyobuziNet.Middlewares
                 var oldApiUri = context.RequestServices.GetService<IOptions<ImgAzyobuziNetOptions>>()?.Value?.FallbackV2ApiUri;
                 if (!string.IsNullOrEmpty(oldApiUri))
                 {
-                    this._interoperation = new ApiV2Interoperation(new Uri(oldApiUri), context.RequestServices.GetService<IHttpClient>());
+                    this._interoperation = new ApiV2Interoperation(new Uri(oldApiUri), context.RequestServices.GetService<IImgAzyobuziNetHttpClient>());
                 }
             }
 

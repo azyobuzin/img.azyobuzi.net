@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace ImgAzyobuziNet.Core.SupportServices
 {
-    public interface IHttpClient
+    public interface IImgAzyobuziNetHttpClient
     {
         Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, bool allowAutoRedirect = true);
     }

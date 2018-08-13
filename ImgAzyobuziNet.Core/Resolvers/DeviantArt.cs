@@ -32,10 +32,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class DeviantArtResolver : IResolver
     {
-        private readonly IHttpClient _httpClient;
+        private readonly IImgAzyobuziNetHttpClient _httpClient;
         private readonly IResolverCache _resolverCache;
 
-        public DeviantArtResolver(IHttpClient httpClient, IResolverCache resolverCache)
+        public DeviantArtResolver(IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
         {
             this._httpClient = httpClient;
             this._resolverCache = resolverCache;

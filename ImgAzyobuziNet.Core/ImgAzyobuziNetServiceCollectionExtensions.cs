@@ -29,9 +29,9 @@ namespace Microsoft.Extensions.DependencyInjection
             return serviceCollection;
         }
 
-        public static IServiceCollection AddHttpClient(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddImgAzyobuziNetHttpClient(this IServiceCollection serviceCollection)
         {
-            return serviceCollection.AddSingleton(typeof(IHttpClient), typeof(DefaultHttpClient));
+            return serviceCollection.AddSingleton(typeof(IImgAzyobuziNetHttpClient), typeof(DefaultHttpClient));
         }
 
         public static IServiceCollection AddMemoryResolverCache(this IServiceCollection serviceCollection)

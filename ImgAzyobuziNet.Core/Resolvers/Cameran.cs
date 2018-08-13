@@ -32,10 +32,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class CameranResolver : IResolver
     {
-        private readonly IHttpClient _httpClient;
+        private readonly IImgAzyobuziNetHttpClient _httpClient;
         private readonly IResolverCache _resolverCache;
 
-        public CameranResolver(IHttpClient httpClient, IResolverCache resolverCache)
+        public CameranResolver(IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
         {
             this._httpClient = httpClient;
             this._resolverCache = resolverCache;

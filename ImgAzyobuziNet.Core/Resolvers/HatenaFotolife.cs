@@ -34,10 +34,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class HatenaFotolifeResolver : IResolver
     {
-        private readonly IHttpClient _httpClient;
+        private readonly IImgAzyobuziNetHttpClient _httpClient;
         private readonly IResolverCache _resolverCache;
 
-        public HatenaFotolifeResolver(IHttpClient httpClient, IResolverCache resolverCache)
+        public HatenaFotolifeResolver(IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
         {
             this._httpClient = httpClient;
             this._resolverCache = resolverCache;

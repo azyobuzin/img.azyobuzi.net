@@ -51,9 +51,9 @@ namespace ImgAzyobuziNet
         };
 
         private readonly Uri _oldApiUri;
-        private readonly IHttpClient _httpClient;
+        private readonly IImgAzyobuziNetHttpClient _httpClient;
 
-        public ApiV2Interoperation(Uri oldApiUri, IHttpClient httpClient)
+        public ApiV2Interoperation(Uri oldApiUri, IImgAzyobuziNetHttpClient httpClient)
         {
             this._oldApiUri = oldApiUri;
             this._httpClient = httpClient;

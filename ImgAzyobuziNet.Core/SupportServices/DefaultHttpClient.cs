@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace ImgAzyobuziNet.Core.SupportServices
 {
     [SuppressMessage("Usage", "IAN0001:DoNotCreateHttpClient")]
-    public class DefaultHttpClient : IHttpClient
+    public class DefaultHttpClient : IImgAzyobuziNetHttpClient
     {
         private static readonly Func<ILogger, string, IDisposable> s_beginScope =
             LoggerMessage.DefineScope<string>("HttpClient {0}");

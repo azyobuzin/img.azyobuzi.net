@@ -43,10 +43,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
     public class InstagramResolver : IResolver
     {
         private readonly string _accessToken;
-        private readonly IHttpClient _httpClient;
+        private readonly IImgAzyobuziNetHttpClient _httpClient;
         private readonly IResolverCache _resolverCache;
 
-        public InstagramResolver(IOptions<ImgAzyobuziNetOptions> options, IHttpClient httpClient, IResolverCache resolverCache)
+        public InstagramResolver(IOptions<ImgAzyobuziNetOptions> options, IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
         {
             this._accessToken = options?.Value?.ApiKeys?.InstagramAccessToken;
             this._httpClient = httpClient;

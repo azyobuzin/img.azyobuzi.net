@@ -30,7 +30,7 @@ namespace ImgAzyobuziNet.Core.Test
                 .AddLogging()
                 .AddMemoryCache()
                 .AddMemoryResolverCache()
-                .AddHttpClient()
+                .AddImgAzyobuziNetHttpClient()
                 .BuildServiceProvider()
         );
 

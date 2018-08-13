@@ -54,10 +54,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
     public class FlickrResolver : IResolver
     {
         private readonly string _apiKey;
-        private readonly IHttpClient _httpClient;
+        private readonly IImgAzyobuziNetHttpClient _httpClient;
         private readonly IResolverCache _resolverCache;
 
-        public FlickrResolver(IOptions<ImgAzyobuziNetOptions> options, IHttpClient httpClient, IResolverCache resolverCache)
+        public FlickrResolver(IOptions<ImgAzyobuziNetOptions> options, IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
         {
             this._apiKey = options?.Value?.ApiKeys?.FlickrApiKey;
             this._httpClient = httpClient;

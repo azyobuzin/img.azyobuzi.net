@@ -43,10 +43,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
     public class _500pxResolver : IResolver
     {
         private readonly string _consumerKey;
-        private readonly IHttpClient _httpClient;
+        private readonly IImgAzyobuziNetHttpClient _httpClient;
         private readonly IResolverCache _resolverCache;
 
-        public _500pxResolver(IOptions<ImgAzyobuziNetOptions> options, IHttpClient httpClient, IResolverCache resolverCache)
+        public _500pxResolver(IOptions<ImgAzyobuziNetOptions> options, IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
         {
             this._consumerKey = options?.Value?.ApiKeys?._500pxConsumerKey;
             this._httpClient = httpClient;

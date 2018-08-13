@@ -42,10 +42,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
     public class GyazoResolver : IResolver
     {
-        private readonly IHttpClient _httpClient;
+        private readonly IImgAzyobuziNetHttpClient _httpClient;
         private readonly IResolverCache _resolverCache;
 
-        public GyazoResolver(IHttpClient httpClient, IResolverCache resolverCache)
+        public GyazoResolver(IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
         {
             this._httpClient = httpClient;
             this._resolverCache = resolverCache;

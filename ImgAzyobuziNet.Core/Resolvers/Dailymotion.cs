@@ -35,10 +35,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
     {
         // 動画の取得には投稿者のアクセストークンが必要
 
-        private readonly IHttpClient _httpClient;
+        private readonly IImgAzyobuziNetHttpClient _httpClient;
         private readonly IResolverCache _resolverCache;
 
-        public DailymotionResolver(IHttpClient httpClient, IResolverCache resolverCache)
+        public DailymotionResolver(IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
         {
             this._httpClient = httpClient;
             this._resolverCache = resolverCache;
