@@ -25,7 +25,7 @@ namespace ImgAzyobuziNet
             services.Configure<ImgAzyobuziNetOptions>(options => options.BindConfiguration(this.Configuration))
                 .AddMemoryCache()
                 .AddMemoryResolverCache()
-                .AddHttpClient()
+                .AddImgAzyobuziNetHttpClient()
                 .AddImgAzyobuziNetService()
                 .AddDefaultPatternProviders()
                 .AddCors(options => options.AddPolicy(
