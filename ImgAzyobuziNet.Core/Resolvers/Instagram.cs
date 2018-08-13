@@ -9,6 +9,8 @@ using Microsoft.Extensions.Options;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
+    // Instagram は API が動かないのでしばらくお休み
+    /*
     public class InstagramProvider : PatternProviderBase<InstagramResolver>
     {
         public override string ServiceId => "Instagram";
@@ -39,6 +41,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         #endregion
     }
+    */
 
     public class InstagramResolver : IResolver
     {
@@ -139,6 +142,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         #region Tests
 
+        /*
         [TestMethod(TestCategory.Network)]
         private async Task FetchImageTest()
         {
@@ -158,6 +162,13 @@ namespace ImgAzyobuziNet.Core.Resolvers
             result.images.standard_resolution.url.NotNullOrEmpty();
             result.videos.Value.low_resolution.url.NotNullOrEmpty();
             result.videos.Value.standard_resolution.url.NotNullOrEmpty();
+        }
+        */
+
+        [TestMethod(TestCategory.Network)]
+        private void HelpWanted()
+        {
+            throw new System.Exception("API キーが死んでいます。本登録しなきゃダメかな？助けて");
         }
 
         #endregion

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
+    /*
     public class _500pxProvider : PatternProviderBase<_500pxResolver>
     {
         public override string ServiceId => "500px";
@@ -39,6 +40,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         #endregion
     }
+    */
 
     public class _500pxResolver : IResolver
     {
@@ -101,11 +103,22 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         #region Tests
 
+        /*
         [TestMethod(TestCategory.Network)]
         private async Task FetchTest()
         {
             var imageUrl = await this.Fetch("128836907").ConfigureAwait(false);
             Assert.True(() => !string.IsNullOrEmpty(imageUrl));
+        }
+        */
+
+        [TestMethod(TestCategory.Network)]
+        private void Todo()
+        {
+            throw new System.Exception("API が死んでしまったので、 OEmbed 経由でやる");
+            // TODO
+            // og:image, twitter:image はアクセス制御が厳しそう
+            // OEmbed はヘッダーにリンクがある
         }
 
         #endregion

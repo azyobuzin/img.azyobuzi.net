@@ -10,13 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AngleSharp" Version="0.9.9.1" />
-    <PackageReference Include="Jil" Version="2.15.4" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0" />
-    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.4.0" />
-    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+    <PackageReference Include="AngleSharp" Version="0.9.10" />
+    <PackageReference Include="Jil" Version="2.16.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.1" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>
