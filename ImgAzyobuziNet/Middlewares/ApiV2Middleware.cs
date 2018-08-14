@@ -34,7 +34,8 @@ namespace ImgAzyobuziNet.Middlewares
 
             var impl = new Impl(context);
 
-            if (!context.Request.Method.Equals("GET", StringComparison.OrdinalIgnoreCase))
+            var method = context.Request.Method.ToUpperInvariant();
+            if (method != "GET" && method != "HEAD")
             {
                 impl.ErrorResponse(4050);
                 return;
