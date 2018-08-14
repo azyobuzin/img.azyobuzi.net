@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,10 +25,12 @@ namespace ImgAzyobuziNet.Controllers
         };
 
         private readonly ImgAzyobuziNetService _imgAzyobuziNetService;
+        private readonly TelemetryClient _telemetryClient;
 
-        public ApiV3Controller(ImgAzyobuziNetService imgAzyobuziNetService)
+        public ApiV3Controller(ImgAzyobuziNetService imgAzyobuziNetService, TelemetryClient telemetryClient)
         {
             this._imgAzyobuziNetService = imgAzyobuziNetService;
+            this._telemetryClient = telemetryClient;
         }
 
         private IActionResult ErrorResponse(int error, string serviceId = null, Exception ex = null)
@@ -45,10 +49,30 @@ namespace ImgAzyobuziNet.Controllers
 
         private IActionResult HandleException(string serviceId, Exception ex)
         {
-            return this.ErrorResponse(
-                ex is ImageNotFoundException ? 4043
-                : ex is NotPictureException ? 4044
-                : 5000, serviceId, ex);
+            int error;
+            switch (ex)
+            {
+                case ImageNotFoundException _:
+                    error = 4043;
+                    break;
+                case NotPictureException _:
+                    error = 4044;
+                    break;
+                default:
+                    if (this._telemetryClient != null)
+                    {
+                        var telemetry = new ExceptionTelemetry(ex)
+                        {
+                            SeverityLevel = SeverityLevel.Error
+                        };
+                        this._telemetryClient.TrackException(telemetry);
+                    }
+
+                    error = 5000;
+                    break;
+            }
+
+            return this.ErrorResponse(error, serviceId, ex);
         }
 
         public IActionResult Services()

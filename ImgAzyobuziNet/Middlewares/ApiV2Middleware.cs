@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core;
 using ImgAzyobuziNet.Core.SupportServices;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -91,17 +93,22 @@ namespace ImgAzyobuziNet.Middlewares
                 this.Request = context.Request;
                 this.Response = context.Response;
                 this._imgAzyobuziNetService = context.RequestServices.GetService<ImgAzyobuziNetService>();
+                this._telemetryClient = context.RequestServices.GetService<TelemetryClient>();
 
                 var oldApiUri = context.RequestServices.GetService<IOptions<ImgAzyobuziNetOptions>>()?.Value?.FallbackV2ApiUri;
                 if (!string.IsNullOrEmpty(oldApiUri))
                 {
-                    this._interoperation = new ApiV2Interoperation(new Uri(oldApiUri), context.RequestServices.GetService<IImgAzyobuziNetHttpClient>());
+                    this._interoperation = new ApiV2Interoperation(
+                        new Uri(oldApiUri),
+                        context.RequestServices.GetService<IImgAzyobuziNetHttpClient>(),
+                        this._telemetryClient);
                 }
             }
 
             private readonly HttpRequest Request;
             private readonly HttpResponse Response;
             private readonly ImgAzyobuziNetService _imgAzyobuziNetService;
+            private readonly TelemetryClient _telemetryClient;
             private readonly ApiV2Interoperation _interoperation;
 
             private static readonly IReadOnlyDictionary<int, ErrorDefinition> s_errors = new Dictionary<int, ErrorDefinition>
@@ -143,9 +150,9 @@ namespace ImgAzyobuziNet.Middlewares
             {
                 var s = s_errors[error];
                 this.Response.StatusCode = s.StatusCode;
-                this.Json(new
+                this.Json(new V2ErrorResponse()
                 {
-                    error = new
+                    error = new V2ErrorObject()
                     {
                         code = error,
                         message = s.Message,
@@ -156,10 +163,30 @@ namespace ImgAzyobuziNet.Middlewares
 
             public void HandleException(Exception ex)
             {
-                this.ErrorResponse(
-                    ex is ImageNotFoundException ? 4043
-                    : ex is NotPictureException ? 4044
-                    : 5000, ex);
+                int error;
+                switch (ex)
+                {
+                    case ImageNotFoundException _:
+                        error = 4043;
+                        break;
+                    case NotPictureException _:
+                        error = 4044;
+                        break;
+                    default:
+                        if (this._telemetryClient != null)
+                        {
+                            var telemetry = new ExceptionTelemetry(ex)
+                            {
+                                SeverityLevel = SeverityLevel.Error
+                            };
+                            this._telemetryClient.TrackException(telemetry);
+                        }
+
+                        error = 5000;
+                        break;
+                }
+
+                this.ErrorResponse(error, ex);
             }
 
             public void Index()
