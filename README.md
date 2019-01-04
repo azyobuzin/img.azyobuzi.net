@@ -13,7 +13,7 @@ master は本番サーバーで稼働中のもの、 dev は機能追加・バ�
     - [MySQL-python](http://pypi.python.org/pypi/MySQL-python)
     - [Werkzeug](http://pypi.python.org/pypi/Werkzeug)
 - src の中身を放り込む
-- 環境変数 IMGAZYOBUZI_DB_HOST, IMGAZYOBUZI_DB_POR, IMGAZYOBUZI_DB_NAME ,IMGAZYOBUZI_DB_USER, IMGAZYOBUZI_DB_PASSWORD をいい感じに設定する
+- 環境変数 `IMGAZYOBUZI_DB_HOST`, `IMGAZYOBUZI_DB_PORT`, `IMGAZYOBUZI_DB_NAME`, `IMGAZYOBUZI_DB_USER`, `IMGAZYOBUZI_DB_PASSWORD` をいい感じに設定する
 - dbsnapshot_struct.sql を MySQL で実行
 - gunicorn で動かす
 

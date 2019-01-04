@@ -10,7 +10,7 @@ RUN set -ex && \
         libmariadbclient-dev-compat libmariadbclient18 && \
     pip install -q pipenv && \
     if [ ! -f 'Pipfile.lock' ]; then pipenv lock; fi && \
-    pipenv install --deploy --system --clear && \
+    pipenv install --system --clear && \
     apt-get autoremove -qy python-dev python-pip libmariadbclient-dev-compat && \
     rm -rf /var/lib/apt/lists/*
 
