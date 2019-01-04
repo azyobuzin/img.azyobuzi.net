@@ -1,2 +1,3 @@
 *.pyc
 /src/resolvers/private_constant.py
+Pipfile.lock

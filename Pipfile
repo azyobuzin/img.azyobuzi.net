@@ -1,0 +1,15 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+oauth2 = "~=1.9.0"
+mysql-python = "~=1.2.5"
+werkzeug = "~=0.11.10"
+gunicorn = "*"
+
+[requires]
+python_version = "2.7"
