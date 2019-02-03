@@ -5,9 +5,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using AngleSharp.Dom;
-using AngleSharp.Dom.Html;
-using AngleSharp.Extensions;
-using AngleSharp.Parser.Html;
+using AngleSharp.Html.Dom;
+using AngleSharp.Html.Parser;
 using ImgAzyobuziNet.Core.SupportServices;
 
 namespace ImgAzyobuziNet.Core
@@ -39,7 +38,7 @@ namespace ImgAzyobuziNet.Core
         {
             // ReadAsStreamAsync returns a MemoryStream.
             using (var stream = await httpContent.ReadAsStreamAsync().ConfigureAwait(false))
-                return new HtmlParser().Parse(stream);
+                return new HtmlParser().ParseDocument(stream);
         }
 
         public static void Set<T>(this HttpHeaderValueCollection<T> headers, T value)

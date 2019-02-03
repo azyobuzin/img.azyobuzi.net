@@ -14,11 +14,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImgAzyobuziNet.Core", "ImgA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImgAzyobuziNet.TestFramework", "TestFramework\ImgAzyobuziNet.TestFramework\ImgAzyobuziNet.TestFramework.csproj", "{EB447FEC-AA8D-4FDE-AC71-156661DCFEC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImgAzyobuziNet.TestFramework.TestAdapter", "TestFramework\ImgAzyobuziNet.TestFramework.TestAdapter\ImgAzyobuziNet.TestFramework.TestAdapter.csproj", "{7C64B589-01E9-4981-9C55-D95C6CABAE87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImgAzyobuziNet.TestFramework.TestAdapter", "TestFramework\ImgAzyobuziNet.TestFramework.TestAdapter\ImgAzyobuziNet.TestFramework.TestAdapter.csproj", "{7C64B589-01E9-4981-9C55-D95C6CABAE87}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestProjects", "TestProjects", "{561868FF-BDB8-4449-A9C3-8B1FA80DEE5F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImgAzyobuziNet.Core.Test", "TestProjects\ImgAzyobuziNet.Core.Test\ImgAzyobuziNet.Core.Test.csproj", "{68520BEA-5FDD-43A2-AE28-1B171EF66F75}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImgAzyobuziNet.Core.Test", "TestProjects\ImgAzyobuziNet.Core.Test\ImgAzyobuziNet.Core.Test.csproj", "{68520BEA-5FDD-43A2-AE28-1B171EF66F75}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3E84B369-D298-4A96-98C8-3A838769EAFE}"
 	ProjectSection(SolutionItems) = preProject
@@ -27,11 +27,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analyzers", "Analyzers", "{D5268636-7464-4394-86FE-06F74BB62D81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImgAzyobuziNet.Analyzers.Core", "Analyzers\ImgAzyobuziNet.Analyzers.Core\ImgAzyobuziNet.Analyzers.Core.csproj", "{8E574EFE-237D-42EF-A481-CA42733AB8E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImgAzyobuziNet.Analyzers.Core", "Analyzers\ImgAzyobuziNet.Analyzers.Core\ImgAzyobuziNet.Analyzers.Core.csproj", "{8E574EFE-237D-42EF-A481-CA42733AB8E2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ItemTemplates", "ItemTemplates", "{B213C3F0-4FAC-4844-8591-7C90F7E5DF5F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImgAzyobuziNet.ItemTemplates.Resolver", "ItemTemplates\ImgAzyobuziNet.ItemTemplates.Resolver\ImgAzyobuziNet.ItemTemplates.Resolver.csproj", "{7094129C-ADEE-4D3B-A3D6-60AE9C5E0B23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImgAzyobuziNet.AzureFunctions", "ImgAzyobuziNet.AzureFunctions\ImgAzyobuziNet.AzureFunctions.csproj", "{B55DDF69-2295-4E72-8C9E-97EFD38FF07A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +69,10 @@ Global
 		{7094129C-ADEE-4D3B-A3D6-60AE9C5E0B23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7094129C-ADEE-4D3B-A3D6-60AE9C5E0B23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7094129C-ADEE-4D3B-A3D6-60AE9C5E0B23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B55DDF69-2295-4E72-8C9E-97EFD38FF07A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B55DDF69-2295-4E72-8C9E-97EFD38FF07A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B55DDF69-2295-4E72-8C9E-97EFD38FF07A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B55DDF69-2295-4E72-8C9E-97EFD38FF07A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -77,5 +83,8 @@ Global
 		{68520BEA-5FDD-43A2-AE28-1B171EF66F75} = {561868FF-BDB8-4449-A9C3-8B1FA80DEE5F}
 		{8E574EFE-237D-42EF-A481-CA42733AB8E2} = {D5268636-7464-4394-86FE-06F74BB62D81}
 		{7094129C-ADEE-4D3B-A3D6-60AE9C5E0B23} = {B213C3F0-4FAC-4844-8591-7C90F7E5DF5F}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3C89F41F-E427-4F0C-A3B5-4A390FBA40A3}
 	EndGlobalSection
 EndGlobal

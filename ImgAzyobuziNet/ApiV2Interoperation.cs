@@ -100,7 +100,7 @@ namespace ImgAzyobuziNet
             using (var res = await this.SendRequest(req).ConfigureAwait(false))
             {
                 var content = await res.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
-                CheckResponseException(content);
+                this.CheckResponseException(content);
                 return ((int)res.StatusCode, content);
             }
         }
@@ -123,7 +123,7 @@ namespace ImgAzyobuziNet
                 }
 
                 var content = await res.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
-                CheckResponseException(content);
+                this.CheckResponseException(content);
                 return ((int)res.StatusCode, content).Inr();
             }
         }

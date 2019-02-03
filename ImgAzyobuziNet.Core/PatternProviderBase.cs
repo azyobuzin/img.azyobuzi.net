@@ -10,11 +10,11 @@ namespace ImgAzyobuziNet.Core
         public abstract string ServiceName { get; }
         public abstract string Pattern { get; }
 
-        private ObjectFactory _factory = ActivatorUtilities.CreateFactory(typeof(T), Type.EmptyTypes);
+        private readonly ObjectFactory _factory = ActivatorUtilities.CreateFactory(typeof(T), Type.EmptyTypes);
 
         public IResolver GetResolver(IServiceProvider serviceProvider)
         {
-            return (IResolver)_factory(serviceProvider, Array.Empty<object>());
+            return (IResolver)this._factory(serviceProvider, Array.Empty<object>());
         }
     }
 }

@@ -3,8 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using AngleSharp.Dom.Html;
-using AngleSharp.Extensions;
+using AngleSharp.Html.Dom;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
 
@@ -78,8 +77,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
             foreach (var node in document.Head.ChildNodes)
             {
-                var element = node as IHtmlMetaElement;
-                if (element == null) continue;
+                if (!(node is IHtmlMetaElement element)) continue;
 
                 if (ogImage == null && element.GetAttribute("property") == "og:image")
                 {

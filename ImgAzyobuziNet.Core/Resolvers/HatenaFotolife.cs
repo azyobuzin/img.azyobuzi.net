@@ -3,8 +3,8 @@ using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using AngleSharp.Dom.Html;
-using AngleSharp.Extensions;
+using AngleSharp.Dom;
+using AngleSharp.Html.Dom;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
 

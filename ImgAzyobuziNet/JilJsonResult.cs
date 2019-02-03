@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ImgAzyobuziNet
 {
+    // TODO: Jil を使うだけ無駄感があるので、 Newtonsoft.Json に戻したい
     public class JilJsonResult<T> : ActionResult
     {
         public T Data { get; set; }
