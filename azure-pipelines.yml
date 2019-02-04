@@ -1,5 +1,6 @@
 trigger:
   branches:
+    include: ['*']
     exclude: [v1, v2, oldv3]
 
 pr:
@@ -9,14 +10,26 @@ pr:
 pool:
   vmImage: ubuntu-16.04
 
+variables:
+  DotNetCoreSdkVersion: '2.2.103'
+  BuildConfiguration: Release
+
 steps:
   - task: DotNetCoreInstaller@0
     inputs:
-      version: '2.2.103'
-  - script: dotnet test TestProjects/ImgAzyobuziNet.Core.Test/ImgAzyobuziNet.Core.Test.csproj --filter TestCategory=Static --logger trx
+      version: $(DotNetCoreSdkVersion)
+  - task: DotNetCoreCLI@2
     displayName: Run tests
-  - task: PublishTestResults@2
-    condition: succeededOrFailed()
     inputs:
-      testRunner: VSTest
-      testResultsFiles: '**/*.trx'
+      command: test
+      projects: TestProjects/ImgAzyobuziNet.Core.Test/ImgAzyobuziNet.Core.Test.csproj
+      arguments: --filter TestCategory=Static
+  - task: DotNetCoreCLI@2
+    displayName: Build Azure Functions project
+    inputs:
+      command: publish
+      publishWebProjects: false
+      projects: ImgAzyobuziNet.AzureFunctions/ImgAzyobuziNet.AzureFunctions.csproj
+      arguments: --configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)
+      zipAfterPublish: true
+  - task: PublishBuildArtifacts@1
