@@ -33,7 +33,6 @@ namespace ImgAzyobuziNet
             "フォト蔵",
             "PIAPRO",
             "Pikubo",
-            "pixiv",
             "Shamoji",
             "SkyDrive",
             "Streamzoo",
