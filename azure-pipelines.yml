@@ -2,6 +2,12 @@ trigger:
   branches:
     include: ['*']
     exclude: [v1, v2, oldv3]
+  paths:
+    include: ['*']
+    exclude:
+      - README.md
+      - docs/*
+      - ItemTemplates/*
 
 pr:
   branches:
@@ -18,6 +24,16 @@ steps:
   - task: DotNetCoreInstaller@0
     inputs:
       version: $(DotNetCoreSdkVersion)
+  - task: DotNetCoreCLI@2
+    displayName: Build analyzers
+    inputs:
+      command: build
+      projects: Analyzers/**/*.csproj
+  - task: DotNetCoreCLI@2
+    displayName: Build ImgAzyobuziNet.Core
+    inputs:
+      command: build
+      projects: ImgAzyobuziNet.Core/ImgAzyobuziNet.Core.csproj
   - task: DotNetCoreCLI@2
     displayName: Run tests
     inputs:
