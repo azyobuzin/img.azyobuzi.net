@@ -163,6 +163,7 @@ namespace ImgAzyobuziNet.AzureFunctions
                 {
                     code = error,
                     message = s.Message,
+                    service_id = serviceId,
                     exception = ex?.ToString()
                 }
             })

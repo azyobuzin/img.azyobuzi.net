@@ -1,15 +1,14 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
-using Jil;
-using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
-    /*
     public class _500pxProvider : PatternProviderBase<_500pxResolver>
     {
         public override string ServiceId => "500px";
@@ -40,52 +39,41 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         #endregion
     }
-    */
 
     public class _500pxResolver : IResolver
     {
-        private readonly string _consumerKey;
         private readonly IImgAzyobuziNetHttpClient _httpClient;
         private readonly IResolverCache _resolverCache;
 
-        public _500pxResolver(IOptions<ImgAzyobuziNetOptions> options, IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
+        public _500pxResolver(IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
         {
-            this._consumerKey = options?.Value?.ApiKeys?._500pxConsumerKey;
             this._httpClient = httpClient;
             this._resolverCache = resolverCache;
         }
 
         public async ValueTask<ImageInfo[]> GetImages(Match match)
         {
-            if (string.IsNullOrEmpty(this._consumerKey))
-                throw new NotConfiguredException();
-
             var id = match.Groups[1].Value;
             var result = await this._resolverCache.GetOrSet(
                 "500px-" + id,
                 () => this.Fetch(id)
             ).ConfigureAwait(false);
 
-            return new[] { new ImageInfo(result, result, result) };
+            return new[] { new ImageInfo(result.url, result.url, result.thumbnail_url) };
         }
 
-        private struct ApiResponse
+        private class CacheItem
         {
-            public Photo photo;
+            public string url;
+            public string thumbnail_url;
         }
 
-        private struct Photo
-        {
-            public string image_url;
-        }
-
-        private async Task<string> Fetch(string id)
+        private async Task<CacheItem> Fetch(string id)
         {
             string s;
             var req = new HttpRequestMessage(
                 HttpMethod.Get,
-                "https://api.500px.com/v1/photos/" + id
-                    + "?image_size=5&consumer_key=" + this._consumerKey
+                "https://500px.com/oembed?url=https%3A%2F%2F500px.com%2Fphoto%2F" + Uri.EscapeDataString(id) + "&format=json"
             );
 
             using (var res = await this._httpClient.SendAsync(req).ConfigureAwait(false))
@@ -98,27 +86,17 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 s = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
 
-            return JSON.Deserialize<ApiResponse>(s).photo.image_url;
+            return JsonConvert.DeserializeObject<CacheItem>(s);
         }
 
         #region Tests
 
-        /*
         [TestMethod(TestCategory.Network)]
         private async Task FetchTest()
         {
-            var imageUrl = await this.Fetch("128836907").ConfigureAwait(false);
-            Assert.True(() => !string.IsNullOrEmpty(imageUrl));
-        }
-        */
-
-        [TestMethod(TestCategory.Network)]
-        private void Todo()
-        {
-            throw new System.Exception("API が死んでしまったので、 OEmbed 経由でやる");
-            // TODO
-            // og:image, twitter:image はアクセス制御が厳しそう
-            // OEmbed はヘッダーにリンクがある
+            var result = await this.Fetch("128836907").ConfigureAwait(false);
+            Assert.True(() => !string.IsNullOrEmpty(result.url));
+            Assert.True(() => !string.IsNullOrEmpty(result.thumbnail_url));
         }
 
         #endregion

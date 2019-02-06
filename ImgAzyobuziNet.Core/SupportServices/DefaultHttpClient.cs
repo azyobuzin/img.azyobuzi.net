@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
@@ -40,6 +41,10 @@ namespace ImgAzyobuziNet.Core.SupportServices
         public DefaultHttpClient(ILogger<DefaultHttpClient> logger)
         {
             this._logger = logger;
+
+            var userAgent = new ProductInfoHeaderValue("ImgAzyobuziNet", "3.0");
+            this._httpClient.DefaultRequestHeaders.UserAgent.Add(userAgent);
+            this._httpClientWithAutoRedirect.DefaultRequestHeaders.UserAgent.Add(userAgent);
         }
 
         public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, bool allowAutoRedirect = true)

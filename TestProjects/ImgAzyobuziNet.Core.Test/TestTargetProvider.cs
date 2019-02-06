@@ -25,7 +25,7 @@ namespace ImgAzyobuziNet.Core.Test
                         .AddUserSecrets("ImgAzyobuziNet")
                         .AddEnvironmentVariables()
                         .Build();
-                    options.BindConfiguration(config);
+                    config.Bind(options);
                 })
                 .AddLogging()
                 .AddMemoryCache()

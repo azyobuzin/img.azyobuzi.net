@@ -78,7 +78,6 @@ namespace ImgAzyobuziNet.Core.Resolvers
                 if (!exists)
                 {
                     result = await this.Fetch(tinyCode, true).ConfigureAwait(false);
-                    // TODO: キャッシュ保存失敗してもログだけ吐いて握りつぶしたいが、 Logger を引き回すのやだ…やだ…
                     await this._resolverCache.Set(key, result).ConfigureAwait(false);
                     await this._resolverCache.Set(CreateIdKey(result.Id), result).ConfigureAwait(false);
                 }

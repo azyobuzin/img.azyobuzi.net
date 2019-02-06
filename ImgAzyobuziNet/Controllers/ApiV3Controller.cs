@@ -42,6 +42,7 @@ namespace ImgAzyobuziNet.Controllers
                 {
                     code = error,
                     message = s.Message,
+                    service_id = serviceId,
                     exception = ex?.ToString()
                 }
             }, s.StatusCode);

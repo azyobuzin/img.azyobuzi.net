@@ -28,7 +28,7 @@ namespace ImgAzyobuziNet.AzureFunctions
                 .Build();
 
             ServiceProvider = new ServiceCollection()
-                .Configure<ImgAzyobuziNetOptions>(options => options.BindConfiguration(configuration))
+                .Configure<ImgAzyobuziNetOptions>(configuration)
                 .AddMemoryCache()
                 .AddMemoryResolverCache() // TODO: キャッシュ方法を設定でプラガブルに
                 .AddImgAzyobuziNetHttpClient()

@@ -22,7 +22,7 @@ namespace ImgAzyobuziNet
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<ImgAzyobuziNetOptions>(options => options.BindConfiguration(this.Configuration))
+            services.Configure<ImgAzyobuziNetOptions>(this.Configuration)
                 .AddMemoryCache()
                 .AddMemoryResolverCache()
                 .AddImgAzyobuziNetHttpClient()
