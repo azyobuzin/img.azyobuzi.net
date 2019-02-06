@@ -18,37 +18,23 @@ namespace ImgAzyobuziNet
         private static readonly string[] s_serviceNameWhitelist =
         {
             "携帯百景",
-            "飯テロ.in",
-            "My365",
+            "My365", // 2019/2/28 サービス終了予告
             "MyPix",
             "ニコニコ動画",
             "ニコニコ静画",
             "OneDrive",
             "Ow.ly",
-            "Path",
-            "Pckles",
             "PHOTOHITO",
-            "Photomemo",
-            "Big Canvas PhotoShare",
             "フォト蔵",
             "PIAPRO",
-            "Pikubo",
-            "Shamoji",
             "SkyDrive",
-            "Streamzoo",
             "TINAMI",
             "Tumblr",
             "つなビィ",
-            "ついっぷるフォト",
             "TwitCasting",
-            "Twitgoo",
-            "TwitrPix",
             "Twitter",
-            "Ustream.tv",
-            "Via.Me",
             "Vimeo",
             "Vine",
-            "yfrog",
             "YouTube"
         };
 

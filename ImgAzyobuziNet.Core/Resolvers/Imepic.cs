@@ -106,9 +106,9 @@ namespace ImgAzyobuziNet.Core.Resolvers
         [TestMethod(TestCategory.Network)]
         private async Task FetchTest()
         {
-            // http://imepic.jp/20170322/630700
+            // http://imepic.jp/20190207/021560
             // 保存期間 30 日なので気づいたらテスト通らなくなってるやつ
-            var result = await this.Fetch("20170322/630700").ConfigureAwait(false);
+            var result = await this.Fetch("20190207/021560").ConfigureAwait(false);
             Assert.True(() => !string.IsNullOrEmpty(result.OgImage));
             Assert.True(() => !string.IsNullOrEmpty(result.TwitterImage));
         }
