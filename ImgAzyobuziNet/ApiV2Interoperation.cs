@@ -17,7 +17,6 @@ namespace ImgAzyobuziNet
     {
         private static readonly string[] s_serviceNameWhitelist =
         {
-            "携帯百景",
             "My365", // 2019/2/28 サービス終了予告
             "MyPix",
             "ニコニコ動画",
