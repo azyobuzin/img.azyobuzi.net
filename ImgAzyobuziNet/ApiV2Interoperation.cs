@@ -18,7 +18,6 @@ namespace ImgAzyobuziNet
         private static readonly string[] s_serviceNameWhitelist =
         {
             "My365", // 2019/2/28 サービス終了予告
-            "ニコニコ静画",
             "OneDrive",
             "Ow.ly",
             "PHOTOHITO",

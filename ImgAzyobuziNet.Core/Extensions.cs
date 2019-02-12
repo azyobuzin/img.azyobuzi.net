@@ -34,6 +34,15 @@ namespace ImgAzyobuziNet.Core
             return node.Descendents<T>().FirstOrDefault(x => x.Id == id);
         }
 
+        public static string GetTwitterCardImage(this IDocument document)
+        {
+            return document.Head.ChildNodes
+                .OfType<IHtmlMetaElement>()
+                .Where(x => x.Name == "twitter:image")
+                .Select(x => x.Content)
+                .FirstOrDefault(x => !string.IsNullOrEmpty(x));
+        }
+
         public static async Task<IHtmlDocument> ReadAsHtmlDocument(this HttpContent httpContent)
         {
             // ReadAsStreamAsync returns a MemoryStream.
