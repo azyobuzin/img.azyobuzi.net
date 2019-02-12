@@ -19,7 +19,6 @@ namespace ImgAzyobuziNet
         {
             "My365", // 2019/2/28 サービス終了予告
             "OneDrive",
-            "Ow.ly",
             "PHOTOHITO",
             "フォト蔵",
             "PIAPRO",
