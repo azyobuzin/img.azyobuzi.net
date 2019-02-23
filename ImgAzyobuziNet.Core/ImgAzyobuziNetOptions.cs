@@ -11,5 +11,6 @@
         public string FlickrApiKey { get; set; }
         public string InstagramAccessToken { get; set; }
         public string MobypictureDeveloperKey { get; set; }
+        public string TinamiApiKey { get; set; }
     }
 }

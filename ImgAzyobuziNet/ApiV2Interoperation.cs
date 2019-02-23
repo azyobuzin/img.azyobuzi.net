@@ -20,7 +20,6 @@ namespace ImgAzyobuziNet
             "My365", // 2019/2/28 サービス終了予告
             "OneDrive",
             "SkyDrive",
-            "TINAMI",
             "Tumblr",
             "つなビィ",
             "TwitCasting",

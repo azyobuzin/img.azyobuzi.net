@@ -34,7 +34,7 @@ namespace ImgAzyobuziNet.Core
             return node.Descendents<T>().FirstOrDefault(x => x.Id == id);
         }
 
-        public static string GetTwitterCardImage(this IDocument document)
+        internal static string GetTwitterCardImage(this IDocument document)
         {
             return document.Head.ChildNodes
                 .OfType<IHtmlMetaElement>()
@@ -43,7 +43,7 @@ namespace ImgAzyobuziNet.Core
                 .FirstOrDefault(x => !string.IsNullOrEmpty(x));
         }
 
-        public static string GetOpenGraphImage(this IDocument document)
+        internal static string GetOpenGraphImage(this IDocument document)
         {
             return document.Head.ChildNodes
                 .OfType<IHtmlMetaElement>()
