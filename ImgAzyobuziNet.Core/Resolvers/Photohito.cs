@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AngleSharp.Html.Dom;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
+using Shouldly;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -23,8 +24,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private void RegexTest()
         {
             var match = this.GetRegex().Match("https://photohito.com/photo/8395855/");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("8395855");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("8395855");
         }
 
         #endregion
@@ -88,7 +89,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         {
             // https://photohito.com/photo/8433605/
             var result = await this.Fetch("8433605").ConfigureAwait(false);
-            result.NotNullOrEmpty();
+            result.ShouldNotBeNullOrEmpty();
         }
 
         #endregion

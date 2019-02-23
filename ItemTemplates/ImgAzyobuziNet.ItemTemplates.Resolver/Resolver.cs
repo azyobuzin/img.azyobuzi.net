@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.TestFramework;
+using Shouldly;
 
 namespace $rootnamespace$
 {
@@ -22,8 +23,8 @@ namespace $rootnamespace$
         private void RegexTest()
         {
             var match = this.GetRegex().Match("");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("");
         }
 
         #endregion

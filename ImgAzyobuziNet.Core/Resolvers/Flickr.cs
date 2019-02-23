@@ -8,6 +8,7 @@ using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
 using Jil;
 using Microsoft.Extensions.Options;
+using Shouldly;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -24,29 +25,30 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private void RegexPhotoTest()
         {
             var match = this.GetRegex().Match("https://www.flickr.com/photos/85669226@N02/23816761306/in/datetaken/");
-            Assert.True(() => match.Success);
-            Assert.True(() => !match.Groups[1].Success);
-            match.Groups[2].Value.Is("23816761306");
-            Assert.True(() => !match.Groups[3].Success);
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Success.ShouldBeFalse();
+            match.Groups[2].Value.ShouldBe("23816761306");
+            match.Groups[3].Success.ShouldBeFalse();
         }
 
         [TestMethod(TestCategory.Static)]
         private void RegexAlbumTest()
         {
             var match = this.GetRegex().Match("https://www.flickr.com/photos/takeshik/albums/72157658404341455");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("albums");
-            match.Groups[2].Value.Is("72157658404341455");
-            Assert.True(() => !match.Groups[3].Success);
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("albums");
+            match.Groups[2].Value.ShouldBe("72157658404341455");
+            match.Groups[3].Success.ShouldBeFalse();
         }
 
         [TestMethod(TestCategory.Static)]
         private void RegexShortenedTest()
         {
             var match = this.GetRegex().Match("https://flic.kr/p/ChB8nC");
-            Assert.True(() => match.Success);
-            Assert.True(() => !match.Groups[1].Success && !match.Groups[2].Success);
-            match.Groups[3].Value.Is("ChB8nC");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Success.ShouldBeFalse();
+            match.Groups[2].Success.ShouldBeFalse();
+            match.Groups[3].Value.ShouldBe("ChB8nC");
         }
         #endregion
     }
@@ -285,7 +287,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         [TestMethod(TestCategory.Static)]
         private static void DecodeBase58Test()
         {
-            DecodeBase58("y8hQ95").Is(21085915780);
+            DecodeBase58("y8hQ95").ShouldBe(21085915780);
         }
 
         [TestMethod(TestCategory.Network)]
@@ -293,10 +295,10 @@ namespace ImgAzyobuziNet.Core.Resolvers
         {
             // https://www.flickr.com/photos/85669226@N02/23816761306
             var result = await this.FetchPhoto("23816761306").ConfigureAwait(false);
-            result.Full.Is("https://farm6.staticflickr.com/5725/23816761306_d95dabb2be_o.jpg");
-            result.Large.Is("https://farm6.staticflickr.com/5725/23816761306_123ded3e11_b.jpg");
-            result.Thumb.Is("https://farm6.staticflickr.com/5725/23816761306_123ded3e11_m.jpg");
-            result.VideoFull.Is("https://www.flickr.com/photos/85669226@N02/23816761306/play/hd/123ded3e11/");
+            result.Full.ShouldBe("https://farm6.staticflickr.com/5725/23816761306_d95dabb2be_o.jpg");
+            result.Large.ShouldBe("https://farm6.staticflickr.com/5725/23816761306_123ded3e11_b.jpg");
+            result.Thumb.ShouldBe("https://farm6.staticflickr.com/5725/23816761306_123ded3e11_m.jpg");
+            result.VideoFull.ShouldBe("https://www.flickr.com/photos/85669226@N02/23816761306/play/hd/123ded3e11/");
         }
 
         [TestMethod(TestCategory.Network)]
@@ -304,12 +306,13 @@ namespace ImgAzyobuziNet.Core.Resolvers
         {
             // https://www.flickr.com/photos/85669226@N02/albums/72157661860595319
             var result = await this.FetchAlbum("72157661860595319").ConfigureAwait(false);
-            result.Length.Is(2);
-            foreach (var x in result)
-                Assert.True(() => !string.IsNullOrEmpty(x.Full) && !string.IsNullOrEmpty(x.Large) && !string.IsNullOrEmpty(x.Thumb));
-            Assert.True(() => !string.IsNullOrEmpty(result[0].VideoFull) && !string.IsNullOrEmpty(result[0].VideoLarge) && !string.IsNullOrEmpty(result[0].VideoMobile));
-            result[0].VideoFull.Is(result[0].VideoLarge);
-            Assert.True(() => result[0].VideoLarge != result[0].VideoMobile);
+            result.Length.ShouldBe(2);
+            result.ShouldAllBe(x => !string.IsNullOrEmpty(x.Full) && !string.IsNullOrEmpty(x.Large) && !string.IsNullOrEmpty(x.Thumb));
+            result[0].VideoFull.ShouldNotBeNullOrEmpty();
+            result[0].VideoLarge.ShouldNotBeNullOrEmpty();
+            result[0].VideoMobile.ShouldNotBeNullOrEmpty();
+            (result[0].VideoFull == result[0].VideoLarge).ShouldBeTrue();
+            (result[0].VideoLarge != result[0].VideoMobile).ShouldBeTrue();
         }
 
         [TestMethod(TestCategory.Network)]
@@ -317,9 +320,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
         {
             // https://www.flickr.com/photos/flickr/galleries/72157662518421935/
             var result = await this.FetchGallery("72157662518421935").ConfigureAwait(false);
-            result.Length.Is(23);
-            foreach (var x in result)
-                Assert.True(() => !string.IsNullOrEmpty(x.Full) && !string.IsNullOrEmpty(x.Large) && !string.IsNullOrEmpty(x.Thumb));
+            result.Length.ShouldBe(23);
+            result.ShouldAllBe(x => !string.IsNullOrEmpty(x.Full) && !string.IsNullOrEmpty(x.Large) && !string.IsNullOrEmpty(x.Thumb));
         }
 
         #endregion

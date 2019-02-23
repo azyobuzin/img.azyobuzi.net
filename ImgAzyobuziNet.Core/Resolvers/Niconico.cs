@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
+using Shouldly;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -23,24 +24,24 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private void RegexLongTest()
         {
             var match = this.GetRegex().Match("https://www.nicovideo.jp/watch/sm34610104/");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("sm34610104");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("sm34610104");
         }
 
         [TestMethod(TestCategory.Static)]
         private void RegexShortTest()
         {
             var match = this.GetRegex().Match("https://nico.ms/sm28073785?ref=twitter");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("sm28073785");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("sm28073785");
         }
 
         [TestMethod(TestCategory.Static)]
         private void RegexNiconicoMovieMakerTest()
         {
             var match = this.GetRegex().Match("https://www.nicovideo.jp/watch/nm2829323");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("nm2829323");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("nm2829323");
         }
 
         #endregion
@@ -134,7 +135,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         {
             // https://www.nicovideo.jp/watch/sm30202776
             var result = await this.Fetch("sm30202776").ConfigureAwait(false);
-            result.NotNullOrEmpty();
+            result.ShouldNotBeNullOrEmpty();
         }
 
         #endregion

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
 using Jil;
+using Shouldly;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -23,8 +24,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private void RegexTest()
         {
             var match = this.GetRegex().Match("http://aenea-jones.deviantart.com/art/Stillness-578505886");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("Stillness-578505886");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("Stillness-578505886");
         }
 
         #endregion
@@ -83,8 +84,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private async Task FetchTest()
         {
             var result = await this.Fetch("http://kirokaze.deviantart.com/art/Mountain-town-578514456").ConfigureAwait(false);
-            Assert.True(() => !string.IsNullOrEmpty(result.url));
-            Assert.True(() => !string.IsNullOrEmpty(result.thumbnail_url));
+            result.url.ShouldNotBeNullOrEmpty();
+            result.thumbnail_url.ShouldNotBeNullOrEmpty();
         }
 
         #endregion

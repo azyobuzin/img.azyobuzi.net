@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
 using Newtonsoft.Json;
+using Shouldly;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -25,16 +26,16 @@ namespace ImgAzyobuziNet.Core.Resolvers
         {
             var match = this.GetRegex().Match(
                 "https://500px.com/photo/128754325/t-v-winter-by-ray-green?ctx_page=1&from=popular");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("128754325");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("128754325");
         }
 
         [TestMethod(TestCategory.Static)]
         private void RegexId()
         {
             var match = this.GetRegex().Match("https://500px.com/photo/128742743");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("128742743");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("128742743");
         }
 
         #endregion
@@ -95,8 +96,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private async Task FetchTest()
         {
             var result = await this.Fetch("128836907").ConfigureAwait(false);
-            Assert.True(() => !string.IsNullOrEmpty(result.url));
-            Assert.True(() => !string.IsNullOrEmpty(result.thumbnail_url));
+            result.url.ShouldNotBeNullOrEmpty();
+            result.thumbnail_url.ShouldNotBeNullOrEmpty();
         }
 
         #endregion

@@ -6,6 +6,7 @@ using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
 using Jil;
 using Microsoft.Extensions.Options;
+using Shouldly;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -23,27 +24,27 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private void RegexTest()
         {
             var match = this.GetRegex().Match("http://www.mobypicture.com/user/rockon_cpa/view/19785094?");
-            Assert.True(() => match.Success);
-            Assert.True(() => !match.Groups[1].Success);
-            match.Groups[2].Value.Is("19785094");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Success.ShouldBeFalse();
+            match.Groups[2].Value.ShouldBe("19785094");
         }
 
         [TestMethod(TestCategory.Static)]
         private void RegexTestWithSuffix()
         {
             var match = this.GetRegex().Match("http://www.mobypicture.com/user/rockon_cpa/view/19785094/hoge");
-            Assert.True(() => match.Success);
-            Assert.True(() => !match.Groups[1].Success);
-            match.Groups[2].Value.Is("19785094");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Success.ShouldBeFalse();
+            match.Groups[2].Value.ShouldBe("19785094");
         }
 
         [TestMethod(TestCategory.Static)]
         private void RegexTestTiny()
         {
             var match = this.GetRegex().Match("http://moby.to/715vsq");
-            Assert.True(() => match.Success);
-            Assert.True(() => !match.Groups[2].Success);
-            match.Groups[1].Value.Is("715vsq");
+            match.Success.ShouldBeTrue();
+            match.Groups[2].Success.ShouldBeFalse();
+            match.Groups[1].Value.ShouldBe("715vsq");
         }
 
         #endregion
@@ -198,11 +199,11 @@ namespace ImgAzyobuziNet.Core.Resolvers
         {
             // http://moby.to/wywhsh
             var result = await this.Fetch("19785122", false).ConfigureAwait(false);
-            result.Id.Is("19785122");
-            result.TinyCode.Is("wywhsh");
-            result.UrlThumbnail.NotNullOrEmpty();
-            result.UrlFull.NotNullOrEmpty();
-            Assert.True(() => result.UrlVideo == null);
+            result.Id.ShouldBe("19785122");
+            result.TinyCode.ShouldBe("wywhsh");
+            result.UrlThumbnail.ShouldNotBeNullOrEmpty();
+            result.UrlFull.ShouldNotBeNullOrEmpty();
+            result.UrlVideo.ShouldBeNull();
         }
 
         [TestMethod(TestCategory.Network)]
@@ -210,11 +211,11 @@ namespace ImgAzyobuziNet.Core.Resolvers
         {
             // http://moby.to/715vsq
             var result = await this.Fetch("715vsq", true).ConfigureAwait(false);
-            result.Id.Is("19785094");
-            result.TinyCode.Is("715vsq");
-            result.UrlThumbnail.NotNullOrEmpty();
-            result.UrlFull.NotNullOrEmpty();
-            result.UrlVideo.NotNullOrEmpty();
+            result.Id.ShouldBe("19785094");
+            result.TinyCode.ShouldBe("715vsq");
+            result.UrlThumbnail.ShouldNotBeNullOrEmpty();
+            result.UrlFull.ShouldNotBeNullOrEmpty();
+            result.UrlVideo.ShouldNotBeNullOrEmpty();
         }
 
         #endregion

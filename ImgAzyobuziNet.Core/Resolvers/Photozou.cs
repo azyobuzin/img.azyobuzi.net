@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
 using Newtonsoft.Json.Linq;
+using Shouldly;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -22,16 +23,16 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private void RegexShowTest()
         {
             var match = this.GetRegex().Match("http://photozou.jp/photo/show/3175940/260308826");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("260308826");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("260308826");
         }
 
         [TestMethod(TestCategory.Static)]
         private void RegexPhotoOnlyTest()
         {
             var match = this.GetRegex().Match("http://photozou.jp/photo/photo_only/2886762/158535562?size=1024#content");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("158535562");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("158535562");
         }
 
         #endregion
@@ -100,9 +101,9 @@ namespace ImgAzyobuziNet.Core.Resolvers
         {
             // http://photozou.jp/photo/show/3230845/257350186
             var result = await this.Fetch("257350186").ConfigureAwait(false);
-            result.image_url.NotNullOrEmpty();
-            result.original_image_url.NotNullOrEmpty();
-            result.thumbnail_image_url.NotNullOrEmpty();
+            result.image_url.ShouldNotBeNullOrEmpty();
+            result.original_image_url.ShouldNotBeNullOrEmpty();
+            result.thumbnail_image_url.ShouldNotBeNullOrEmpty();
         }
 
         #endregion

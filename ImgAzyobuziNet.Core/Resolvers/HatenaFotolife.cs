@@ -7,6 +7,7 @@ using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
+using Shouldly;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -24,9 +25,9 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private void RegexTest()
         {
             var match = this.GetRegex().Match("http://f.hatena.ne.jp/azyobuzin_test/20090502111522");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("azyobuzin_test");
-            match.Groups[2].Value.Is("20090502111522");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("azyobuzin_test");
+            match.Groups[2].Value.ShouldBe("20090502111522");
         }
 
         #endregion
@@ -122,8 +123,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
         {
             // http://f.hatena.ne.jp/azyobuzin/20150412015830
             var result = await this.Fetch("azyobuzin", "20150412015830").ConfigureAwait(false);
-            result.Extension.Is("png");
-            result.IsOriginalAvailable.Is(true);
+            result.Extension.ShouldBe("png");
+            result.IsOriginalAvailable.ShouldBeTrue();
         }
 
         [TestMethod(TestCategory.Network)]
@@ -131,8 +132,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
         {
             // http://f.hatena.ne.jp/azyobuzin_test/20070423171636
             var result = await this.Fetch("azyobuzin_test", "20070423171636").ConfigureAwait(false);
-            result.Extension.Is("flv");
-            result.IsOriginalAvailable.Is(false);
+            result.Extension.ShouldBe("flv");
+            result.IsOriginalAvailable.ShouldBeFalse();
         }
 
         #endregion

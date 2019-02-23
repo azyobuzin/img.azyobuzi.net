@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
 using Jil;
+using Shouldly;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -24,8 +25,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private void RegexTest()
         {
             var match = this.GetRegex().Match("http://www.dailymotion.com/video/x26m1j4_wildlife_animals");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("x26m1j4_wildlife_animals");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("x26m1j4_wildlife_animals");
         }
 
         #endregion
@@ -94,9 +95,9 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private async Task FetchTest()
         {
             var result = await this.Fetch("x26m1j4_wildlife_animals").ConfigureAwait(false);
-            Assert.True(() => !string.IsNullOrEmpty(result.thumbnail_url));
-            Assert.True(() => !string.IsNullOrEmpty(result.thumbnail_480_url));
-            Assert.True(() => !string.IsNullOrEmpty(result.thumbnail_180_url));
+            result.thumbnail_url.ShouldNotBeNullOrEmpty();
+            result.thumbnail_480_url.ShouldNotBeNullOrEmpty();
+            result.thumbnail_180_url.ShouldNotBeNullOrEmpty();
         }
 
         #endregion

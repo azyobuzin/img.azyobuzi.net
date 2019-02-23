@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.TestFramework;
+using Shouldly;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -18,16 +19,16 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private void RegexTest()
         {
             var match = this.GetRegex().Match("http://img.ly/2eCe");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("2eCe");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("2eCe");
         }
 
         [TestMethod(TestCategory.Static)]
         private void RegexShowTest()
         {
             var match = this.GetRegex().Match("http://img.ly/show/large/D6sU");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("D6sU");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("D6sU");
         }
 
         #endregion

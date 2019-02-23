@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AngleSharp.Html.Dom;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
+using Shouldly;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -24,16 +25,16 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private void RegexTest()
         {
             var match = this.GetRegex().Match("http://ow.ly/i/12D4C");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("12D4C");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("12D4C");
         }
 
         [TestMethod(TestCategory.Static)]
         private void RegexOriginalTest()
         {
             var match = this.GetRegex().Match("http://ow.ly/i/12D4C/original");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("12D4C");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("12D4C");
         }
 
         #endregion
@@ -104,7 +105,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         {
             // http://ow.ly/i/5argt
             var result = await this.Fetch("5argt").ConfigureAwait(false);
-            result.Is("http://static.ow.ly/photos/original/5argt.jpg");
+            result.ShouldBe("http://static.ow.ly/photos/original/5argt.jpg");
         }
 
         #endregion

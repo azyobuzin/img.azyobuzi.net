@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.TestFramework;
+using Shouldly;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -18,8 +19,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private void RegexTest()
         {
             var match = this.GetRegex().Match("http://www.mypix.jp/app.php/picture/64303/in");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("64303");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("64303");
         }
 
         #endregion

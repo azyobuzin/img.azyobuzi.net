@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AngleSharp.Html.Dom;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
+using Shouldly;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -22,18 +23,18 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private void RegexSeigaTest()
         {
             var match = this.GetRegex().Match("http://seiga.nicovideo.jp/watch/im6025110/");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("im");
-            match.Groups[2].Value.Is("6025110");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("im");
+            match.Groups[2].Value.ShouldBe("6025110");
         }
 
         [TestMethod(TestCategory.Static)]
         private void RegexMangaTest()
         {
             var match = this.GetRegex().Match("http://seiga.nicovideo.jp/watch/mg175730");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("mg");
-            match.Groups[2].Value.Is("175730");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("mg");
+            match.Groups[2].Value.ShouldBe("175730");
         }
 
         #endregion
@@ -112,8 +113,8 @@ namespace ImgAzyobuziNet.Core.Resolvers
         {
             // http://seiga.nicovideo.jp/watch/mg332323
             var result = await this.FetchManga("332323").ConfigureAwait(false);
-            result.NotNullOrEmpty();
-            Assert.True(() => Regex.Match(result, "^https?://lohas.nicoseiga.jp/thumb/").Success);
+            result.ShouldNotBeNullOrEmpty();
+            Regex.Match(result, "^https?://lohas.nicoseiga.jp/thumb/").Success.ShouldBeTrue();
         }
 
         #endregion

@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
+using Shouldly;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -20,18 +21,18 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private void RegexUserAndSequentialIdTest()
         {
             var match = this.GetRegex().Match("http://movapic.com/boubun/pic/5399239/");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("boubun");
-            match.Groups[2].Value.Is("5399239");
-            Assert.True(() => !match.Groups[3].Success);
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("boubun");
+            match.Groups[2].Value.ShouldBe("5399239");
+            match.Groups[3].Success.ShouldBeFalse();
         }
 
         [TestMethod(TestCategory.Static)]
         private void RegexTimestampAndIdTest()
         {
             var match = this.GetRegex().Match("http://movapic.com/pic/201902072352025c5cc4a2958d6");
-            Assert.True(() => match.Success);
-            match.Groups[3].Value.Is("201902072352025c5cc4a2958d6");
+            match.Success.ShouldBeTrue();
+            match.Groups[3].Value.ShouldBe("201902072352025c5cc4a2958d6");
         }
 
         #endregion
@@ -104,7 +105,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         {
             // http://movapic.com/boubun/pic/5399239
             var result = await this.Fetch("boubun", "5399239").ConfigureAwait(false);
-            result.NotNullOrEmpty();
+            result.ShouldNotBeNullOrEmpty();
         }
 
         #endregion

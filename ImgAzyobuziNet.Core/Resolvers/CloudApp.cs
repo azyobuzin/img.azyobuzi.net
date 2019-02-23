@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
 using Jil;
+using Shouldly;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -23,16 +24,16 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private void RegexId()
         {
             var match = this.GetRegex().Match("http://cl.ly/2V2a2R1E1v3F");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("2V2a2R1E1v3F");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("2V2a2R1E1v3F");
         }
 
         [TestMethod(TestCategory.Static)]
         private void RegexImageId()
         {
             var match = this.GetRegex().Match("http://cl.ly/image/1u1T2k2N2F1L");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("1u1T2k2N2F1L");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("1u1T2k2N2F1L");
         }
 
         #endregion
@@ -107,33 +108,26 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private async Task ImageTest()
         {
             var result = await this.Fetch("http://cl.ly/image/1u1T2k2N2F1L").ConfigureAwait(false);
-            result.item_type.Is("image");
-            Assert.True(() => !string.IsNullOrEmpty(result.content_url));
-            Assert.True(() => !string.IsNullOrEmpty(result.thumbnail_url));
+            result.item_type.ShouldBe("image");
+            result.content_url.ShouldNotBeNullOrEmpty();
+            result.thumbnail_url.ShouldNotBeNullOrEmpty();
         }
 
         [TestMethod(TestCategory.Network)]
         private async Task VideoTest()
         {
             var result = await this.Fetch("http://cl.ly/2V2a2R1E1v3F").ConfigureAwait(false);
-            result.item_type.Is("video");
-            Assert.True(() => !string.IsNullOrEmpty(result.content_url));
+            result.item_type.ShouldBe("video");
+            result.content_url.ShouldNotBeNullOrEmpty();
         }
 
         [TestMethod(TestCategory.Network)]
-        private async Task NotImageTest()
+        private Task NotImageTest()
         {
-            try
+            return Should.ThrowAsync<NotPictureException>(async () =>
             {
                 await this.GetImages(new CloudAppProvider().GetRegex().Match("http://cl.ly/0D3P1e022K10")).ConfigureAwait(false);
-            }
-            catch (NotPictureException)
-            {
-                // OK
-                return;
-            }
-
-            throw new AssertionException("No exception has been thrown.");
+            });
         }
 
         #endregion

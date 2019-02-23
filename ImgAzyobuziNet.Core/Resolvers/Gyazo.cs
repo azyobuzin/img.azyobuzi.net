@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ImgAzyobuziNet.Core.SupportServices;
 using ImgAzyobuziNet.TestFramework;
 using Jil;
+using Shouldly;
 
 namespace ImgAzyobuziNet.Core.Resolvers
 {
@@ -23,18 +24,18 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private void RegexTest()
         {
             var match = this.GetRegex().Match("https://gyazo.com/5a924a0a4c83e23436754de2293b646e");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("5a924a0a4c83e23436754de2293b646e");
-            Assert.True(() => !match.Groups[2].Success);
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("5a924a0a4c83e23436754de2293b646e");
+            match.Groups[2].Success.ShouldBeFalse();
         }
 
         [TestMethod(TestCategory.Static)]
         private void WithExtensionTest()
         {
             var match = this.GetRegex().Match("https://bot.gyazo.com/694986837d4524f13a264db302dd2122.gif");
-            Assert.True(() => match.Success);
-            match.Groups[1].Value.Is("694986837d4524f13a264db302dd2122");
-            match.Groups[2].Value.Is(".gif");
+            match.Success.ShouldBeTrue();
+            match.Groups[1].Value.ShouldBe("694986837d4524f13a264db302dd2122");
+            match.Groups[2].Value.ShouldBe(".gif");
         }
 
         #endregion
@@ -97,7 +98,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private async Task FetchTest()
         {
             var result = await this.Fetch("5a924a0a4c83e23436754de2293b646e");
-            Assert.True(() => result.EndsWith("/5a924a0a4c83e23436754de2293b646e.png", StringComparison.Ordinal));
+            result.ShouldEndWith("/5a924a0a4c83e23436754de2293b646e.png", Case.Sensitive);
         }
 
         #endregion
