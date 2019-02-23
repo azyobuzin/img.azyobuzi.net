@@ -43,6 +43,15 @@ namespace ImgAzyobuziNet.Core
                 .FirstOrDefault(x => !string.IsNullOrEmpty(x));
         }
 
+        public static string GetOpenGraphImage(this IDocument document)
+        {
+            return document.Head.ChildNodes
+                .OfType<IHtmlMetaElement>()
+                .Where(x => x.GetAttribute("property") == "og:image")
+                .Select(x => x.Content)
+                .FirstOrDefault(x => !string.IsNullOrEmpty(x));
+        }
+
         public static async Task<IHtmlDocument> ReadAsHtmlDocument(this HttpContent httpContent)
         {
             // ReadAsStreamAsync returns a MemoryStream.
