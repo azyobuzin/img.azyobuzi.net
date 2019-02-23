@@ -38,5 +38,10 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             return serviceCollection.AddTransient(typeof(IResolverCache), typeof(MemoryResolverCache));
         }
+
+        public static IServiceCollection AddNoResolverCache(this IServiceCollection serviceCollection)
+        {
+            return serviceCollection.AddSingleton(typeof(IResolverCache), typeof(NoResolverCache));
+        }
     }
 }

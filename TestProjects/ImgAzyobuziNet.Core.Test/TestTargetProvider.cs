@@ -9,12 +9,12 @@ namespace ImgAzyobuziNet.Core.Test
 {
     public class TestTargetProvider : ITestTargetProvider
     {
-        private static Assembly[] s_targetAssemblies =
+        private static readonly Assembly[] s_targetAssemblies =
         {
             typeof(ImgAzyobuziNetService).GetTypeInfo().Assembly
         };
 
-        private static TestActivator s_activator = new TestActivator(
+        private static readonly TestActivator s_activator = new TestActivator(
             new ServiceCollection()
                 .Configure<ImgAzyobuziNetOptions>(options =>
                 {
@@ -28,8 +28,7 @@ namespace ImgAzyobuziNet.Core.Test
                     config.Bind(options);
                 })
                 .AddLogging()
-                .AddMemoryCache()
-                .AddMemoryResolverCache()
+                .AddNoResolverCache()
                 .AddImgAzyobuziNetHttpClient()
                 .BuildServiceProvider()
         );

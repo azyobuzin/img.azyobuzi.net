@@ -7,6 +7,7 @@
     <PackageProjectUrl>https://img.azyobuzi.net/</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/azyobuzin/img.azyobuzi.net/blob/master/LICENSE.txt</PackageLicenseUrl>
     <NoWarn>$(NoWarn);0649</NoWarn>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
