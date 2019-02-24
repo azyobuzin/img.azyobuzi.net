@@ -2,6 +2,7 @@
 using System.Reflection;
 using ImgAzyobuziNet.Core;
 using ImgAzyobuziNet.Core.SupportServices;
+using ImgAzyobuziNet.Core.SupportServices.Twitter;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -42,6 +43,13 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddNoResolverCache(this IServiceCollection serviceCollection)
         {
             return serviceCollection.AddSingleton(typeof(IResolverCache), typeof(NoResolverCache));
+        }
+
+        public static IServiceCollection AddTwitterResolver(this IServiceCollection serviceCollection)
+        {
+            return serviceCollection
+                .AddTransient(typeof(ITwitterResolver), typeof(DefaultTwitterResolver))
+                .AddSingleton(typeof(TwitterCredentialsManager));
         }
     }
 }

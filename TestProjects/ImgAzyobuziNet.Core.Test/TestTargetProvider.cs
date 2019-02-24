@@ -30,6 +30,7 @@ namespace ImgAzyobuziNet.Core.Test
                 .AddLogging()
                 .AddNoResolverCache()
                 .AddImgAzyobuziNetHttpClient()
+                .AddTwitterResolver()
                 .BuildServiceProvider()
         );
 

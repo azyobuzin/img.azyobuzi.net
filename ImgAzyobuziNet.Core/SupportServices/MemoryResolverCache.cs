@@ -4,7 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace ImgAzyobuziNet.Core.SupportServices
 {
-    public class MemoryResolverCache : IResolverCache
+    internal class MemoryResolverCache : IResolverCache
     {
         private static readonly TimeSpan s_defaultSlidingExpiration = new TimeSpan(TimeSpan.TicksPerDay);
 

@@ -69,7 +69,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         public async ValueTask<ImageInfo[]> GetImages(Match match)
         {
             if (string.IsNullOrEmpty(this._apiKey))
-                throw new NotConfiguredException();
+                throw new NotConfiguredException(nameof(ImgAzyobuziNetOptions.ApiKeys) + ":" + nameof(ApiKeys.FlickrApiKey));
 
             try
             {

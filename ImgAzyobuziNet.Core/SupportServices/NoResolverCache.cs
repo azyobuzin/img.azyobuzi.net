@@ -2,7 +2,7 @@
 
 namespace ImgAzyobuziNet.Core.SupportServices
 {
-    public class NoResolverCache : IResolverCache
+    internal class NoResolverCache : IResolverCache
     {
         public ValueTask<(bool Exists, T Value)> TryGetValue<T>(string key)
         {

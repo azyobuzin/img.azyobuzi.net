@@ -66,7 +66,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         public async ValueTask<ImageInfo[]> GetImages(Match match)
         {
             if (string.IsNullOrEmpty(this._developerKey))
-                throw new NotConfiguredException();
+                throw new NotConfiguredException(nameof(ImgAzyobuziNetOptions.ApiKeys) + ":" + nameof(ApiKeys.MobypictureDeveloperKey));
 
             // 誰か短縮の法則を見つけてくれ～
             CacheItem result;

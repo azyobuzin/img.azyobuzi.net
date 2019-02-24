@@ -10,19 +10,23 @@ using Microsoft.Extensions.Logging;
 namespace ImgAzyobuziNet.Core.SupportServices
 {
     [SuppressMessage("Usage", "IAN0001:DoNotCreateHttpClient")]
-    public class DefaultHttpClient : IImgAzyobuziNetHttpClient
+    internal class DefaultHttpClient : IImgAzyobuziNetHttpClient
     {
+        #region Logging
+
         private static readonly Func<ILogger, string, IDisposable> s_beginScope =
-            LoggerMessage.DefineScope<string>("HttpClient {0}");
+            LoggerMessage.DefineScope<string>("HttpClient {Host}");
 
         private static readonly Action<ILogger, HttpMethod, string, Exception> s_httpClientRequestMessage =
-            LoggerMessage.Define<HttpMethod, string>(LogLevel.Information, new EventId(100, "HttpClientRequest"), "{0} {1}");
+            LoggerMessage.Define<HttpMethod, string>(LogLevel.Information, new EventId(100, "HttpClientRequest"), "{Method} {Uri}");
 
         private static readonly Action<ILogger, int, TimeSpan, Exception> s_httpClientResponseMessage =
-            LoggerMessage.Define<int, TimeSpan>(LogLevel.Information, new EventId(101, "HttpClientRequest"), "Status: {0}, Elapsed: {1}");
+            LoggerMessage.Define<int, TimeSpan>(LogLevel.Information, new EventId(101, "HttpClientRequest"), "Status: {StatusCode}, Elapsed: {Elapsed}");
 
         private static readonly Action<ILogger, string, Exception> s_httpClientResponseContentMessage =
-            LoggerMessage.Define<string>(LogLevel.Debug, new EventId(102, "HttpClientResponseContent"), "{0}");
+            LoggerMessage.Define<string>(LogLevel.Debug, new EventId(102, "HttpClientResponseContent"), "{ResponseBody}");
+
+        #endregion
 
         private readonly HttpClient _httpClient = new HttpClient(new HttpClientHandler()
         {

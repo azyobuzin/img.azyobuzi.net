@@ -14,8 +14,8 @@ namespace ImgAzyobuziNet.Core
 
     public class NotConfiguredException : ImgAzyobuziNetException
     {
-        public NotConfiguredException()
-            : base("このサービスを使用するのに必要なオプションが設定されていません。")
+        public NotConfiguredException(string configurationKey)
+            : base($"このサービスを使用するのに必要なオプション {configurationKey} が設定されていません。")
         { }
     }
 }

@@ -59,7 +59,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         public async ValueTask<ImageInfo[]> GetImages(Match match)
         {
             if (string.IsNullOrEmpty(this._accessToken))
-                throw new NotConfiguredException();
+                throw new NotConfiguredException(nameof(ImgAzyobuziNetOptions.ApiKeys) + ":" + nameof(ApiKeys.InstagramAccessToken));
 
             var id = match.Groups[1].Value;
             var result = await this._resolverCache.GetOrSet(

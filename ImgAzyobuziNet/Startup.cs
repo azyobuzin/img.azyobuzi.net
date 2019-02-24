@@ -26,6 +26,7 @@ namespace ImgAzyobuziNet
                 .AddMemoryCache()
                 .AddMemoryResolverCache()
                 .AddImgAzyobuziNetHttpClient()
+                .AddTwitterResolver()
                 .AddImgAzyobuziNetService()
                 .AddDefaultPatternProviders()
                 .AddCors(options => options.AddPolicy(
@@ -54,6 +55,10 @@ namespace ImgAzyobuziNet
             WebHost.CreateDefaultBuilder(args)
                 .UseApplicationInsights()
                 .UseStartup<Startup>()
+                .ConfigureLogging(builder =>
+                {
+                    builder.AddApplicationInsights();
+                })
                 .Build()
                 .Run();
     }
