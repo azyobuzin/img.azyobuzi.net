@@ -56,7 +56,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private readonly IImgAzyobuziNetHttpClient _httpClient;
         private readonly IResolverCache _resolverCache;
 
-        public MobypictureResolver(IOptions<ImgAzyobuziNetOptions> options, IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
+        public MobypictureResolver(IOptionsSnapshot<ImgAzyobuziNetOptions> options, IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
         {
             this._developerKey = options?.Value?.ApiKeys?.MobypictureDeveloperKey;
             this._httpClient = httpClient;
