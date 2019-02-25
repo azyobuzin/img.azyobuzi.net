@@ -11,7 +11,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
 
         public override string ServiceName => "YouTube";
 
-        public override string Pattern => @"^https?://(?:www\.)?(?:youtube\.com/watch/?\?(?:.+&)?v=([\w\-]+)(?:&|$)|youtu\.be/([\w\-]+)/?(?:[\?#]|$))";
+        public override string Pattern => @"^https?://(?:www\.)?(?:youtube\.com/watch/?\?(?:.*&)?v=([\w\-]+)(?:&|$)|youtu\.be/([\w\-]+)/?(?:[\?#]|$))";
 
         #region Tests
 
