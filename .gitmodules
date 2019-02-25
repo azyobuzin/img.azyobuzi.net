@@ -1,4 +1,0 @@
-[submodule "NX"]
-	path = NX
-	url = https://github.com/cannorin/NX.git
-	branch = rewrite

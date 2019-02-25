@@ -3,7 +3,6 @@
     public class ImgAzyobuziNetOptions
     {
         public ApiKeys ApiKeys { get; set; }
-        public string FallbackV2ApiUri { get; set; }
     }
 
     public class ApiKeys

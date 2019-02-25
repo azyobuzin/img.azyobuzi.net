@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core;
-using ImgAzyobuziNet.Core.SupportServices;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using NX;
 
 namespace ImgAzyobuziNet.Middlewares
 {
@@ -51,7 +48,7 @@ namespace ImgAzyobuziNet.Middlewares
                         impl.Index();
                         break;
                     case "/regex.json":
-                        await impl.Regex().ConfigureAwait(false);
+                        impl.Regex();
                         break;
                     case "/redirect":
                     case "/redirect.json":
@@ -94,22 +91,12 @@ namespace ImgAzyobuziNet.Middlewares
                 this.Response = context.Response;
                 this._imgAzyobuziNetService = context.RequestServices.GetService<ImgAzyobuziNetService>();
                 this._telemetryClient = context.RequestServices.GetService<TelemetryClient>();
-
-                var oldApiUri = context.RequestServices.GetService<IOptions<ImgAzyobuziNetOptions>>()?.Value?.FallbackV2ApiUri;
-                if (!string.IsNullOrEmpty(oldApiUri))
-                {
-                    this._interoperation = new ApiV2Interoperation(
-                        new Uri(oldApiUri),
-                        context.RequestServices.GetService<IImgAzyobuziNetHttpClient>(),
-                        this._telemetryClient);
-                }
             }
 
             private readonly HttpRequest Request;
             private readonly HttpResponse Response;
             private readonly ImgAzyobuziNetService _imgAzyobuziNetService;
             private readonly TelemetryClient _telemetryClient;
-            private readonly ApiV2Interoperation _interoperation;
 
             private static readonly IReadOnlyDictionary<int, ErrorDefinition> s_errors = new Dictionary<int, ErrorDefinition>
             {
@@ -194,16 +181,10 @@ namespace ImgAzyobuziNet.Middlewares
                 this.ErrorResponse(4041);
             }
 
-            public async Task Regex()
+            public void Regex()
             {
                 var result = this._imgAzyobuziNetService.GetPatternProviders()
                     .Select(x => new ApiV2NameRegexPair(x.ServiceName, x.Pattern));
-
-                if (this._interoperation != null)
-                {
-                    result = result.Concat(await this._interoperation.GetRegex().ConfigureAwait(false));
-                }
-
                 this.Json(result);
             }
 
@@ -237,15 +218,7 @@ namespace ImgAzyobuziNet.Middlewares
 
                 if (result == null)
                 {
-                    if (this._interoperation != null)
-                    {
-                        await this.RedirectInterop().ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        this.ErrorResponse(4002);
-                    }
-
+                    this.ErrorResponse(4002);
                     return;
                 }
 
@@ -297,19 +270,6 @@ namespace ImgAzyobuziNet.Middlewares
                 this.Response.GetTypedHeaders().Location = new Uri(location);
             }
 
-            private async Task RedirectInterop()
-            {
-                (await this._interoperation.Redirect(this.Request.QueryString.ToUriComponent()).ConfigureAwait(false))
-                    .Match(
-                        location =>
-                        {
-                            this.Response.StatusCode = 302;
-                            this.Response.GetTypedHeaders().Location = location;
-                        },
-                        t => this.RawJson(t.StatusCode, t.Content)
-                    );
-            }
-
             public async Task AllSizes()
             {
                 var uri = this.Request.Query["uri"].FirstOrDefault();
@@ -323,15 +283,7 @@ namespace ImgAzyobuziNet.Middlewares
 
                 if (result == null)
                 {
-                    if (this._interoperation != null)
-                    {
-                        await this.AllSizesInterop().ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        this.ErrorResponse(4002);
-                    }
-
+                    this.ErrorResponse(4002);
                     return;
                 }
 
@@ -361,12 +313,6 @@ namespace ImgAzyobuziNet.Middlewares
                     video = img.VideoFull,
                     video_https = img.VideoFull
                 });
-            }
-
-            private async Task AllSizesInterop()
-            {
-                var t = await this._interoperation.AllSizes(this.Request.QueryString.ToUriComponent()).ConfigureAwait(false);
-                this.RawJson(t.StatusCode, t.Content);
             }
         }
     }
