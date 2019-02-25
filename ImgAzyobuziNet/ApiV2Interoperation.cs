@@ -22,7 +22,6 @@ namespace ImgAzyobuziNet
             "SkyDrive",
             "Tumblr",
             "つなビィ",
-            "Vine",
             "YouTube"
         };
 

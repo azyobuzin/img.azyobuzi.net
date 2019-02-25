@@ -18,4 +18,6 @@ namespace ImgAzyobuziNet.Core
             : base($"このサービスを使用するのに必要なオプション {configurationKey} が設定されていません。")
         { }
     }
+
+    // TODO: 呼び出した API が想定外のレスポンスを返したことを表す例外
 }
