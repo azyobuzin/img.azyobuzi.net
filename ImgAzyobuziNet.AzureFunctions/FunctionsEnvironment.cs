@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,16 +16,17 @@ namespace ImgAzyobuziNet.AzureFunctions
     {
         static FunctionsEnvironment()
         {
-            // Application Insights
-            var telemetryClientConfiguration = TelemetryConfiguration.CreateDefault();
-            if (IsDevelopment)
-                telemetryClientConfiguration.TelemetryChannel.DeveloperMode = true;
-            TelemetryClient = new TelemetryClient(telemetryClientConfiguration);
-
             // Services
             var configuration = new ConfigurationBuilder()
+                .AddUserSecrets("ImgAzyobuziNet")
                 .AddEnvironmentVariables()
                 .Build();
+
+            var hostingEnvironment = new HostingEnvironment()
+            {
+                EnvironmentName = EnvironmentName,
+                ApplicationName = "ImgAzyobuziNet",
+            };
 
             ServiceProvider = new ServiceCollection()
                 .Configure<ImgAzyobuziNetOptions>(configuration)
@@ -35,16 +36,28 @@ namespace ImgAzyobuziNet.AzureFunctions
                 .AddTwitterResolver()
                 .AddImgAzyobuziNetService()
                 .AddDefaultPatternProviders()
-                .AddSingleton(TelemetryClient)
+                .AddSingleton((Microsoft.AspNetCore.Hosting.IHostingEnvironment)hostingEnvironment)
+                .AddSingleton((Microsoft.Extensions.Hosting.IHostingEnvironment)hostingEnvironment)
+                .AddApplicationInsightsTelemetry(options => options.DeveloperMode |= IsDevelopment)
                 .AddLogging(builder =>
                 {
-                    builder.Services.Configure<TelemetryConfiguration>(x => x.TelemetryChannel.DeveloperMode |= IsDevelopment);
                     builder.AddApplicationInsights();
                     // 外部への通信は Dependency として記録しているはずなので、 ILogger 経由では記録しない
                     builder.AddFilter<ApplicationInsightsLoggerProvider>("ImgAzyobuziNet.Core.SupportServices.DefaultHttpClient", LogLevel.Warning);
                     builder.AddFilter<ApplicationInsightsLoggerProvider>("ImgAzyobuziNet.Core.SupportServices.Twitter.DefaultTwitterResolver", LogLevel.Warning);
                 })
                 .BuildServiceProvider();
+
+            TelemetryClient = ServiceProvider.GetRequiredService<TelemetryClient>();
+        }
+
+        public static string EnvironmentName
+        {
+            get
+            {
+                var s = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                return string.IsNullOrEmpty(s) ? Microsoft.AspNetCore.Hosting.EnvironmentName.Production : s;
+            }
         }
 
         public static bool IsDevelopment
@@ -52,7 +65,7 @@ namespace ImgAzyobuziNet.AzureFunctions
             get
             {
                 return string.Equals(
-                    Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+                    EnvironmentName,
                     "Development",
                     StringComparison.OrdinalIgnoreCase);
             }
