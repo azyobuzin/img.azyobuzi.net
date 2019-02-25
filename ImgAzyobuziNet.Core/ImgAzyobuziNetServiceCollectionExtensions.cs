@@ -37,7 +37,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddMemoryResolverCache(this IServiceCollection serviceCollection)
         {
-            return serviceCollection.AddTransient(typeof(IResolverCache), typeof(MemoryResolverCache));
+            return serviceCollection
+                .AddTransient(typeof(IResolverCache), typeof(MemoryResolverCache))
+                .AddSingleton(typeof(IResolverCacheLogger<>), typeof(DefaultResolverCacheLogger<>));
         }
 
         public static IServiceCollection AddNoResolverCache(this IServiceCollection serviceCollection)
