@@ -3,12 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.ApplicationInsights;
 
 namespace ImgAzyobuziNet.AzureFunctions
 {
@@ -16,12 +15,6 @@ namespace ImgAzyobuziNet.AzureFunctions
     {
         static FunctionsEnvironment()
         {
-            // Application Insights
-            var telemetryClientConfiguration = TelemetryConfiguration.CreateDefault();
-            if (IsDevelopment)
-                telemetryClientConfiguration.TelemetryChannel.DeveloperMode = true;
-            TelemetryClient = new TelemetryClient(telemetryClientConfiguration);
-
             // Services
             var configuration = new ConfigurationBuilder()
                 .AddEnvironmentVariables()
@@ -34,10 +27,17 @@ namespace ImgAzyobuziNet.AzureFunctions
                 .AddImgAzyobuziNetHttpClient()
                 .AddImgAzyobuziNetService()
                 .AddDefaultPatternProviders()
-                .AddSingleton(TelemetryClient)
-                .AddLogging()
-                .ReplaceWithRequestService<ILoggerFactory>()
+                .AddApplicationInsightsTelemetry(options => options.DeveloperMode |= IsDevelopment)
+                .AddLogging(builder =>
+                {
+                    builder.AddApplicationInsights();
+                    // 外部への通信は Dependency として記録しているはずなので、 ILogger 経由では記録しない
+                    builder.AddFilter<ApplicationInsightsLoggerProvider>("ImgAzyobuziNet.Core.SupportServices.DefaultHttpClient", LogLevel.Warning);
+                    builder.AddFilter<ApplicationInsightsLoggerProvider>("ImgAzyobuziNet.Core.SupportServices.Twitter.DefaultTwitterResolver", LogLevel.Warning);
+                })
                 .BuildServiceProvider();
+
+            TelemetryClient = ServiceProvider.GetRequiredService<TelemetryClient>();
         }
 
         public static bool IsDevelopment
@@ -83,12 +83,6 @@ namespace ImgAzyobuziNet.AzureFunctions
                 // ConfigureAwait(false) しないほうが適切？ わからん
                 return await action(serviceScope.ServiceProvider.GetRequiredService<ImgAzyobuziNetService>());
             }
-        }
-
-        private static IServiceCollection ReplaceWithRequestService<TService>(this IServiceCollection serviceCollection)
-            where TService : class
-        {
-            return serviceCollection.Replace(ServiceDescriptor.Transient(_ => s_requestServices.Value?.GetService<TService>()));
         }
     }
 }

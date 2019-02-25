@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.ApplicationInsights;
 
 namespace ImgAzyobuziNet
 {
@@ -58,6 +59,9 @@ namespace ImgAzyobuziNet
                 .ConfigureLogging(builder =>
                 {
                     builder.AddApplicationInsights();
+                    // 外部への通信は Dependency として記録しているはずなので、 ILogger 経由では記録しない
+                    builder.AddFilter<ApplicationInsightsLoggerProvider>("ImgAzyobuziNet.Core.SupportServices.DefaultHttpClient", LogLevel.Warning);
+                    builder.AddFilter<ApplicationInsightsLoggerProvider>("ImgAzyobuziNet.Core.SupportServices.Twitter.DefaultTwitterResolver", LogLevel.Warning);
                 })
                 .Build()
                 .Run();
