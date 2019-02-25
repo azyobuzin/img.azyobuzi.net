@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core;
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +16,12 @@ namespace ImgAzyobuziNet.AzureFunctions
     {
         static FunctionsEnvironment()
         {
+            // Application Insights
+            var telemetryClientConfiguration = TelemetryConfiguration.CreateDefault();
+            if (IsDevelopment)
+                telemetryClientConfiguration.TelemetryChannel.DeveloperMode = true;
+            TelemetryClient = new TelemetryClient(telemetryClientConfiguration);
+
             // Services
             var configuration = new ConfigurationBuilder()
                 .AddEnvironmentVariables()
@@ -27,17 +34,16 @@ namespace ImgAzyobuziNet.AzureFunctions
                 .AddImgAzyobuziNetHttpClient()
                 .AddImgAzyobuziNetService()
                 .AddDefaultPatternProviders()
-                .AddApplicationInsightsTelemetry(options => options.DeveloperMode |= IsDevelopment)
+                .AddSingleton(TelemetryClient)
                 .AddLogging(builder =>
                 {
+                    builder.Services.Configure<TelemetryConfiguration>(x => x.TelemetryChannel.DeveloperMode |= IsDevelopment);
                     builder.AddApplicationInsights();
                     // 外部への通信は Dependency として記録しているはずなので、 ILogger 経由では記録しない
                     builder.AddFilter<ApplicationInsightsLoggerProvider>("ImgAzyobuziNet.Core.SupportServices.DefaultHttpClient", LogLevel.Warning);
                     builder.AddFilter<ApplicationInsightsLoggerProvider>("ImgAzyobuziNet.Core.SupportServices.Twitter.DefaultTwitterResolver", LogLevel.Warning);
                 })
                 .BuildServiceProvider();
-
-            TelemetryClient = ServiceProvider.GetRequiredService<TelemetryClient>();
         }
 
         public static bool IsDevelopment
