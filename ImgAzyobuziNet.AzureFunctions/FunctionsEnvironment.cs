@@ -32,6 +32,7 @@ namespace ImgAzyobuziNet.AzureFunctions
                 .AddMemoryCache()
                 .AddMemoryResolverCache() // TODO: キャッシュ方法を設定でプラガブルに
                 .AddImgAzyobuziNetHttpClient()
+                .AddTwitterResolver()
                 .AddImgAzyobuziNetService()
                 .AddDefaultPatternProviders()
                 .AddSingleton(TelemetryClient)
