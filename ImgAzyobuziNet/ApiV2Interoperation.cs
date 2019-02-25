@@ -22,7 +22,6 @@ namespace ImgAzyobuziNet
             "SkyDrive",
             "Tumblr",
             "つなビィ",
-            "YouTube"
         };
 
         private readonly Uri _oldApiUri;
