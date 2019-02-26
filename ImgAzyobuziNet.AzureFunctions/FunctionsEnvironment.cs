@@ -34,10 +34,6 @@ namespace ImgAzyobuziNet.AzureFunctions
                 .Configure<TelemetryConfiguration>(tc =>
                 {
                     tc.TelemetryChannel.DeveloperMode |= IsDevelopment;
-                    tc.TelemetryProcessorChainBuilder
-                        .UseAdaptiveSampling()
-                        .Use(next => new QuickPulseTelemetryProcessor(next))
-                        .Build();
                 })
                 .AddSingleton(typeof(IOptions<TelemetryConfiguration>), typeof(TelemetryConfigurationOptions))
                 .AddSingleton(provider => provider.GetService<IOptions<TelemetryConfiguration>>().Value)
