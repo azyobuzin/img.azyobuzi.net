@@ -3,12 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using ImgAzyobuziNet.Core;
 using Microsoft.ApplicationInsights;
-using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector.QuickPulse;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.ApplicationInsights;
+using Microsoft.Extensions.Options;
 
 namespace ImgAzyobuziNet.AzureFunctions
 {
@@ -22,12 +23,6 @@ namespace ImgAzyobuziNet.AzureFunctions
                 .AddEnvironmentVariables()
                 .Build();
 
-            var hostingEnvironment = new HostingEnvironment()
-            {
-                EnvironmentName = EnvironmentName,
-                ApplicationName = "ImgAzyobuziNet",
-            };
-
             ServiceProvider = new ServiceCollection()
                 .Configure<ImgAzyobuziNetOptions>(configuration)
                 .AddMemoryCache()
@@ -36,15 +31,21 @@ namespace ImgAzyobuziNet.AzureFunctions
                 .AddTwitterResolver()
                 .AddImgAzyobuziNetService()
                 .AddDefaultPatternProviders()
-                .AddSingleton((Microsoft.AspNetCore.Hosting.IHostingEnvironment)hostingEnvironment)
-                .AddSingleton((Microsoft.Extensions.Hosting.IHostingEnvironment)hostingEnvironment)
-                .AddApplicationInsightsTelemetry(options => options.DeveloperMode |= IsDevelopment)
+                .Configure<TelemetryConfiguration>(tc =>
+                {
+                    tc.TelemetryChannel.DeveloperMode |= IsDevelopment;
+                    tc.TelemetryProcessorChainBuilder
+                        .UseAdaptiveSampling()
+                        .Use(next => new QuickPulseTelemetryProcessor(next))
+                        .Build();
+                })
+                .AddSingleton(typeof(IOptions<TelemetryConfiguration>), typeof(TelemetryConfigurationOptions))
+                .AddSingleton(provider => provider.GetService<IOptions<TelemetryConfiguration>>().Value)
+                .AddSingleton<TelemetryClient>()
                 .AddLogging(builder =>
                 {
+                    builder.SetMinimumLevel(LogLevel.Information);
                     builder.AddApplicationInsights();
-                    // 外部への通信は Dependency として記録しているはずなので、 ILogger 経由では記録しない
-                    builder.AddFilter<ApplicationInsightsLoggerProvider>("ImgAzyobuziNet.Core.SupportServices.DefaultHttpClient", LogLevel.Warning);
-                    builder.AddFilter<ApplicationInsightsLoggerProvider>("ImgAzyobuziNet.Core.SupportServices.Twitter.DefaultTwitterResolver", LogLevel.Warning);
                 })
                 .BuildServiceProvider();
 
