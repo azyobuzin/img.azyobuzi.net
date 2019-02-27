@@ -6,5 +6,6 @@ namespace ImgAzyobuziNet.Core.SupportServices
     {
         ValueTask<(bool Exists, T Value)> TryGetValue<T>(string key);
         Task Set(string key, object value);
+        Task DeleteExpiredEntries();
     }
 }

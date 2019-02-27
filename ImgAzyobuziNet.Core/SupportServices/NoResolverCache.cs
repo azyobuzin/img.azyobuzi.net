@@ -13,5 +13,10 @@ namespace ImgAzyobuziNet.Core.SupportServices
         {
             return Task.CompletedTask;
         }
+
+        public Task DeleteExpiredEntries()
+        {
+            return Task.CompletedTask;
+        }
     }
 }

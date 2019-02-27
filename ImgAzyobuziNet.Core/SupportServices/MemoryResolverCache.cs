@@ -45,5 +45,11 @@ namespace ImgAzyobuziNet.Core.SupportServices
 
             return Task.CompletedTask;
         }
+
+        public Task DeleteExpiredEntries()
+        {
+            // SlidingExpiration が勝手にやってくれるので、実装する必要なし
+            return Task.CompletedTask;
+        }
     }
 }
