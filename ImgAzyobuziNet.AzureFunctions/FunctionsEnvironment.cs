@@ -24,12 +24,11 @@ namespace ImgAzyobuziNet.AzureFunctions
                 .Build();
 
             ServiceProvider = new ServiceCollection()
-                .Configure<ImgAzyobuziNetOptions>(configuration)
                 .AddMemoryCache()
-                .AddMemoryResolverCache() // TODO: キャッシュ方法を設定でプラガブルに
+                .AddResolverByOption()
                 .AddImgAzyobuziNetHttpClient()
                 .AddTwitterResolver()
-                .AddImgAzyobuziNetService()
+                .AddImgAzyobuziNetService(configuration)
                 .AddDefaultPatternProviders()
                 .Configure<TelemetryConfiguration>(tc =>
                 {
@@ -44,6 +43,8 @@ namespace ImgAzyobuziNet.AzureFunctions
                     builder.AddApplicationInsights();
                 })
                 .BuildServiceProvider();
+
+            var options = ServiceProvider.GetService<IOptions<TelemetryConfiguration>>();
 
             TelemetryClient = ServiceProvider.GetRequiredService<TelemetryClient>();
         }

@@ -30,7 +30,7 @@ namespace ImgAzyobuziNet.Core.SupportServices.Twitter
 
         #endregion
 
-        private readonly ApiKeys _apiKeys;
+        private readonly ApiKeyOptions _apiKeys;
         private readonly TwitterCredentialsManager _credentialsManager;
         private readonly ILogger _logger;
 
@@ -129,9 +129,9 @@ namespace ImgAzyobuziNet.Core.SupportServices.Twitter
             var consumerSecret = this._apiKeys?.TwitterConsumerSecret;
 
             if (string.IsNullOrEmpty(consumerKey))
-                throw new NotConfiguredException(nameof(ImgAzyobuziNetOptions.ApiKeys) + ":" + nameof(ApiKeys.TwitterConsumerKey));
+                throw new NotConfiguredException(nameof(ImgAzyobuziNetOptions.ApiKeys) + ":" + nameof(ApiKeyOptions.TwitterConsumerKey));
             if (string.IsNullOrEmpty(consumerSecret))
-                throw new NotConfiguredException(nameof(ImgAzyobuziNetOptions.ApiKeys) + ":" + nameof(ApiKeys.TwitterConsumerSecret));
+                throw new NotConfiguredException(nameof(ImgAzyobuziNetOptions.ApiKeys) + ":" + nameof(ApiKeyOptions.TwitterConsumerSecret));
 
             var accessToken = this._apiKeys.TwitterAccessToken;
 

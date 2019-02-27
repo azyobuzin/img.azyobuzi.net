@@ -49,9 +49,9 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private readonly IImgAzyobuziNetHttpClient _httpClient;
         private readonly IResolverCache _resolverCache;
 
-        public TinamiResolver(IOptionsSnapshot<ImgAzyobuziNetOptions> options, IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
+        public TinamiResolver(IOptionsSnapshot<ApiKeyOptions> options, IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
         {
-            this._apiKey = options?.Value?.ApiKeys?.TinamiApiKey;
+            this._apiKey = options?.Value?.TinamiApiKey;
             this._httpClient = httpClient;
             this._resolverCache = resolverCache;
         }
@@ -59,7 +59,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         public async ValueTask<ImageInfo[]> GetImages(Match match)
         {
             if (string.IsNullOrEmpty(this._apiKey))
-                throw new NotConfiguredException(nameof(ImgAzyobuziNetOptions.ApiKeys) + ":" + nameof(ApiKeys.TinamiApiKey));
+                throw new NotConfiguredException(nameof(ImgAzyobuziNetOptions.ApiKeys) + ":" + nameof(ApiKeyOptions.TinamiApiKey));
 
             var id = match.Groups[1].Value;
             var result = await this._resolverCache.GetOrSet(

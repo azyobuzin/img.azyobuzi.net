@@ -56,9 +56,9 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private readonly IImgAzyobuziNetHttpClient _httpClient;
         private readonly IResolverCache _resolverCache;
 
-        public MobypictureResolver(IOptionsSnapshot<ImgAzyobuziNetOptions> options, IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
+        public MobypictureResolver(IOptionsSnapshot<ApiKeyOptions> options, IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
         {
-            this._developerKey = options?.Value?.ApiKeys?.MobypictureDeveloperKey;
+            this._developerKey = options?.Value?.MobypictureDeveloperKey;
             this._httpClient = httpClient;
             this._resolverCache = resolverCache;
         }
@@ -66,7 +66,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         public async ValueTask<ImageInfo[]> GetImages(Match match)
         {
             if (string.IsNullOrEmpty(this._developerKey))
-                throw new NotConfiguredException(nameof(ImgAzyobuziNetOptions.ApiKeys) + ":" + nameof(ApiKeys.MobypictureDeveloperKey));
+                throw new NotConfiguredException(nameof(ImgAzyobuziNetOptions.ApiKeys) + ":" + nameof(ApiKeyOptions.MobypictureDeveloperKey));
 
             // 誰か短縮の法則を見つけてくれ～
             CacheItem result;

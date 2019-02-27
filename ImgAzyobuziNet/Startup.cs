@@ -1,5 +1,4 @@
-﻿using ImgAzyobuziNet.Core;
-using ImgAzyobuziNet.Middlewares;
+﻿using ImgAzyobuziNet.Middlewares;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,12 +22,12 @@ namespace ImgAzyobuziNet
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<ImgAzyobuziNetOptions>(this.Configuration)
+            services
                 .AddMemoryCache()
-                .AddMemoryResolverCache()
+                .AddResolverByOption()
                 .AddImgAzyobuziNetHttpClient()
                 .AddTwitterResolver()
-                .AddImgAzyobuziNetService()
+                .AddImgAzyobuziNetService(this.Configuration)
                 .AddDefaultPatternProviders()
                 .AddCors(options => options.AddPolicy(
                     ApiCorsPolicyName,

@@ -14,25 +14,30 @@ namespace ImgAzyobuziNet.Core.Test
             typeof(ImgAzyobuziNetService).GetTypeInfo().Assembly
         };
 
-        private static readonly TestActivator s_activator = new TestActivator(
-            new ServiceCollection()
-                .Configure<ImgAzyobuziNetOptions>(options =>
-                {
-                    var config = new ConfigurationBuilder()
-                        .SetBasePath(Path.GetDirectoryName(typeof(TestTargetProvider).GetTypeInfo().Assembly.Location))
-                        .AddJsonFile("appsettings.json", true)
-                        .AddJsonFile("appsettings.Development.json", true)
-                        .AddUserSecrets("ImgAzyobuziNet")
-                        .AddEnvironmentVariables()
-                        .Build();
-                    config.Bind(options);
-                })
-                .AddLogging()
-                .AddNoResolverCache()
-                .AddImgAzyobuziNetHttpClient()
-                .AddTwitterResolver()
-                .BuildServiceProvider()
-        );
+        private static readonly TestActivator s_activator;
+
+        static TestTargetProvider()
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Path.GetDirectoryName(typeof(TestTargetProvider).GetTypeInfo().Assembly.Location))
+                .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("appsettings.Development.json", true)
+                .AddUserSecrets("ImgAzyobuziNet")
+                .AddEnvironmentVariables()
+                .Build();
+
+            s_activator = new TestActivator(
+                new ServiceCollection()
+                    .Configure<ImgAzyobuziNetOptions>(config)
+                    .Configure<ApiKeyOptions>(config.GetSection(nameof(ImgAzyobuziNetOptions.ApiKeys)))
+                    .Configure<ResolverCacheOptions>(config.GetSection(nameof(ImgAzyobuziNetOptions.ResolverCache)))
+                    .AddLogging()
+                    .AddNoResolverCache()
+                    .AddImgAzyobuziNetHttpClient()
+                    .AddTwitterResolver()
+                    .BuildServiceProvider()
+            );
+        }
 
         public IEnumerable<Assembly> GetTargetAssemblies()
         {

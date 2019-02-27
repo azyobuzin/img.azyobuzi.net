@@ -33,7 +33,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ItemTemplates", "ItemTempla
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImgAzyobuziNet.ItemTemplates.Resolver", "ItemTemplates\ImgAzyobuziNet.ItemTemplates.Resolver\ImgAzyobuziNet.ItemTemplates.Resolver.csproj", "{7094129C-ADEE-4D3B-A3D6-60AE9C5E0B23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImgAzyobuziNet.AzureFunctions", "ImgAzyobuziNet.AzureFunctions\ImgAzyobuziNet.AzureFunctions.csproj", "{B55DDF69-2295-4E72-8C9E-97EFD38FF07A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImgAzyobuziNet.AzureFunctions", "ImgAzyobuziNet.AzureFunctions\ImgAzyobuziNet.AzureFunctions.csproj", "{B55DDF69-2295-4E72-8C9E-97EFD38FF07A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

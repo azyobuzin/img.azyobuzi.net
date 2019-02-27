@@ -59,9 +59,9 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private readonly IImgAzyobuziNetHttpClient _httpClient;
         private readonly IResolverCache _resolverCache;
 
-        public FlickrResolver(IOptionsSnapshot<ImgAzyobuziNetOptions> options, IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
+        public FlickrResolver(IOptionsSnapshot<ApiKeyOptions> options, IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
         {
-            this._apiKey = options?.Value?.ApiKeys?.FlickrApiKey;
+            this._apiKey = options?.Value?.FlickrApiKey;
             this._httpClient = httpClient;
             this._resolverCache = resolverCache;
         }
@@ -69,7 +69,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         public async ValueTask<ImageInfo[]> GetImages(Match match)
         {
             if (string.IsNullOrEmpty(this._apiKey))
-                throw new NotConfiguredException(nameof(ImgAzyobuziNetOptions.ApiKeys) + ":" + nameof(ApiKeys.FlickrApiKey));
+                throw new NotConfiguredException(nameof(ImgAzyobuziNetOptions.ApiKeys) + ":" + nameof(ApiKeyOptions.FlickrApiKey));
 
             try
             {

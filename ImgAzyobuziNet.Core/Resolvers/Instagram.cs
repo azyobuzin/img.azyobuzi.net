@@ -49,9 +49,9 @@ namespace ImgAzyobuziNet.Core.Resolvers
         private readonly IImgAzyobuziNetHttpClient _httpClient;
         private readonly IResolverCache _resolverCache;
 
-        public InstagramResolver(IOptionsSnapshot<ImgAzyobuziNetOptions> options, IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
+        public InstagramResolver(IOptionsSnapshot<ApiKeyOptions> options, IImgAzyobuziNetHttpClient httpClient, IResolverCache resolverCache)
         {
-            this._accessToken = options?.Value?.ApiKeys?.InstagramAccessToken;
+            this._accessToken = options?.Value?.InstagramAccessToken;
             this._httpClient = httpClient;
             this._resolverCache = resolverCache;
         }
@@ -59,7 +59,7 @@ namespace ImgAzyobuziNet.Core.Resolvers
         public async ValueTask<ImageInfo[]> GetImages(Match match)
         {
             if (string.IsNullOrEmpty(this._accessToken))
-                throw new NotConfiguredException(nameof(ImgAzyobuziNetOptions.ApiKeys) + ":" + nameof(ApiKeys.InstagramAccessToken));
+                throw new NotConfiguredException(nameof(ImgAzyobuziNetOptions.ApiKeys) + ":" + nameof(ApiKeyOptions.InstagramAccessToken));
 
             var id = match.Groups[1].Value;
             var result = await this._resolverCache.GetOrSet(
