@@ -1,22 +1,48 @@
-# img.azyobuzi.net v3
-ASP.NET Core になって新登場。
+# img.azyobuzi.net
+img.azyobuzi.net は web 上に数ある画像共有サービスから画像の URI を取得する API を提供します。
 
-昔のコードは v2 ブランチをご覧ください。
-
-# ビルド
-## 普通にビルド
+## 簡単な使い方
+### 1. 正規表現を取得する
 ```
-dotnet restore
-dotnet build
+https://img.azyobuzi.net/api/v3/services
 ```
 
-## Docker
-Docker Hub にあります。
+対応している画像共有サービスの URI にマッチする正規表現を取得します。
 
-https://hub.docker.com/r/azyobuzin/img.azyobuzi.net/
+この正規表現は基本的な構文のみを使用しているため、多くの正規表現エンジンで実行することができます。ホスト部は小文字で記述されているため、大文字・小文字を区別しないオプション(i フラグ)を使用することをおすすめします。
 
-# Pull Request 募集中
-v2 からの移行に手が回らない状況です。
-v2 ブランチのソースからいい感じに書き直していただけるとよろこびます。
-いい感じでなくても手直しするので適当によろしくお願いします。
-Issue を作成して、作者のケツ叩きをしてくれてもOKです。
+### 2. 画像の URI を取得する
+```
+https://img.azyobuzi.net/api/v3/resolve?uri=http://f.hatena.ne.jp/azyobuzin/20130909162630
+```
+
+```json
+{
+    "service_id": "HatenaFotolife",
+    "service_name": "はてなフォトライフ",
+    "images": [
+        {
+            "full": "http://cdn-ak.f.st-hatena.com/images/fotolife/a/azyobuzin/20130909/20130909162630_original.jpg",
+            "large": "http://cdn-ak.f.st-hatena.com/images/fotolife/a/azyobuzin/20130909/20130909162630.jpg",
+            "thumb": "http://cdn-ak.f.st-hatena.com/images/fotolife/a/azyobuzin/20130909/20130909162630_120.jpg",
+            "video_full": null,
+            "video_large": null,
+            "video_mobile": null
+        }
+    ]
+}
+```
+
+full, large, thumb の 3 種類のサイズを取得することができます。
+
+### 3. リダイレクト
+```
+https://img.azyobuzi.net/api/v3/redirect?uri=http://f.hatena.ne.jp/azyobuzin/20130909162630&size=large
+```
+
+```
+302
+Location: http://cdn-ak.f.st-hatena.com/images/fotolife/a/azyobuzin/20130909/20130909162630.jpg
+```
+
+指定したサイズの画像へリダイレクトします。

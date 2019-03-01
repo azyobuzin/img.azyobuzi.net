@@ -1,0 +1,262 @@
+FORMAT: 1A
+HOST: https://img.azyobuzi.net/api
+
+# img.azyobuzi.net
+
+## Group Version 3
+最新バージョンの API です。
+
+v2 からの変更点は以下の通りです。
+
+- 複数枚の画像に対応
+- 動画のサイズを 3 段階に分けた
+
+### GET /v3/services
+対応している画像共有サービスの URI にマッチする正規表現を取得します。
+
++ Response 200 (application/json)
+    + Body
+
+            [
+                {
+                    "id": "CloudApp",
+                    "name": "CloudApp",
+                    "pattern": "^https?://(?:www\\.)?cl\\.ly/(?:image/)?(\\w+)/?(?:[\\?#]|$)"
+                },
+                {
+                    "id": "Dailymotion",
+                    "name": "Dailymotion",
+                    "pattern": "^https?://(?:www\\.)?dailymotion\\.com/video/([^/\\?]+)/?(?:[\\?#]|$)"
+                }
+            ]
+
+    + Schema
+
+            {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "title": "サービスID",
+                            "description": "サービスを表す文字列。変更されることはありません。"
+                        },
+                        "name": {
+                            "type": "string",
+                            "title": "サービス名",
+                            "description": "サービスの表示名。サービスが改名するなどして変更されることがあります。"
+                        },
+                        "pattern": {
+                            "type": "string",
+                            "title": "正規表現"
+                        }
+                    }
+                }
+            }
+
+### GET /v3/redirect
+指定した画像の、指定したサイズへリダイレクトします。
+
+`size` によってどのような画像へリダイレクトされるのかについては、 `/v3/resolve` のレスポンススキーマを参考にしてください。
+
++ Parameters
+    + uri (required)
+    + size (enum[string], optional)
+        + Default: `full`
+        + Members
+            + `full`
+            + `large`
+            + `thumb`
+            + `video_full`
+            + `video_large`
+            + `video_mobile`
+
++ Response 302
+    + Headers
+
+            Location: https://service/image
+
++ Response 400 (application/json)
+    | code | 説明 |
+    | ---- | ---- |
+    | 4001 | `uri` パラメータが指定されていません。 |
+    | 4002 | `uri` パラメータが、どの正規表現にもマッチしませんでした。 |
+    | 4003 | `size` パラメータが不正です。 |
+
+    + Body
+
+            {
+                "error": {
+                    "code": 4002,
+                    "message": "Unsupported URI.",
+                    "service_id": null,
+                    "exception": null
+                }
+            }
+
++ Response 404 (application/json)
+    | code | 説明 |
+    | ---- | ---- |
+    | 4043 | 指定された画像の詳細情報を取得しに行きましたが、画像が存在しませんでした。 |
+    | 4044 | 指定された画像の詳細情報を取得しに行きましたが、画像ではないコンテンツでした。 |
+    | 4045 | `size` パラメータに動画が指定されましたが、動画を取得することができませんでした。 |
+
+    + Body
+
+            {
+                "error": {
+                    "code": 4043,
+                    "message": "The image is not found.",
+                    "service_id": "HatenaFotolife",
+                    "exception": "ImgAzyobuziNet.Core.ImageNotFoundException: Exception of type 'ImgAzyobuziNet.Core.ImageNotFoundException' was thrown.\r\n at ImgAzyobuziNet.Core.Resolvers.HatenaFotolifeResolver.Fetch(String username, String id) in /home/vsts/work/1/s/ImgAzyobuziNet.Core/Resolvers/HatenaFotolife.cs:line 109\r\n at ImgAzyobuziNet.Core.Extensions.GetOrSet[T](IResolverCache resolverCache, String key, Func`1 valueFactory) in /home/vsts/work/1/s/ImgAzyobuziNet.Core/Extensions.cs:line 21\r\n at ImgAzyobuziNet.Core.Resolvers.HatenaFotolifeResolver.GetImages(Match match) in /home/vsts/work/1/s/ImgAzyobuziNet.Core/Resolvers/HatenaFotolife.cs:line 51\r\n at ImgAzyobuziNet.Core.ImgAzyobuziNetService.Resolve(String uri) in /home/vsts/work/1/s/ImgAzyobuziNet.Core/ImgAzyobuziNetService.cs:line 33"
+                }
+            }
+
++ Response 500 (application/json)
+    | code | 説明 |
+    | ---- | ---- |
+    | 5000 | 想定されていないエラーが発生しました。これは画像共有サービスの仕様変更が原因である可能性があります。 |
+
+    + Body
+
+            {
+                "error": {
+                    "code": 5000,
+                    "exception": "System.Exception: 5000テスト",
+                    "service_id": null,
+                    "message": "Raised unknown exception on server."
+                }
+            }
+
+### GET /v3/resolve
+指定した URI に対応する画像の URI を取得します。
+
++ Parameters
+    + uri (required)
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "service_id": "HatenaFotolife",
+                "service_name": "はてなフォトライフ",
+                "images": [
+                    {
+                        "full": "http://cdn-ak.f.st-hatena.com/images/fotolife/a/azyobuzin/20130909/20130909162630_original.jpg",
+                        "large": "http://cdn-ak.f.st-hatena.com/images/fotolife/a/azyobuzin/20130909/20130909162630.jpg",
+                        "thumb": "http://cdn-ak.f.st-hatena.com/images/fotolife/a/azyobuzin/20130909/20130909162630_120.jpg",
+                        "video_full": null,
+                        "video_large": null,
+                        "video_mobile": null
+                    }
+                ]
+            }
+
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "service_id": {
+                        "type": "string",
+                        "title": "サービスID",
+                        "description": "/v3/services の service_id に対応します。"
+                    },
+                    "service_name": {
+                        "type": "string",
+                        "title": "サービス名",
+                        "description": "/v3/services の service_name に対応します。"
+                    },
+                    "images": {
+                        "type": "array",
+                        "title": "画像のリスト",
+                        "description": "サービスによっては2枚以上の画像を取得できるので、配列になっています。",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "full": {
+                                    "type": "string",
+                                    "title": "最大サイズの画像の URI",
+                                    "description": "取得できる最大サイズの画像です。"
+                                },
+                                "large": {
+                                    "type": "string",
+                                    "title": "大きめの画像の URI",
+                                    "description": "長辺が500～900pxの画像を目安としています。サービスによっては full と同じ URI が代入されます。"
+                                },
+                                "thumb": {
+                                    "type": "string",
+                                    "title": "サムネイルの URI",
+                                    "description": "長辺が200px以下の画像を目安としています。サービスによっては large と同じ URI が代入されます。"
+                                },
+                                "video_full": {
+                                    "type": ["string", "null"],
+                                    "title": "最大サイズの動画の URI",
+                                    "description": "動画を取得することができた場合、このフィールドには取得できる最大サイズの動画の URI が代入されます。動画を取得できない場合 null が代入されます。例えば、 YouTube は動画投稿サービスですが、動画自体を簡単に取得することはできないため、 null となります。"
+                                },
+                                "video_large": {
+                                    "type": ["string", "null"],
+                                    "title": "大きめの動画の URI",
+                                    "description": "HD以下の画質の動画を目安としています。サービスによっては video_full と同じ URI が代入されます。"
+                                },
+                                "video_mobile": {
+                                    "type": ["string", "null"],
+                                    "title": "小さめの動画の URI",
+                                    "descirption": "サービスで提供される最も低画質の動画です。サービスによっては、 video_large と同じ URI が代入されます。"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
++ Response 400 (application/json)
+    | code | 説明 |
+    | ---- | ---- |
+    | 4001 | `uri` パラメータが指定されていません。 |
+    | 4002 | `uri` パラメータが、どの正規表現にもマッチしませんでした。 |
+
+    + Body
+
+            {
+                "error": {
+                    "code": 4002,
+                    "message": "Unsupported URI.",
+                    "service_id": null,
+                    "exception": null
+                }
+            }
+
++ Response 404 (application/json)
+    | code | 説明 |
+    | ---- | ---- |
+    | 4043 | 指定された画像の詳細情報を取得しに行きましたが、画像が存在しませんでした。 |
+    | 4044 | 指定された画像の詳細情報を取得しに行きましたが、画像ではないコンテンツでした。 |
+
+    + Body
+
+            {
+                "error": {
+                    "code": 4043,
+                    "message": "The image is not found.",
+                    "service_id": "HatenaFotolife",
+                    "exception": "ImgAzyobuziNet.Core.ImageNotFoundException: Exception of type 'ImgAzyobuziNet.Core.ImageNotFoundException' was thrown.\r\n at ImgAzyobuziNet.Core.Resolvers.HatenaFotolifeResolver.Fetch(String username, String id) in /home/vsts/work/1/s/ImgAzyobuziNet.Core/Resolvers/HatenaFotolife.cs:line 109\r\n at ImgAzyobuziNet.Core.Extensions.GetOrSet[T](IResolverCache resolverCache, String key, Func`1 valueFactory) in /home/vsts/work/1/s/ImgAzyobuziNet.Core/Extensions.cs:line 21\r\n at ImgAzyobuziNet.Core.Resolvers.HatenaFotolifeResolver.GetImages(Match match) in /home/vsts/work/1/s/ImgAzyobuziNet.Core/Resolvers/HatenaFotolife.cs:line 51\r\n at ImgAzyobuziNet.Core.ImgAzyobuziNetService.Resolve(String uri) in /home/vsts/work/1/s/ImgAzyobuziNet.Core/ImgAzyobuziNetService.cs:line 33"
+                }
+            }
+
++ Response 500 (application/json)
+    | code | 説明 |
+    | ---- | ---- |
+    | 5000 | 想定されていないエラーが発生しました。これは画像共有サービスの仕様変更が原因である可能性があります。 |
+
+    + Body
+
+            {
+                "error": {
+                    "code": 5000,
+                    "exception": "System.Exception: 5000テスト",
+                    "service_id": null,
+                    "message": "Raised unknown exception on server."
+                }
+            }
